@@ -97,15 +97,27 @@ const NewsCard = ({ date, title, desc, tag, color = "primary" }: { date: string,
   </motion.div>
 );
 
-const BracketMatch = ({ player1, player2, score1 = "--", score2 = "--", country1, country2, side = "left", color = "primary" }: any) => (
+const BracketMatch = ({ player1, player2, score1 = "--", score2 = "--", country1, country2, countryCode1, countryCode2, side = "left", color = "primary" }: any) => (
   <div className={`flex flex-col gap-1 bg-white/5 p-4 md:p-3 rounded border-${side === "left" ? "l" : "r"}-4 ${color === "primary" ? "border-primary" : "border-accent-red"} relative transition-all hover:bg-white/10`}>
     <div className={`flex justify-between items-center ${side === "right" ? "flex-row-reverse" : ""}`}>
-      <span className="font-bold text-4xl md:text-sm uppercase leading-tight">{player1} <span className="text-lg md:text-[10px] text-slate-500 block md:inline">{country1}</span></span>
+      <span className="font-bold text-4xl md:text-sm uppercase leading-tight flex items-center gap-2">
+        {player1} 
+        <span className="text-lg md:text-[10px] text-slate-500 flex items-center gap-1">
+          <img src={`https://flagcdn.com/w20/${countryCode1}.png`} alt={country1} className="w-4 h-auto rounded-sm" />
+          {country1}
+        </span>
+      </span>
       <span className="text-primary font-mono text-4xl md:text-sm">{score1}</span>
     </div>
     <div className="h-[1px] bg-white/10 my-2 md:my-1"></div>
     <div className={`flex justify-between items-center ${side === "right" ? "flex-row-reverse" : ""}`}>
-      <span className="font-bold text-4xl md:text-sm uppercase leading-tight">{player2} <span className="text-lg md:text-[10px] text-slate-500 block md:inline">{country2}</span></span>
+      <span className="font-bold text-4xl md:text-sm uppercase leading-tight flex items-center gap-2">
+        {player2} 
+        <span className="text-lg md:text-[10px] text-slate-500 flex items-center gap-1">
+          <img src={`https://flagcdn.com/w20/${countryCode2}.png`} alt={country2} className="w-4 h-auto rounded-sm" />
+          {country2}
+        </span>
+      </span>
       <span className="text-primary font-mono text-4xl md:text-sm">{score2}</span>
     </div>
   </div>
@@ -117,10 +129,10 @@ const BracketContent = () => (
     <div className="flex flex-col h-full">
       <h3 className="font-heading text-2xl md:text-xl text-primary mb-8 text-center shrink-0">HUITIÈMES (A)</h3>
       <div className="flex-1 flex flex-col justify-around py-4">
-        <BracketMatch player1="VICTOR" country1="🇺🇸" color="accent-red" />
-        <BracketMatch player1="PHIL WIZARD" country1="🇨🇦" />
-        <BracketMatch player1="DANY DANN" country1="🇫🇷" color="accent-red" />
-        <BracketMatch player1="SHIGEKIX" country1="🇯🇵" />
+        <BracketMatch player1="VICTOR" country1="USA" countryCode1="us" player2="TBD" country2="--" countryCode2="un" color="accent-red" />
+        <BracketMatch player1="PHIL WIZARD" country1="CAN" countryCode1="ca" player2="TBD" country2="--" countryCode2="un" />
+        <BracketMatch player1="DANY DANN" country1="FRA" countryCode1="fr" player2="TBD" country2="--" countryCode2="un" color="accent-red" />
+        <BracketMatch player1="SHIGEKIX" country1="JPN" countryCode1="jp" player2="TBD" country2="--" countryCode2="un" />
       </div>
     </div>
 
@@ -212,10 +224,10 @@ const BracketContent = () => (
     <div className="flex flex-col h-full">
       <h3 className="font-heading text-2xl md:text-xl text-primary mb-8 text-center shrink-0">HUITIÈMES (B)</h3>
       <div className="flex-1 flex flex-col justify-around py-4">
-        <BracketMatch player1="LIGEE" country1="🇨🇳" side="right" color="accent-red" />
-        <BracketMatch player1="KUZYA" country1="🇺🇦" side="right" />
-        <BracketMatch player1="LEE" country1="🇳🇱" side="right" color="accent-red" />
-        <BracketMatch player1="QUAKE" country1="🇹🇼" side="right" />
+        <BracketMatch player1="LIGEE" country1="CHN" countryCode1="cn" player2="TBD" country2="--" countryCode2="un" side="right" color="accent-red" />
+        <BracketMatch player1="KUZYA" country1="UKR" countryCode1="ua" player2="TBD" country2="--" countryCode2="un" side="right" />
+        <BracketMatch player1="LEE" country1="NLD" countryCode1="nl" player2="TBD" country2="--" countryCode2="un" side="right" color="accent-red" />
+        <BracketMatch player1="QUAKE" country1="TPE" countryCode1="tw" player2="TBD" country2="--" countryCode2="un" side="right" />
       </div>
     </div>
   </div>
