@@ -3,6 +3,9 @@ import Competition from './Competition';
 import Dancers from './Dancers';
 import Judges from './Judges';
 import Media from './Media';
+import History from './History';
+import Tickets from './Tickets';
+import Program from './Program';
 import { 
   Menu, 
   X, 
@@ -234,10 +237,10 @@ const BracketContent = () => (
 );
 
 export default function App() {
-  const [currentPage, setCurrentPage] = useState<'home' | 'competition' | 'dancers' | 'judges' | 'media'>('home');
+  const [currentPage, setCurrentPage] = useState<'home' | 'competition' | 'dancers' | 'judges' | 'media' | 'history' | 'tickets' | 'program'>('home');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  const navigateTo = (page: 'home' | 'competition' | 'dancers' | 'judges' | 'media', anchor?: string) => (e: React.MouseEvent) => {
+  const navigateTo = (page: 'home' | 'competition' | 'dancers' | 'judges' | 'media' | 'history' | 'tickets' | 'program', anchor?: string) => (e: React.MouseEvent) => {
     e.preventDefault();
     setCurrentPage(page);
     setIsMenuOpen(false);
@@ -321,8 +324,11 @@ export default function App() {
             
             <div className="hidden xl:flex items-center space-x-6">
               <NavLink href="#home" active={currentPage === 'home'} onClick={navigateTo('home')}>Accueil</NavLink>
+              <NavLink href="#history" active={currentPage === 'history'} onClick={navigateTo('history')}>Histoire</NavLink>
               <NavLink href="#competition" active={currentPage === 'competition'} onClick={navigateTo('competition')}>Compétition</NavLink>
               <NavLink href="#dancers" active={currentPage === 'dancers'} onClick={navigateTo('dancers')}>Danseurs</NavLink>
+              <NavLink href="#tickets" active={currentPage === 'tickets'} onClick={navigateTo('tickets')}>Billetterie</NavLink>
+              <NavLink href="#program" active={currentPage === 'program'} onClick={navigateTo('program')}>Programme</NavLink>
               <NavLink href="#brackets" onClick={navigateTo('home', '#brackets')}>Brackets</NavLink>
               <NavLink href="#judges" active={currentPage === 'judges'} onClick={navigateTo('judges')}>Juges</NavLink>
               <NavLink href="#media" active={currentPage === 'media'} onClick={navigateTo('media')}>Médias</NavLink>
@@ -331,9 +337,6 @@ export default function App() {
             </div>
 
             <div className="flex items-center gap-4">
-              <button className="btn-luxury-primary !px-6 !py-2 shimmer-effect">
-                S'INSCRIRE
-              </button>
               <button className="xl:hidden text-white" onClick={() => setIsMenuOpen(!isMenuOpen)}>
                 {isMenuOpen ? <X /> : <Menu />}
               </button>
@@ -353,8 +356,11 @@ export default function App() {
           >
             <div className="flex flex-col space-y-6 text-center">
               <a href="#home" onClick={navigateTo('home')} className={`text-2xl font-heading uppercase ${currentPage === 'home' ? 'text-primary' : 'text-white'}`}>Accueil</a>
+              <a href="#history" onClick={navigateTo('history')} className={`text-2xl font-heading uppercase ${currentPage === 'history' ? 'text-primary' : 'text-white'}`}>Histoire</a>
               <a href="#competition" onClick={navigateTo('competition')} className={`text-2xl font-heading uppercase ${currentPage === 'competition' ? 'text-primary' : 'text-white'}`}>Compétition</a>
               <a href="#dancers" onClick={navigateTo('dancers')} className={`text-2xl font-heading uppercase ${currentPage === 'dancers' ? 'text-primary' : 'text-white'}`}>Danseurs</a>
+              <a href="#tickets" onClick={navigateTo('tickets')} className={`text-2xl font-heading uppercase ${currentPage === 'tickets' ? 'text-primary' : 'text-white'}`}>Billetterie</a>
+              <a href="#program" onClick={navigateTo('program')} className={`text-2xl font-heading uppercase ${currentPage === 'program' ? 'text-primary' : 'text-white'}`}>Programme</a>
               <a href="#brackets" onClick={navigateTo('home', '#brackets')} className="text-2xl font-heading text-white uppercase">Brackets</a>
               <a href="#judges" onClick={navigateTo('judges')} className={`text-2xl font-heading uppercase ${currentPage === 'judges' ? 'text-primary' : 'text-white'}`}>Juges</a>
               <a href="#media" onClick={navigateTo('media')} className={`text-2xl font-heading uppercase ${currentPage === 'media' ? 'text-primary' : 'text-white'}`}>Médias</a>
@@ -591,7 +597,13 @@ export default function App() {
             </div>
           </div>
           <div className="mt-12 text-center">
-            <a href="#" className="inline-block border border-white/20 px-8 py-3 text-xs font-bold tracking-[0.2em] uppercase hover:bg-white hover:text-background-dark transition-all">Consulter le programme complet</a>
+            <a 
+              href="#program" 
+              onClick={navigateTo('program')}
+              className="inline-block border border-white/20 px-8 py-3 text-xs font-bold tracking-[0.2em] uppercase hover:bg-white hover:text-background-dark transition-all cursor-pointer"
+            >
+              Consulter le programme complet
+            </a>
           </div>
         </div>
       </section>
@@ -819,6 +831,12 @@ export default function App() {
     <Dancers />
   ) : currentPage === 'judges' ? (
     <Judges />
+  ) : currentPage === 'history' ? (
+    <History />
+  ) : currentPage === 'tickets' ? (
+    <Tickets />
+  ) : currentPage === 'program' ? (
+    <Program onReserveTickets={() => setCurrentPage('tickets')} />
   ) : (
     <Media />
   )}
@@ -849,9 +867,12 @@ export default function App() {
               <h4 className="text-white font-heading text-2xl uppercase tracking-widest mb-8 border-b border-primary/30 pb-2 inline-block">Navigation</h4>
               <ul className="space-y-4">
                 <li><a href="#home" onClick={navigateTo('home')} className="text-slate-400 hover:text-primary transition-colors text-xs font-bold tracking-widest uppercase">Accueil</a></li>
+                <li><a href="#history" onClick={navigateTo('history')} className="text-slate-400 hover:text-primary transition-colors text-xs font-bold tracking-widest uppercase">Histoire</a></li>
                 <li><a href="#competition" onClick={navigateTo('competition')} className="text-slate-400 hover:text-primary transition-colors text-xs font-bold tracking-widest uppercase">La Compétition</a></li>
                 <li><a href="#dancers" onClick={navigateTo('dancers')} className="text-slate-400 hover:text-primary transition-colors text-xs font-bold tracking-widest uppercase">Les Danseurs</a></li>
                 <li><a href="#judges" onClick={navigateTo('judges')} className="text-slate-400 hover:text-primary transition-colors text-xs font-bold tracking-widest uppercase">Les Juges</a></li>
+                <li><a href="#tickets" onClick={navigateTo('tickets')} className="text-slate-400 hover:text-primary transition-colors text-xs font-bold tracking-widest uppercase">Billetterie</a></li>
+                <li><a href="#program" onClick={navigateTo('program')} className="text-slate-400 hover:text-primary transition-colors text-xs font-bold tracking-widest uppercase">Programme</a></li>
                 <li><a href="#media" onClick={navigateTo('media')} className="text-slate-400 hover:text-primary transition-colors text-xs font-bold tracking-widest uppercase">Médias</a></li>
                 <li><a href="#vip" onClick={navigateTo('home', '#vip')} className="text-slate-400 hover:text-primary transition-colors text-xs font-bold tracking-widest uppercase">Espace VIP</a></li>
               </ul>
