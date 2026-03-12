@@ -23,7 +23,8 @@ import {
   Twitter, 
   Youtube,
   Trophy,
-  User
+  User,
+  ChevronDown
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -31,11 +32,52 @@ const NavLink = ({ href, children, active = false, red = false, onClick }: { hre
   <a 
     href={href} 
     onClick={onClick}
-    className={`text-xs font-bold tracking-widest uppercase transition-colors hover:text-primary cursor-pointer ${active ? 'text-primary' : red ? 'text-accent-red' : 'text-white'}`}
+    className={`text-xs font-bold tracking-widest uppercase transition-colors hover:text-primary cursor-pointer whitespace-nowrap ${active ? 'text-primary' : red ? 'text-accent-red' : 'text-white'}`}
   >
     {children}
   </a>
 );
+
+const NavDropdown = ({ label, items, active = false }: { label: string, items: { label: string, onClick: (e: React.MouseEvent) => void, active?: boolean }[], active?: boolean }) => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <div 
+      className="relative group"
+      onMouseEnter={() => setIsOpen(true)}
+      onMouseLeave={() => setIsOpen(false)}
+    >
+      <button 
+        className={`flex items-center gap-1 text-xs font-bold tracking-widest uppercase transition-colors hover:text-primary cursor-pointer whitespace-nowrap ${active ? 'text-primary' : 'text-white'}`}
+      >
+        {label}
+        <ChevronDown className={`w-3 h-3 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
+      </button>
+      
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div 
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 10 }}
+            className="absolute top-full left-0 mt-2 w-48 bg-background-dark border border-white/10 py-2 shadow-2xl z-50"
+          >
+            {items.map((item, idx) => (
+              <a
+                key={idx}
+                href="#"
+                onClick={item.onClick}
+                className={`block px-4 py-2 text-[10px] font-bold tracking-widest uppercase transition-colors hover:bg-white/5 hover:text-primary ${item.active ? 'text-primary' : 'text-slate-400'}`}
+              >
+                {item.label}
+              </a>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+};
 
 const CountdownItem = ({ value, label }: { value: number | string, label: string }) => (
   <div className="flex flex-col">
@@ -322,18 +364,32 @@ export default function App() {
               <span className="hidden sm:block font-heading text-xl tracking-tighter text-white">ALL STARS BATTLE</span>
             </div>
             
-            <div className="hidden xl:flex items-center space-x-6">
+            <div className="hidden xl:flex items-center space-x-8">
               <NavLink href="#home" active={currentPage === 'home'} onClick={navigateTo('home')}>Accueil</NavLink>
-              <NavLink href="#history" active={currentPage === 'history'} onClick={navigateTo('history')}>Histoire</NavLink>
-              <NavLink href="#competition" active={currentPage === 'competition'} onClick={navigateTo('competition')}>Compétition</NavLink>
-              <NavLink href="#dancers" active={currentPage === 'dancers'} onClick={navigateTo('dancers')}>Danseurs</NavLink>
+              
+              <NavDropdown 
+                label="Le Festival" 
+                active={currentPage === 'history' || currentPage === 'program'}
+                items={[
+                  { label: "Histoire", onClick: navigateTo('history'), active: currentPage === 'history' },
+                  { label: "Programme", onClick: navigateTo('program'), active: currentPage === 'program' }
+                ]} 
+              />
+
+              <NavDropdown 
+                label="Compétition" 
+                active={currentPage === 'competition' || currentPage === 'dancers' || currentPage === 'judges'}
+                items={[
+                  { label: "Tableau (Brackets)", onClick: navigateTo('home', '#brackets') },
+                  { label: "Les Danseurs", onClick: navigateTo('dancers'), active: currentPage === 'dancers' },
+                  { label: "Les Juges", onClick: navigateTo('judges'), active: currentPage === 'judges' }
+                ]} 
+              />
+
               <NavLink href="#tickets" active={currentPage === 'tickets'} onClick={navigateTo('tickets')}>Billetterie</NavLink>
-              <NavLink href="#program" active={currentPage === 'program'} onClick={navigateTo('program')}>Programme</NavLink>
-              <NavLink href="#brackets" onClick={navigateTo('home', '#brackets')}>Brackets</NavLink>
-              <NavLink href="#judges" active={currentPage === 'judges'} onClick={navigateTo('judges')}>Juges</NavLink>
               <NavLink href="#media" active={currentPage === 'media'} onClick={navigateTo('media')}>Médias</NavLink>
-              <NavLink href="#vip" red>VIP</NavLink>
-              <NavLink href="#footer">Contact</NavLink>
+              <NavLink href="#vip" red onClick={navigateTo('home', '#vip')}>VIP</NavLink>
+              <NavLink href="#footer" onClick={navigateTo('home', '#footer')}>Contact</NavLink>
             </div>
 
             <div className="flex items-center gap-4">
@@ -349,23 +405,42 @@ export default function App() {
       <AnimatePresence>
         {isMenuOpen && (
           <motion.div 
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="fixed inset-0 z-40 bg-background-dark pt-24 px-6 xl:hidden"
+            initial={{ opacity: 0, x: '100%' }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: '100%' }}
+            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+            className="fixed inset-0 z-40 bg-background-dark pt-24 px-6 xl:hidden overflow-y-auto"
           >
-            <div className="flex flex-col space-y-6 text-center">
-              <a href="#home" onClick={navigateTo('home')} className={`text-2xl font-heading uppercase ${currentPage === 'home' ? 'text-primary' : 'text-white'}`}>Accueil</a>
-              <a href="#history" onClick={navigateTo('history')} className={`text-2xl font-heading uppercase ${currentPage === 'history' ? 'text-primary' : 'text-white'}`}>Histoire</a>
-              <a href="#competition" onClick={navigateTo('competition')} className={`text-2xl font-heading uppercase ${currentPage === 'competition' ? 'text-primary' : 'text-white'}`}>Compétition</a>
-              <a href="#dancers" onClick={navigateTo('dancers')} className={`text-2xl font-heading uppercase ${currentPage === 'dancers' ? 'text-primary' : 'text-white'}`}>Danseurs</a>
-              <a href="#tickets" onClick={navigateTo('tickets')} className={`text-2xl font-heading uppercase ${currentPage === 'tickets' ? 'text-primary' : 'text-white'}`}>Billetterie</a>
-              <a href="#program" onClick={navigateTo('program')} className={`text-2xl font-heading uppercase ${currentPage === 'program' ? 'text-primary' : 'text-white'}`}>Programme</a>
-              <a href="#brackets" onClick={navigateTo('home', '#brackets')} className="text-2xl font-heading text-white uppercase">Brackets</a>
-              <a href="#judges" onClick={navigateTo('judges')} className={`text-2xl font-heading uppercase ${currentPage === 'judges' ? 'text-primary' : 'text-white'}`}>Juges</a>
-              <a href="#media" onClick={navigateTo('media')} className={`text-2xl font-heading uppercase ${currentPage === 'media' ? 'text-primary' : 'text-white'}`}>Médias</a>
-              <a href="#vip" className="text-2xl font-heading text-accent-red uppercase">VIP</a>
-              <a href="#footer" className="text-2xl font-heading text-white uppercase">Contact</a>
+            <div className="flex flex-col space-y-8 text-left max-w-md mx-auto">
+              <a href="#home" onClick={navigateTo('home')} className={`text-3xl font-heading uppercase ${currentPage === 'home' ? 'text-primary' : 'text-white'}`}>Accueil</a>
+              
+              <div className="space-y-4">
+                <p className="text-slate-500 text-[10px] font-bold tracking-[0.3em] uppercase">Le Festival</p>
+                <div className="flex flex-col space-y-4 pl-4 border-l border-white/10">
+                  <a href="#history" onClick={navigateTo('history')} className={`text-xl font-heading uppercase ${currentPage === 'history' ? 'text-primary' : 'text-white'}`}>Histoire</a>
+                  <a href="#program" onClick={navigateTo('program')} className={`text-xl font-heading uppercase ${currentPage === 'program' ? 'text-primary' : 'text-white'}`}>Programme</a>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <p className="text-slate-500 text-[10px] font-bold tracking-[0.3em] uppercase">Compétition</p>
+                <div className="flex flex-col space-y-4 pl-4 border-l border-white/10">
+                  <a href="#brackets" onClick={navigateTo('home', '#brackets')} className="text-xl font-heading text-white uppercase">Tableau (Brackets)</a>
+                  <a href="#dancers" onClick={navigateTo('dancers')} className={`text-xl font-heading uppercase ${currentPage === 'dancers' ? 'text-primary' : 'text-white'}`}>Danseurs</a>
+                  <a href="#judges" onClick={navigateTo('judges')} className={`text-xl font-heading uppercase ${currentPage === 'judges' ? 'text-primary' : 'text-white'}`}>Juges</a>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <p className="text-slate-500 text-[10px] font-bold tracking-[0.3em] uppercase">Expérience</p>
+                <div className="flex flex-col space-y-4 pl-4 border-l border-white/10">
+                  <a href="#tickets" onClick={navigateTo('tickets')} className={`text-xl font-heading uppercase ${currentPage === 'tickets' ? 'text-primary' : 'text-white'}`}>Billetterie</a>
+                  <a href="#media" onClick={navigateTo('media')} className={`text-xl font-heading uppercase ${currentPage === 'media' ? 'text-primary' : 'text-white'}`}>Médias</a>
+                  <a href="#vip" onClick={navigateTo('home', '#vip')} className="text-xl font-heading text-accent-red uppercase">Espace VIP</a>
+                </div>
+              </div>
+
+              <a href="#footer" onClick={navigateTo('home', '#footer')} className="text-3xl font-heading text-white uppercase pt-4 border-t border-white/5">Contact</a>
             </div>
           </motion.div>
         )}
