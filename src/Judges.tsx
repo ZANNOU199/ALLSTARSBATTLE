@@ -12,7 +12,7 @@ const judgesData = [
   {
     name: "B-BOY WING",
     country: "KOR",
-    flag: "🇰🇷",
+    countryCode: "kr",
     role: "Legendary B-Boy | Red Bull All Star",
     desc: "Maître de la précision technique et du flow aérien. Champion du monde Red Bull BC One 2008.",
     image: "https://lh3.googleusercontent.com/aida-public/AB6AXuAsMPEeS8KmTa9xlSlIItDGCdiuw6Wudk0_CuB2EXO7b15Bd0gN1iI4vxVUBsedtLDEwbh9SNuQun4w9hhyMxVTgc5xqzC9gPQ9nY3GK8GKLG7IKXa6LxRR-9nPrVdusjenLnc2ppisUbr8Dj_vIwfAVA93UwDfdipoVGs0nWdEQe7gm5WCbINkcEtdaJ-hjHwDhWxljJ95OqNZzFTarmmqB1nUoxrsCoFGRSZmwOOXwv9NJz4TKINvQKZttFhHAyqvrCTQn3EL55WU"
@@ -20,7 +20,7 @@ const judgesData = [
   {
     name: "B-GIRL AYUMI",
     country: "JPN",
-    flag: "🇯🇵",
+    countryCode: "jp",
     role: "WDSF Certified | World Champion",
     desc: "Pionnière du breaking féminin de haut niveau. Reconnue pour sa propreté et sa musicalité.",
     image: "https://lh3.googleusercontent.com/aida-public/AB6AXuBbssUEujN3rOaXpRj_GtkCEj7CgyCyUmE4Bk5GoW5m5KaVU-ojV_PhYczT3RcrAVu_zjr9afB4AgOiQt7-1QUe35cvpjwzKEOwk8tcqsxN9EHGm3mal4SVKcLRgqcjwSoQmNPF-69L3kBIEGc6dahFQFKO91KL_JezTuwktkgy0Vah1t5j-Bbau5h1R5jeIYoBnu0DkJZOuWIsQgyxCc7RizJMTEaBAH9-M0HfYYmJ7YoSu8JdFAsnElsGMbZz0jQg1RCOKm-F2ToG"
@@ -28,7 +28,7 @@ const judgesData = [
   {
     name: "LILOU",
     country: "FRA",
-    flag: "🇫🇷",
+    countryCode: "fr",
     role: "Pockemon Crew | 2x BC One Champ",
     desc: "Une légende vivante au style unique. Analyse le caractère, l'attitude et l'originalité pure.",
     image: "https://lh3.googleusercontent.com/aida-public/AB6AXuAE6F-udt9xdGLRsqWUwZ8rd4p0IoUmg2O9VgG35Ubs_FxmT09vmfN1eZr8dWcEFL3wdbJawWGDq9_oxaFRRhabe7ieVxDNABV6uMNDnmD4B1IsXQwLYcQc0tBIdPW-o9H9f2Y9qooVFJH1W-4jKgJpY_VkgQDMo70WUbR0BkgmC1TAfLiAjnhH9Z6Ml-gG7efEjWVys3Xb_n8W4em-o0hinSPjwgO1qYffWVm7sCHkdFn8IRsJMSioeHM8OuhGmOzxGpfHi1TYd9LM"
@@ -36,7 +36,7 @@ const judgesData = [
   {
     name: "B-BOY ROX",
     country: "GBR",
-    flag: "🇬🇧",
+    countryCode: "gb",
     role: "Power Moves Specialist",
     desc: "Expert en dynamique et en explosivité physique. Fondateur de l'école technique \"Iron Flow\".",
     image: "https://lh3.googleusercontent.com/aida-public/AB6AXuDuZJeH-zbIuBL20OgGmNDkRnl81gcOeVinTVMnYv6QWGZtnAhQ_pWE7p885XQeawmpgCTh0ArEbEVaDzJreVdFvLRYRLcYehY7fG79VPPNfI-YOevSdQjjK_nI11s3d2UCZqe0h4X5KG96xUJn491V06UW14cYqTe7tpldzJ_Wz1zBhWsT5_Nm30yUQM-Ixkv8uQbQwPEXELcU7f-SDCboerYZSIwLcoVkNRBhejtgJhbHCZrMYyuFYIVJv0EkkvPvBXJl4a0Pn1lT"
@@ -44,7 +44,7 @@ const judgesData = [
   {
     name: "B-GIRL AMI",
     country: "JPN",
-    flag: "🇯🇵",
+    countryCode: "jp",
     role: "Red Bull BC One Winner",
     desc: "L'élégance alliée à la puissance. Première championne du monde de l'histoire du BC One.",
     image: "https://lh3.googleusercontent.com/aida-public/AB6AXuCOoiNcxLKtzMqHPew1g5IA80iCX8ATcVsvftsajEDg1_Sjd8Powz7dpEvwtyIuWsEjLtWVPq3e5-bHfduJNb8Uj6X2c-V22v8CXimnLHowXcA9KwvQw39d12mDm1Dtk8Uvv2CQFGXbqEBuH83KDSxe2_ZXTRLRL1vq7omBkhD6Y_4Fwx1HDOj4SkjdpyKFzVZnifgHevH1mCXZCcvzQ8xwSAJKapwbt1VLIlEN1Yw9-I4PuHvGAnA8DUAH5s2T8OG4RnK7oEWhL04X"
@@ -151,8 +151,13 @@ const Judges = () => {
                   referrerPolicy="no-referrer"
                   loading="lazy"
                 />
-                <div className="absolute top-4 left-4 bg-primary text-background-dark px-3 py-1 font-heading text-xl">
-                  {judge.flag} {judge.country}
+                <div className="absolute top-4 left-4 bg-primary text-background-dark px-3 py-1 font-heading text-xl flex items-center gap-2">
+                  <img 
+                    src={`https://flagcdn.com/w40/${judge.countryCode}.png`}
+                    alt={judge.country}
+                    className="w-6 h-auto rounded-sm shadow-sm"
+                  />
+                  {judge.country}
                 </div>
               </div>
               <div className="px-2 pb-4">
@@ -177,10 +182,10 @@ const Judges = () => {
           
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {[
-              { name: "DJ RENEGADE", origin: "United Kingdom", img: "https://lh3.googleusercontent.com/aida-public/AB6AXuC5JTF4OsaOf6rbdourJaJs5vj_L7rXs0jEPEjNEKB8PitMuuLGo-KB7E2O6NRhQE0gQ_r62lD9NgRt7H4-vgqHLSPH3FIJTjmGy0s2YedAuebIW30f97QMTbDq8Qk4ADw_s6PvS1lACmdoZl-eVSA760nBfBYa-uAM4m94xqMy3ETiG3GGSrC90aYnorsNzbEXgD_l1hTbQ2ZaXTDQoheD0GPl009GJ39a5Dzw5uSqhiaK4yLiVwFmwp0edfA20isOWS0E6rbsBJ0h" },
-              { name: "DJ LEAN ROCK", origin: "USA", img: "https://lh3.googleusercontent.com/aida-public/AB6AXuBCkgAXcxsIIu6odehzModyeJPuIN8FF1dM78v2skW-S1tmDpB0SVteumvBKjChgHB3Rq6e-D1gMbGhPaOJlxxAFMbFM3s555duwgzLb8NmCL8f5sqAZ7bliaBzyLQkqtix1pJ8tzaGGl76GlVRshoU63tIXS7jbD-kP5WNNR_ZYmITqJBOuMsShI1MluneOFFtENjbBgyxVhTkGmxjNe4pFwngLIXCDNy-Jc-bI8KcxEDRbLPIi6WMlgzRX22TtZUrypv_1POo36ph" },
-              { name: "MC TRIX", origin: "Germany", img: "https://lh3.googleusercontent.com/aida-public/AB6AXuD04vI0-akhv-mVtidAHRvb_bB9zpxSSIMZai2QqthaLQQ7WIxXoSfdO0ZLClWxalB7WLto1O0GmIJPbGku2ghpGAHph_FmOfIvO3EP_cYHr3f_WeW96Z2iRf3Xo8dDrtV1zwVaTtBSTVh6i4WKJm2vKhuLUbU5dnD8yHEujf6ARcGHKht1wZ-7Mpkd3KzN0U0dbTYxHOGtUAOlKJ4KLMKwXxN4eX8ZZ9f662GLZYU-C8SmCsV0vX2k4wPXJI5IBxyp3Qe9hGjfNGi_" },
-              { name: "MC MALIK", origin: "Togo", img: "https://lh3.googleusercontent.com/aida-public/AB6AXuBZfn95Rns5ClAhkSoAspij6-UeWhRjLlsiD2ecIP43P0HGMhRCKkqK6mvE1ayax5An9vtB9mTmtjre5xq_avdG7ox2k8X2pN-C5QgloEhxkmIx7xgkBGAc_ip2i0WaYJREMa8Ya8l_Yhpz0x7IEudj2cTbJ0ozPG-H-RH5gXyjruOK34lyS7TIxHbl4q50FHapad4Rbc5h4oYoGZI68_O3EofNU9j0m-fZ02Vt6bO28TZL8P2pZJFiNwlD6z12VMWh-lxUO0cTv8hs" }
+              { name: "DJ RENEGADE", origin: "United Kingdom", countryCode: "gb", img: "https://lh3.googleusercontent.com/aida-public/AB6AXuC5JTF4OsaOf6rbdourJaJs5vj_L7rXs0jEPEjNEKB8PitMuuLGo-KB7E2O6NRhQE0gQ_r62lD9NgRt7H4-vgqHLSPH3FIJTjmGy0s2YedAuebIW30f97QMTbDq8Qk4ADw_s6PvS1lACmdoZl-eVSA760nBfBYa-uAM4m94xqMy3ETiG3GGSrC90aYnorsNzbEXgD_l1hTbQ2ZaXTDQoheD0GPl009GJ39a5Dzw5uSqhiaK4yLiVwFmwp0edfA20isOWS0E6rbsBJ0h" },
+              { name: "DJ LEAN ROCK", origin: "USA", countryCode: "us", img: "https://lh3.googleusercontent.com/aida-public/AB6AXuBCkgAXcxsIIu6odehzModyeJPuIN8FF1dM78v2skW-S1tmDpB0SVteumvBKjChgHB3Rq6e-D1gMbGhPaOJlxxAFMbFM3s555duwgzLb8NmCL8f5sqAZ7bliaBzyLQkqtix1pJ8tzaGGl76GlVRshoU63tIXS7jbD-kP5WNNR_ZYmITqJBOuMsShI1MluneOFFtENjbBgyxVhTkGmxjNe4pFwngLIXCDNy-Jc-bI8KcxEDRbLPIi6WMlgzRX22TtZUrypv_1POo36ph" },
+              { name: "MC TRIX", origin: "Germany", countryCode: "de", img: "https://lh3.googleusercontent.com/aida-public/AB6AXuD04vI0-akhv-mVtidAHRvb_bB9zpxSSIMZai2QqthaLQQ7WIxXoSfdO0ZLClWxalB7WLto1O0GmIJPbGku2ghpGAHph_FmOfIvO3EP_cYHr3f_WeW96Z2iRf3Xo8dDrtV1zwVaTtBSTVh6i4WKJm2vKhuLUbU5dnD8yHEujf6ARcGHKht1wZ-7Mpkd3KzN0U0dbTYxHOGtUAOlKJ4KLMKwXxN4eX8ZZ9f662GLZYU-C8SmCsV0vX2k4wPXJI5IBxyp3Qe9hGjfNGi_" },
+              { name: "MC MALIK", origin: "Togo", countryCode: "tg", img: "https://lh3.googleusercontent.com/aida-public/AB6AXuBZfn95Rns5ClAhkSoAspij6-UeWhRjLlsiD2ecIP43P0HGMhRCKkqK6mvE1ayax5An9vtB9mTmtjre5xq_avdG7ox2k8X2pN-C5QgloEhxkmIx7xgkBGAc_ip2i0WaYJREMa8Ya8l_Yhpz0x7IEudj2cTbJ0ozPG-H-RH5gXyjruOK34lyS7TIxHbl4q50FHapad4Rbc5h4oYoGZI68_O3EofNU9j0m-fZ02Vt6bO28TZL8P2pZJFiNwlD6z12VMWh-lxUO0cTv8hs" }
             ].map((artist) => (
               <div key={artist.name} className="flex gap-4 p-4 border border-white/5 bg-background-dark group hover:border-primary/40 transition-all duration-300">
                 <div className="size-20 bg-primary/10 overflow-hidden flex-shrink-0">
@@ -188,7 +193,14 @@ const Judges = () => {
                 </div>
                 <div className="flex flex-col justify-center">
                   <h4 className="font-heading text-2xl text-white leading-none mb-1">{artist.name}</h4>
-                  <p className="text-primary text-[10px] font-black uppercase tracking-widest">{artist.origin}</p>
+                  <div className="flex items-center gap-2">
+                    <img 
+                      src={`https://flagcdn.com/w40/${artist.countryCode}.png`}
+                      alt={artist.origin}
+                      className="w-4 h-auto rounded-sm shadow-sm"
+                    />
+                    <p className="text-primary text-[10px] font-black uppercase tracking-widest">{artist.origin}</p>
+                  </div>
                 </div>
               </div>
             ))}

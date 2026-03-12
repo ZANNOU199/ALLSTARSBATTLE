@@ -12,6 +12,7 @@ const dancersData = [
     id: 1,
     name: "B-Boy Alpha",
     origin: "Togo",
+    countryCode: "tg",
     style: "Power Moves",
     status: "Champion",
     image: "https://lh3.googleusercontent.com/aida-public/AB6AXuCPtTjFiuFSihpmxPHHSgIfOvV9FYa16rTWDNocl90ICq2Pj4m8883_bGB7Rlq6LZydsHPFp8JJ0Pku-6O5-5KtmJSGcLS0C21O316tTSN2j8EegB2oCtAgJKvZJ4zxoZkPEqLkFpDcQfsmBlJrEbsROiFkq2rTBiiMYfv-QAmMglGbMxLqfJD_LhTP0uJh9jvHSvyiRQsBn7Up0Tmxa_cym0Xo-fOyd8AbUylS_ytS1qIgTHxTHUxQkkXwqHA29_MesHRBksJ8wONs",
@@ -20,7 +21,8 @@ const dancersData = [
   {
     id: 2,
     name: "B-Girl Sora",
-    origin: "Benin",
+    origin: "Bénin",
+    countryCode: "bj",
     style: "Footwork",
     status: "Qualifier",
     image: "https://lh3.googleusercontent.com/aida-public/AB6AXuCQKaRo8aE-yzylqJB_3b15EQWkd6H2-sv_2lxclbORyZqB_0HW4uwSt3NvYq9p3PmDZPfVlYgLw1tNghI3akGzTjS5NcJfJlqFCLdCdRVSD7yoKHzSTXeseTIG7TVKeTnEvjawHqFs95YjX1ONLnFWlTIrBBBnSWZNf44h9iSv-y3uNwd-LeWeaFzsZuZQjxiFCS5W-edu9PRpHby8Dv0J4U1423HOhBa_PYRFFg6lkREsnT0vgsCNQ20-9ZjJ0N-N5nAgyyA7kyTX",
@@ -30,6 +32,7 @@ const dancersData = [
     id: 3,
     name: "Crew Unity",
     origin: "France",
+    countryCode: "fr",
     style: "All Styles",
     status: "Champion",
     image: "https://lh3.googleusercontent.com/aida-public/AB6AXuBYoBw1xgq95WiVuY8fLzMBoz6J6RFRaxHWVJfdJ8tunVU6SfJatGSorBeey5vyRy9Re8bFHI36-xJUBiK5Q3HdqHLe-WUpXE6GnBMOChjHHQtDDJP3w1j2yFg_q-K-2MRUiybV0ODFSKu32pi4CUKcYYpkBt6MTxDRHFwUtBvdnQM_efm04Mc1KDx8pYX2uj6J1Z2TjCtV0mD8Db4jO1_DD2axOIPsKtJmNxBRdEAlIOvLvmsL6kYI3gblAoDVbZh0t6v6LOIEwgr3",
@@ -38,7 +41,8 @@ const dancersData = [
   {
     id: 4,
     name: "B-Boy Flex",
-    origin: "Senegal",
+    origin: "Sénégal",
+    countryCode: "sn",
     style: "Tricks",
     status: "Qualifier",
     image: "https://lh3.googleusercontent.com/aida-public/AB6AXuARISS-OwMF2J2Gj-u8HodfFNdtYI2tLTtvAdgYnSkn_TTLBJrdg6JM7r0oRBBXlhmfZzeFG7yZTKXlb-6-kppJ-Eb1vG_T3BaY49soT_IVrpo3rT-jLcYQu_GoCEtdf9sacz-TYWEaT6sA62jsgR_JHcGgKBVOeu0mmFbCxOkXsVvTrn0gc1EMTOceZLSPikUwEjDTAo_sCzysPYm84mE5RJsFtpJCcwAfbsJBppOgyjPaPBl9KhcHNLHYt1Ar2MdbQGMV0CXf9AKt",
@@ -48,6 +52,7 @@ const dancersData = [
     id: 5,
     name: "B-Girl Luna",
     origin: "Ghana",
+    countryCode: "gh",
     style: "Toprock",
     status: "Champion",
     image: "https://lh3.googleusercontent.com/aida-public/AB6AXuCIq6_t_GqQ1EumelgllFAq4VzViM0KnjWTi_Lqv_dXauiJWH7nWMkjTF1BhQ75NeTguYzOhmfW09QvVnSh-eas0bNRDSkIt2sZgiW3pL_WfjZJPSL3fTUCYpmhfHCnopau4sXSMp4atNM8V1qOXe0ZbfrAMvB8R0gUX9-AN--nXwBdrr3l-ISYSmJxOmP31pPpPWOgueIZ7vKHiCYDFZU8sLiOI-rMKhOWDXwQ545_M_xyDeoVMma0qevxKpLA2XhSqBsFZu0i7LbH",
@@ -57,6 +62,7 @@ const dancersData = [
     id: 6,
     name: "Crew Elite",
     origin: "USA",
+    countryCode: "us",
     style: "Choreography",
     status: "Qualifier",
     image: "https://lh3.googleusercontent.com/aida-public/AB6AXuCy-zj0KvAqe08OZxJddXkM6EM6_rfk_MCZPec39NuAiRRakzhPoctlBcYKJaRGJ7GceRZ_ZSnDrL3lk5pcN3l1zFLLDEFtkUkWdzX22kipqmIbePanx1EsEEsi6aQgz5e1_HKpKY1IDeNqFiyb-SQHvZX1FMg4JW8-tHWEKGZHyM0ikDkWzNVLeya3l3rppykSlpOhKZpSwkPznBsXxuyhIJ1R9-MMU-gY0loss7jm_0sm23XZu2WC1pgj5V4xNHJZHzH42mHX8Asj",
@@ -65,7 +71,8 @@ const dancersData = [
   {
     id: 7,
     name: "B-Boy Shadow",
-    origin: "Nigeria",
+    origin: "Nigéria",
+    countryCode: "ng",
     style: "Abstract",
     status: "Qualifier",
     image: "https://lh3.googleusercontent.com/aida-public/AB6AXuBOCQaUlf94ROduzlo4XAH2txj7uIeXuqLSf7s7CEdrU5XYNu_fARNpwvvlawCl46_4sMXIedPGWAlFbRlVV6mhIA2A2QJjvs3yfSQdKp50nBJsuq1TxbkXZQqK-D0G9fjVxu0HGVEmh_CD2dgT8njTdOjN8M4Yzba1cRKVc71xIYpaDlQH9Ia-K-peJ0C_7Yx4iVDdAWRo2I8nCK0UU4BwdYIKFp9IKYjqizioVe_FEI_DOmMjmfrFX2xjlOvFOEVePfErlvXBeCTw",
@@ -74,7 +81,8 @@ const dancersData = [
   {
     id: 8,
     name: "B-Girl Jade",
-    origin: "Japan",
+    origin: "Japon",
+    countryCode: "jp",
     style: "Flow",
     status: "Qualifier",
     image: "https://lh3.googleusercontent.com/aida-public/AB6AXuAtLd3_h2KPF0jvN-d23si5w3Fp16z5bQFs_5BnZN1gJejl4-esU3N2GD5slZibXIpjNh7lV-5671nkVjONMLQY2rxE_I0ukd2auLcJ6b8tQWgtmxELQthOhe3Sy4OCYUpv4agMK8xc_QVdibfwfSzyMbfy54pflaZR86z9AnqeueLq_EGLM_y9hMy9XJpQqZv3HMjIUPzEaxTUIavemdUAjWZsnh6e6USdHy-_VsPQqY_39Q6GCCN20m6bxB4kWs0yaun8pOV44C71",
@@ -189,7 +197,11 @@ const Dancers = () => {
               <div className="flex-1 flex flex-col gap-2">
                 <h3 className="font-heading text-3xl text-white group-hover:text-primary transition-colors leading-none">{dancer.name}</h3>
                 <div className="flex items-center gap-2 mb-4">
-                  <Flag className="w-3 h-3 text-accent-red" />
+                  <img 
+                    src={`https://flagcdn.com/w40/${dancer.countryCode}.png`}
+                    alt={dancer.origin}
+                    className="w-5 h-auto rounded-sm shadow-sm"
+                  />
                   <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest">{dancer.origin}</p>
                 </div>
                 
