@@ -1,4 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
+import Competition from './Competition';
+import Dancers from './Dancers';
+import Judges from './Judges';
+import Media from './Media';
 import { 
   Menu, 
   X, 
@@ -20,10 +24,11 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
-const NavLink = ({ href, children, active = false, red = false }: { href: string, children: React.ReactNode, active?: boolean, red?: boolean }) => (
+const NavLink = ({ href, children, active = false, red = false, onClick }: { href: string, children: React.ReactNode, active?: boolean, red?: boolean, onClick?: (e: React.MouseEvent) => void }) => (
   <a 
     href={href} 
-    className={`text-xs font-bold tracking-widest uppercase transition-colors hover:text-primary ${active ? 'text-primary' : red ? 'text-accent-red' : 'text-white'}`}
+    onClick={onClick}
+    className={`text-xs font-bold tracking-widest uppercase transition-colors hover:text-primary cursor-pointer ${active ? 'text-primary' : red ? 'text-accent-red' : 'text-white'}`}
   >
     {children}
   </a>
@@ -46,6 +51,7 @@ const DancerCard = ({ name, origin, image }: { name: string, origin: string, ima
       alt={name} 
       className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-110 transition-all duration-700"
       referrerPolicy="no-referrer"
+      loading="lazy"
     />
     <div className="absolute inset-0 bg-gradient-to-t from-background-dark via-transparent to-transparent opacity-80 group-hover:opacity-40 transition-opacity"></div>
     <div className="absolute bottom-0 left-0 p-6 transform translate-y-2 group-hover:translate-y-0 transition-transform">
@@ -124,27 +130,27 @@ const BracketContent = () => (
       <div className="flex-1 flex flex-col justify-around py-4">
         <div className="flex flex-col gap-1 bg-white/5 p-4 rounded border-l-4 border-white/20">
           <div className="text-xs md:text-[10px] uppercase text-slate-500 mb-2">Match A1/A2</div>
-          <div className="flex justify-between items-center opacity-50"><span className="text-2xl md:text-sm font-bold italic">TBD</span> <span className="text-primary text-2xl md:text-sm">--</span></div>
+          <div className="flex justify-between items-center opacity-50"><span className="text-2xl md:text-sm font-bold">TBD</span> <span className="text-primary text-2xl md:text-sm">--</span></div>
           <div className="h-[1px] bg-white/10 my-2"></div>
-          <div className="flex justify-between items-center opacity-50"><span className="text-2xl md:text-sm font-bold italic">TBD</span> <span className="text-primary text-2xl md:text-sm">--</span></div>
+          <div className="flex justify-between items-center opacity-50"><span className="text-2xl md:text-sm font-bold">TBD</span> <span className="text-primary text-2xl md:text-sm">--</span></div>
         </div>
         <div className="flex flex-col gap-1 bg-white/5 p-4 rounded border-l-4 border-white/20">
           <div className="text-xs md:text-[10px] uppercase text-slate-500 mb-2">Match A3/A4</div>
-          <div className="flex justify-between items-center opacity-50"><span className="text-2xl md:text-sm font-bold italic">TBD</span> <span className="text-primary text-2xl md:text-sm">--</span></div>
+          <div className="flex justify-between items-center opacity-50"><span className="text-2xl md:text-sm font-bold">TBD</span> <span className="text-primary text-2xl md:text-sm">--</span></div>
           <div className="h-[1px] bg-white/10 my-2"></div>
-          <div className="flex justify-between items-center opacity-50"><span className="text-2xl md:text-sm font-bold italic">TBD</span> <span className="text-primary text-2xl md:text-sm">--</span></div>
+          <div className="flex justify-between items-center opacity-50"><span className="text-2xl md:text-sm font-bold">TBD</span> <span className="text-primary text-2xl md:text-sm">--</span></div>
         </div>
       </div>
     </div>
 
     {/* Poule A: Semis (Left) */}
     <div className="flex flex-col h-full pr-8 pl-8">
-      <h3 className="font-heading text-2xl md:text-xl text-accent-red mb-8 text-center uppercase italic shrink-0">DEMI-FINALE</h3>
+      <h3 className="font-heading text-2xl md:text-xl text-accent-red mb-8 text-center uppercase shrink-0">DEMI-FINALE</h3>
       <div className="flex-1 flex flex-col justify-around py-4">
         <div className="flex flex-col gap-1 bg-accent-red/10 p-6 rounded border border-accent-red/30">
-          <div className="flex justify-between items-center opacity-30"><span className="text-2xl md:text-sm font-bold italic uppercase">WINNER A1/2</span></div>
-          <div className="h-[1px] bg-white/10 my-4 italic text-center text-xs text-white/20 font-heading">VS</div>
-          <div className="flex justify-between items-center opacity-30"><span className="text-2xl md:text-sm font-bold italic uppercase">WINNER A3/4</span></div>
+          <div className="flex justify-between items-center opacity-30"><span className="text-2xl md:text-sm font-bold uppercase">WINNER A1/2</span></div>
+          <div className="h-[1px] bg-white/10 my-4 text-center text-xs text-white/20 font-heading">VS</div>
+          <div className="flex justify-between items-center opacity-30"><span className="text-2xl md:text-sm font-bold uppercase">WINNER A3/4</span></div>
         </div>
       </div>
     </div>
@@ -153,7 +159,7 @@ const BracketContent = () => (
     <div className="flex flex-col h-full items-center justify-center px-4">
       <div className="text-center mb-12 shrink-0">
         <Trophy className="text-primary w-16 h-16 mx-auto mb-4" />
-        <h2 className="font-heading text-6xl md:text-5xl text-white tracking-widest italic uppercase">GRANDE FINALE</h2>
+        <h2 className="font-heading text-6xl md:text-5xl text-white tracking-widest uppercase">GRANDE FINALE</h2>
       </div>
       <div className="w-full max-w-[260px] md:max-w-[300px] p-1 bg-gradient-to-b from-primary via-accent-red to-primary rounded-xl shadow-[0_0_60px_rgba(244,209,37,0.3)]">
         <div className="bg-background-dark p-6 md:p-8 rounded-lg flex flex-col items-center gap-6 md:gap-8">
@@ -161,7 +167,7 @@ const BracketContent = () => (
             <div className="w-20 h-20 md:w-24 md:h-24 rounded-full border-2 border-primary/30 bg-white/5 flex items-center justify-center mb-4 md:mb-6">
               <User className="w-10 h-10 md:w-12 md:h-12 text-slate-700" />
             </div>
-            <span className="font-heading text-3xl md:text-3xl text-slate-500 italic uppercase text-center">CHAMPION 2026</span>
+            <span className="font-heading text-3xl md:text-3xl text-slate-500 uppercase text-center">CHAMPION 2026</span>
           </div>
           <div className="w-full flex items-center gap-4 md:gap-6">
             <div className="h-px bg-white/10 grow"></div>
@@ -173,12 +179,12 @@ const BracketContent = () => (
 
     {/* Poule B: Semis (Right) */}
     <div className="flex flex-col h-full pl-8 pr-8">
-      <h3 className="font-heading text-2xl md:text-xl text-accent-red mb-8 text-center uppercase italic shrink-0">DEMI-FINALE</h3>
+      <h3 className="font-heading text-2xl md:text-xl text-accent-red mb-8 text-center uppercase shrink-0">DEMI-FINALE</h3>
       <div className="flex-1 flex flex-col justify-around py-4">
         <div className="flex flex-col gap-1 bg-accent-red/10 p-6 rounded border border-accent-red/30">
-          <div className="flex justify-between items-center opacity-30"><span className="text-2xl md:text-sm font-bold italic uppercase">WINNER B1/2</span></div>
-          <div className="h-[1px] bg-white/10 my-4 italic text-center text-xs text-white/20 font-heading">VS</div>
-          <div className="flex justify-between items-center opacity-30"><span className="text-2xl md:text-sm font-bold italic uppercase">WINNER B3/4</span></div>
+          <div className="flex justify-between items-center opacity-30"><span className="text-2xl md:text-sm font-bold uppercase">WINNER B1/2</span></div>
+          <div className="h-[1px] bg-white/10 my-4 text-center text-xs text-white/20 font-heading">VS</div>
+          <div className="flex justify-between items-center opacity-30"><span className="text-2xl md:text-sm font-bold uppercase">WINNER B3/4</span></div>
         </div>
       </div>
     </div>
@@ -189,15 +195,15 @@ const BracketContent = () => (
       <div className="flex-1 flex flex-col justify-around py-4">
         <div className="flex flex-col gap-1 bg-white/5 p-4 rounded border-r-4 border-white/20">
           <div className="text-xs md:text-[10px] uppercase text-slate-500 mb-2 text-right">Match B1/B2</div>
-          <div className="flex justify-between items-center opacity-50"><span className="text-primary text-2xl md:text-sm">--</span> <span className="text-2xl md:text-sm font-bold italic">TBD</span></div>
+          <div className="flex justify-between items-center opacity-50"><span className="text-primary text-2xl md:text-sm">--</span> <span className="text-2xl md:text-sm font-bold">TBD</span></div>
           <div className="h-[1px] bg-white/10 my-2"></div>
-          <div className="flex justify-between items-center opacity-50"><span className="text-primary text-2xl md:text-sm">--</span> <span className="text-2xl md:text-sm font-bold italic">TBD</span></div>
+          <div className="flex justify-between items-center opacity-50"><span className="text-primary text-2xl md:text-sm">--</span> <span className="text-2xl md:text-sm font-bold">TBD</span></div>
         </div>
         <div className="flex flex-col gap-1 bg-white/5 p-4 rounded border-r-4 border-white/20">
           <div className="text-xs md:text-[10px] uppercase text-slate-500 mb-2 text-right">Match B3/B4</div>
-          <div className="flex justify-between items-center opacity-50"><span className="text-primary text-2xl md:text-sm">--</span> <span className="text-2xl md:text-sm font-bold italic">TBD</span></div>
+          <div className="flex justify-between items-center opacity-50"><span className="text-primary text-2xl md:text-sm">--</span> <span className="text-2xl md:text-sm font-bold">TBD</span></div>
           <div className="h-[1px] bg-white/10 my-2"></div>
-          <div className="flex justify-between items-center opacity-50"><span className="text-primary text-2xl md:text-sm">--</span> <span className="text-2xl md:text-sm font-bold italic">TBD</span></div>
+          <div className="flex justify-between items-center opacity-50"><span className="text-primary text-2xl md:text-sm">--</span> <span className="text-2xl md:text-sm font-bold">TBD</span></div>
         </div>
       </div>
     </div>
@@ -216,7 +222,25 @@ const BracketContent = () => (
 );
 
 export default function App() {
+  const [currentPage, setCurrentPage] = useState<'home' | 'competition' | 'dancers' | 'judges' | 'media'>('home');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const navigateTo = (page: 'home' | 'competition' | 'dancers' | 'judges' | 'media', anchor?: string) => (e: React.MouseEvent) => {
+    e.preventDefault();
+    setCurrentPage(page);
+    setIsMenuOpen(false);
+    
+    if (anchor) {
+      setTimeout(() => {
+        const element = document.getElementById(anchor.replace('#', ''));
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 100);
+    } else {
+      window.scrollTo(0, 0);
+    }
+  };
   const [scrolled, setScrolled] = useState(false);
   const [bracketScale, setBracketScale] = useState(1);
   const [bracketHeight, setBracketHeight] = useState(1000);
@@ -284,12 +308,12 @@ export default function App() {
             </div>
             
             <div className="hidden xl:flex items-center space-x-6">
-              <NavLink href="#home" active>Accueil</NavLink>
-              <NavLink href="#competition">Compétition</NavLink>
-              <NavLink href="#dancers">Danseurs</NavLink>
-              <NavLink href="#program">Programme</NavLink>
-              <NavLink href="#brackets">Brackets</NavLink>
-              <NavLink href="#media">Médias</NavLink>
+              <NavLink href="#home" active={currentPage === 'home'} onClick={navigateTo('home')}>Accueil</NavLink>
+              <NavLink href="#competition" active={currentPage === 'competition'} onClick={navigateTo('competition')}>Compétition</NavLink>
+              <NavLink href="#dancers" active={currentPage === 'dancers'} onClick={navigateTo('dancers')}>Danseurs</NavLink>
+              <NavLink href="#brackets" onClick={navigateTo('home', '#brackets')}>Brackets</NavLink>
+              <NavLink href="#judges" active={currentPage === 'judges'} onClick={navigateTo('judges')}>Juges</NavLink>
+              <NavLink href="#media" active={currentPage === 'media'} onClick={navigateTo('media')}>Médias</NavLink>
               <NavLink href="#vip" red>VIP</NavLink>
               <NavLink href="#footer">Contact</NavLink>
             </div>
@@ -316,12 +340,12 @@ export default function App() {
             className="fixed inset-0 z-40 bg-background-dark pt-24 px-6 xl:hidden"
           >
             <div className="flex flex-col space-y-6 text-center">
-              <a href="#home" className="text-2xl font-heading text-primary uppercase">Accueil</a>
-              <a href="#competition" className="text-2xl font-heading text-white uppercase">Compétition</a>
-              <a href="#dancers" className="text-2xl font-heading text-white uppercase">Danseurs</a>
-              <a href="#program" className="text-2xl font-heading text-white uppercase">Programme</a>
-              <a href="#brackets" className="text-2xl font-heading text-white uppercase">Brackets</a>
-              <a href="#media" className="text-2xl font-heading text-white uppercase">Médias</a>
+              <a href="#home" onClick={navigateTo('home')} className={`text-2xl font-heading uppercase ${currentPage === 'home' ? 'text-primary' : 'text-white'}`}>Accueil</a>
+              <a href="#competition" onClick={navigateTo('competition')} className={`text-2xl font-heading uppercase ${currentPage === 'competition' ? 'text-primary' : 'text-white'}`}>Compétition</a>
+              <a href="#dancers" onClick={navigateTo('dancers')} className={`text-2xl font-heading uppercase ${currentPage === 'dancers' ? 'text-primary' : 'text-white'}`}>Danseurs</a>
+              <a href="#brackets" onClick={navigateTo('home', '#brackets')} className="text-2xl font-heading text-white uppercase">Brackets</a>
+              <a href="#judges" onClick={navigateTo('judges')} className={`text-2xl font-heading uppercase ${currentPage === 'judges' ? 'text-primary' : 'text-white'}`}>Juges</a>
+              <a href="#media" onClick={navigateTo('media')} className={`text-2xl font-heading uppercase ${currentPage === 'media' ? 'text-primary' : 'text-white'}`}>Médias</a>
               <a href="#vip" className="text-2xl font-heading text-accent-red uppercase">VIP</a>
               <a href="#footer" className="text-2xl font-heading text-white uppercase">Contact</a>
             </div>
@@ -329,8 +353,10 @@ export default function App() {
         )}
       </AnimatePresence>
 
-      {/* HERO SECTION */}
-      <section id="home" className="relative min-h-screen flex flex-col justify-center items-center pt-20 overflow-hidden">
+      {currentPage === 'home' ? (
+        <>
+          {/* HERO SECTION */}
+          <section id="home" className="relative min-h-screen flex flex-col justify-center items-center pt-20 overflow-hidden">
         {/* Background elements */}
         <div className="absolute inset-0 z-0">
           {/* Video for Tablet & PC */}
@@ -339,6 +365,8 @@ export default function App() {
             loop 
             muted 
             playsInline 
+            preload="auto"
+            poster="https://images.unsplash.com/photo-1547153760-18fc86324498?auto=format&fit=crop&q=80&w=1920"
             className="hidden md:block w-full h-full object-cover opacity-50 scale-105"
           >
             <source src="https://vjs.zencdn.net/v/oceans.mp4" type="video/mp4" />
@@ -347,7 +375,7 @@ export default function App() {
           {/* Photo for Mobile */}
           <div 
             className="md:hidden w-full h-full bg-cover bg-center opacity-60 scale-110"
-            style={{ backgroundImage: 'url("https://images.unsplash.com/photo-1547153760-18fc86324498?auto=format&fit=crop&q=80&w=1080")' }}
+            style={{ backgroundImage: 'url("https://images.unsplash.com/photo-1547153760-18fc86324498?auto=format&fit=crop&q=60&w=800")' }}
           ></div>
           
           <div className="absolute inset-0 bg-gradient-to-b from-background-dark/70 via-background-dark/20 to-background-dark/80"></div>
@@ -360,7 +388,7 @@ export default function App() {
             animate={{ opacity: 1, y: 0 }}
             className="inline-block bg-accent-red px-4 py-1 mb-6 transform -skew-x-12"
           >
-            <span className="text-white font-heading text-2xl tracking-widest italic uppercase">TOGO 2026</span>
+            <span className="text-white font-heading text-2xl tracking-widest uppercase">TOGO 2026</span>
           </motion.div>
           
           <motion.h1 
@@ -370,7 +398,7 @@ export default function App() {
             className="font-heading text-6xl md:text-8xl lg:text-[10rem] leading-none mb-4 tracking-tighter text-white text-luxury-glow"
           >
             ALL STARS BATTLE <br/>
-            <span className="text-primary italic">INTERNATIONAL</span>
+            <span className="text-primary">INTERNATIONAL</span>
           </motion.h1>
           
           <motion.p 
@@ -446,7 +474,7 @@ export default function App() {
           </div>
           <div className="lg:w-1/2">
             <span className="text-primary font-bold tracking-[0.3em] uppercase text-xs">Aperçu</span>
-            <h2 className="font-heading text-5xl md:text-7xl text-white mb-6 uppercase italic">LA COMPÉTITION</h2>
+            <h2 className="font-heading text-5xl md:text-7xl text-white mb-6 uppercase">LA COMPÉTITION</h2>
             <div className="flex flex-col gap-4 mb-8">
               <div className="flex items-center gap-4 text-slate-300">
                 <Calendar className="text-primary w-5 h-5" />
@@ -473,7 +501,7 @@ export default function App() {
           <div className="flex justify-between items-end mb-12">
             <div>
               <span className="text-accent-red font-bold tracking-[0.3em] uppercase text-xs">Featured</span>
-              <h2 className="font-heading text-5xl md:text-7xl text-white uppercase italic leading-none">LES DANSEURS</h2>
+              <h2 className="font-heading text-5xl md:text-7xl text-white uppercase leading-none">LES DANSEURS</h2>
             </div>
             <a href="#" className="text-slate-500 hover:text-white transition-colors uppercase font-bold text-xs tracking-widest pb-2">Voir tous les profils</a>
           </div>
@@ -489,7 +517,7 @@ export default function App() {
       {/* PROGRAMME */}
       <section id="program" className="py-24 bg-surface-dark border-y border-white/5">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="font-heading text-5xl md:text-7xl text-white uppercase italic text-center mb-16 tracking-tight">PROGRAMMATION</h2>
+          <h2 className="font-heading text-5xl md:text-7xl text-white uppercase text-center mb-16 tracking-tight">PROGRAMMATION</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {/* Day 1 */}
             <div className="border border-white/10 p-8 hover:border-primary transition-all bg-background-dark/40 group relative overflow-hidden">
@@ -497,7 +525,7 @@ export default function App() {
               <div className="flex justify-between items-start mb-8 relative z-10">
                 <div className="flex flex-col">
                   <span className="text-4xl font-heading text-primary">JOUR 01</span>
-                  <span className="text-xs font-bold tracking-[0.2em] text-accent-red mt-1 italic uppercase">Workshops & Culture</span>
+                  <span className="text-xs font-bold tracking-[0.2em] text-accent-red mt-1 uppercase">Workshops & Culture</span>
                 </div>
                 <span className="text-xs font-bold bg-white/10 px-3 py-1 text-slate-300">14 AOÛT</span>
               </div>
@@ -514,7 +542,7 @@ export default function App() {
               <div className="flex justify-between items-start mb-8 relative z-10">
                 <div className="flex flex-col">
                   <span className="text-4xl font-heading text-primary">JOUR 02</span>
-                  <span className="text-xs font-bold tracking-[0.2em] text-accent-red mt-1 italic uppercase">The Competition</span>
+                  <span className="text-xs font-bold tracking-[0.2em] text-accent-red mt-1 uppercase">The Competition</span>
                 </div>
                 <span className="text-xs font-bold bg-primary text-background-dark px-3 py-1">15 AOÛT</span>
               </div>
@@ -535,7 +563,7 @@ export default function App() {
               <div className="flex justify-between items-start mb-8 relative z-10">
                 <div className="flex flex-col">
                   <span className="text-4xl font-heading text-primary">JOUR 03</span>
-                  <span className="text-xs font-bold tracking-[0.2em] text-accent-red mt-1 italic uppercase">The Grand Finale</span>
+                  <span className="text-xs font-bold tracking-[0.2em] text-accent-red mt-1 uppercase">The Grand Finale</span>
                 </div>
                 <span className="text-xs font-bold bg-white/10 px-3 py-1 text-slate-300">16 AOÛT</span>
               </div>
@@ -565,7 +593,7 @@ export default function App() {
           <div className="inline-block px-4 py-1 border border-primary/30 bg-primary/10 rounded-full mb-6">
             <span className="text-primary text-xs font-bold tracking-[0.2em] uppercase">Phase Finale - Lomé, Togo</span>
           </div>
-          <h1 className="font-heading text-6xl md:text-8xl text-white mb-4 italic tracking-tight uppercase">
+          <h1 className="font-heading text-6xl md:text-8xl text-white mb-4 tracking-tight uppercase">
             TABLEAU DES BATTLES <span className="text-primary">-</span> TOP 16
           </h1>
           <p className="text-slate-400 max-w-2xl mx-auto font-light text-lg">
@@ -625,7 +653,7 @@ export default function App() {
             <div className="grid lg:grid-cols-2 gap-16 items-center">
               <div>
                 <span className="text-primary font-bold tracking-[0.5em] uppercase text-xs">Exclusif</span>
-                <h2 className="font-heading text-6xl md:text-8xl text-white mb-6 uppercase italic leading-none">EXPÉRIENCE <span className="text-accent-red">VIP</span></h2>
+                <h2 className="font-heading text-6xl md:text-8xl text-white mb-6 uppercase leading-none">EXPÉRIENCE <span className="text-accent-red">VIP</span></h2>
                 <p className="text-slate-300 text-lg mb-10 font-light leading-relaxed">
                   Plongez au cœur de l'action avec un accès privilégié. Vivez le All Stars Battle International dans les meilleures conditions possibles.
                 </p>
@@ -669,7 +697,7 @@ export default function App() {
           <div className="flex justify-between items-end mb-12">
             <div>
               <span className="text-primary font-bold tracking-[0.3em] uppercase text-xs">Archives</span>
-              <h2 className="font-heading text-5xl md:text-7xl text-white uppercase italic leading-none">MÉDIAS</h2>
+              <h2 className="font-heading text-5xl md:text-7xl text-white uppercase leading-none">MÉDIAS</h2>
             </div>
             <a href="#" className="text-slate-500 hover:text-white transition-colors uppercase font-bold text-xs tracking-widest pb-2 underline decoration-primary underline-offset-8">Accéder à la galerie</a>
           </div>
@@ -701,8 +729,8 @@ export default function App() {
         <div className="absolute top-0 left-0 w-full h-full grainy-bg opacity-10 pointer-events-none"></div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center mb-20">
-            <span className="text-accent-red font-bold tracking-[0.4em] uppercase text-xs mb-4 block italic">Réseau Officiel</span>
-            <h2 className="font-heading text-6xl md:text-8xl text-white uppercase italic leading-none">PARTENAIRES & <span className="text-primary">SPONSORS</span></h2>
+            <span className="text-accent-red font-bold tracking-[0.4em] uppercase text-xs mb-4 block">Réseau Officiel</span>
+            <h2 className="font-heading text-6xl md:text-8xl text-white uppercase leading-none">PARTENAIRES & <span className="text-primary">SPONSORS</span></h2>
             <div className="w-24 h-1 bg-gradient-to-r from-accent-red to-primary mx-auto mt-6"></div>
           </div>
           
@@ -734,7 +762,7 @@ export default function App() {
             <a href="#" className="btn-luxury-primary inline-block shimmer-effect">
               DEVENIR PARTENAIRE
             </a>
-            <p className="text-slate-500 text-[10px] uppercase font-bold tracking-[0.3em] mt-6 italic">Rejoignez l'élite de la culture urbaine africaine</p>
+            <p className="text-slate-500 text-[10px] uppercase font-bold tracking-[0.3em] mt-6">Rejoignez l'élite de la culture urbaine africaine</p>
           </div>
         </div>
       </section>
@@ -745,7 +773,7 @@ export default function App() {
           <div className="flex justify-between items-end mb-12">
             <div>
               <span className="text-accent-red font-bold tracking-[0.3em] uppercase text-xs">Blog Officiel</span>
-              <h2 className="font-heading text-5xl md:text-7xl text-white uppercase italic leading-none">ACTUALITÉS & NEWS</h2>
+              <h2 className="font-heading text-5xl md:text-7xl text-white uppercase leading-none">ACTUALITÉS & NEWS</h2>
             </div>
             <a href="#" className="text-slate-500 hover:text-white transition-colors uppercase font-bold text-xs tracking-widest pb-2 border-b border-primary/30">Voir toutes les actualités</a>
           </div>
@@ -772,8 +800,18 @@ export default function App() {
           </div>
         </div>
       </section>
+    </>
+  ) : currentPage === 'competition' ? (
+    <Competition />
+  ) : currentPage === 'dancers' ? (
+    <Dancers />
+  ) : currentPage === 'judges' ? (
+    <Judges />
+  ) : (
+    <Media />
+  )}
 
-      {/* FOOTER */}
+  {/* FOOTER */}
       <footer id="footer" className="bg-background-dark pt-24 pb-12 border-t border-primary/20 grainy-bg">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-16 mb-20">
@@ -798,11 +836,12 @@ export default function App() {
             <div>
               <h4 className="text-white font-heading text-2xl uppercase tracking-widest mb-8 border-b border-primary/30 pb-2 inline-block">Navigation</h4>
               <ul className="space-y-4">
-                <li><a href="#" className="text-slate-400 hover:text-primary transition-colors text-xs font-bold tracking-widest uppercase">Accueil</a></li>
-                <li><a href="#" className="text-slate-400 hover:text-primary transition-colors text-xs font-bold tracking-widest uppercase">La Compétition</a></li>
-                <li><a href="#" className="text-slate-400 hover:text-primary transition-colors text-xs font-bold tracking-widest uppercase">Les Danseurs</a></li>
-                <li><a href="#" className="text-slate-400 hover:text-primary transition-colors text-xs font-bold tracking-widest uppercase">Programme Officiel</a></li>
-                <li><a href="#" className="text-slate-400 hover:text-primary transition-colors text-xs font-bold tracking-widest uppercase">Espace VIP</a></li>
+                <li><a href="#home" onClick={navigateTo('home')} className="text-slate-400 hover:text-primary transition-colors text-xs font-bold tracking-widest uppercase">Accueil</a></li>
+                <li><a href="#competition" onClick={navigateTo('competition')} className="text-slate-400 hover:text-primary transition-colors text-xs font-bold tracking-widest uppercase">La Compétition</a></li>
+                <li><a href="#dancers" onClick={navigateTo('dancers')} className="text-slate-400 hover:text-primary transition-colors text-xs font-bold tracking-widest uppercase">Les Danseurs</a></li>
+                <li><a href="#judges" onClick={navigateTo('judges')} className="text-slate-400 hover:text-primary transition-colors text-xs font-bold tracking-widest uppercase">Les Juges</a></li>
+                <li><a href="#media" onClick={navigateTo('media')} className="text-slate-400 hover:text-primary transition-colors text-xs font-bold tracking-widest uppercase">Médias</a></li>
+                <li><a href="#vip" onClick={navigateTo('home', '#vip')} className="text-slate-400 hover:text-primary transition-colors text-xs font-bold tracking-widest uppercase">Espace VIP</a></li>
               </ul>
             </div>
 

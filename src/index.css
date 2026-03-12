@@ -85,3 +85,18 @@
   scrollbar-width: none;
 }
 
+.urban-texture {
+  background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBc47P6wSoVkZhCF6j5FZMV24bOP9S131NgbtHeOG_PxKLqRLDNmG3w4Yxufs_InlOlmbgsbNhiTd0oLR5rBUjyuLsbIty_cLNmkNmxMixl_FhGwh6nTL6pi1WoffY9NNTVmJnA25q0s9nXCvAgCKd-LC0eUVOEn_5Y1R-Rir2aBwgDqRLckcl9My23OR1FYyvxumiQ_dsAExUisZyMlm4wQE2tqVesKTQ3c5d5HGe1j3dYft0GiHxmU07xiRzmZ8e-6UHe2lVU3L7I");
+  background-repeat: repeat;
+}
+
+.gold-gradient {
+  background: linear-gradient(135deg, #f4d125 0%, #d4af37 100%);
+}
+
+.gold-gradient-text {
+  background: linear-gradient(to right, #f4d125, #fffbeb, #f4d125);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
