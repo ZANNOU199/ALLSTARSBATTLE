@@ -6,6 +6,7 @@ import Media from './Media';
 import History from './History';
 import Tickets from './Tickets';
 import Program from './Program';
+import News from './News';
 import { 
   Menu, 
   X, 
@@ -114,7 +115,7 @@ const ProgramItem = ({ time, title, desc, color = "primary" }: { time: string, t
   </div>
 );
 
-const NewsCard = ({ date, title, desc, tag, color = "primary" }: { date: string, title: string, desc: string, tag: string, color?: "primary" | "accent-red" }) => (
+const NewsCard = ({ date, title, desc, tag, color = "primary", onClick }: { date: string, title: string, desc: string, tag: string, color?: "primary" | "accent-red", onClick?: (e: React.MouseEvent) => void }) => (
   <motion.div 
     whileHover={{ y: -10 }}
     className={`group bg-surface-dark border border-white/5 overflow-hidden transition-all duration-500 hover:border-${color}/50 hover:shadow-[0_20px_40px_rgba(0,0,0,0.4)]`}
@@ -135,9 +136,12 @@ const NewsCard = ({ date, title, desc, tag, color = "primary" }: { date: string,
       <span className="text-slate-500 text-[10px] font-bold uppercase tracking-[0.2em]">{date}</span>
       <h3 className={`text-white font-heading text-2xl mt-3 mb-4 group-hover:text-${color} transition-colors leading-tight`}>{title}</h3>
       <p className="text-slate-400 text-sm leading-relaxed mb-8 font-light">{desc}</p>
-      <a href="#" className={`inline-flex items-center gap-3 text-[10px] font-black tracking-[0.3em] uppercase text-white group-hover:text-${color === "primary" ? "primary" : "accent-red"} transition-all`}>
+      <button 
+        onClick={onClick}
+        className={`inline-flex items-center gap-3 text-[10px] font-black tracking-[0.3em] uppercase text-white group-hover:text-${color === "primary" ? "primary" : "accent-red"} transition-all`}
+      >
         DÉCOUVRIR <ArrowRight className="w-3 h-3 group-hover:translate-x-2 transition-transform" />
-      </a>
+      </button>
     </div>
   </motion.div>
 );
@@ -278,13 +282,19 @@ const BracketContent = () => (
   </div>
 );
 
+import ArtisticScene from './ArtisticScene';
+import Contact from './Contact';
+import Partners from './Partners';
+
 export default function App() {
-  const [currentPage, setCurrentPage] = useState<'home' | 'competition' | 'dancers' | 'judges' | 'media' | 'history' | 'tickets' | 'program'>('home');
+  const [currentPage, setCurrentPage] = useState<'home' | 'competition' | 'dancers' | 'judges' | 'media' | 'history' | 'tickets' | 'program' | 'news' | 'artistic' | 'contact' | 'partners'>('home');
+  const [selectedArticleId, setSelectedArticleId] = useState<string | undefined>(undefined);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  const navigateTo = (page: 'home' | 'competition' | 'dancers' | 'judges' | 'media' | 'history' | 'tickets' | 'program', anchor?: string) => (e: React.MouseEvent) => {
+  const navigateTo = (page: 'home' | 'competition' | 'dancers' | 'judges' | 'media' | 'history' | 'tickets' | 'program' | 'news' | 'artistic' | 'contact' | 'partners', anchor?: string, articleId?: string) => (e: React.MouseEvent) => {
     e.preventDefault();
     setCurrentPage(page);
+    setSelectedArticleId(articleId);
     setIsMenuOpen(false);
     
     if (anchor) {
@@ -369,10 +379,12 @@ export default function App() {
               
               <NavDropdown 
                 label="Le Festival" 
-                active={currentPage === 'history' || currentPage === 'program'}
+                active={currentPage === 'history' || currentPage === 'program' || currentPage === 'artistic' || currentPage === 'partners'}
                 items={[
                   { label: "Histoire", onClick: navigateTo('history'), active: currentPage === 'history' },
-                  { label: "Programme", onClick: navigateTo('program'), active: currentPage === 'program' }
+                  { label: "Programme", onClick: navigateTo('program'), active: currentPage === 'program' },
+                  { label: "Scène Artistique", onClick: navigateTo('artistic'), active: currentPage === 'artistic' },
+                  { label: "Partenaires", onClick: navigateTo('partners'), active: currentPage === 'partners' }
                 ]} 
               />
 
@@ -388,8 +400,9 @@ export default function App() {
 
               <NavLink href="#tickets" active={currentPage === 'tickets'} onClick={navigateTo('tickets')}>Billetterie</NavLink>
               <NavLink href="#media" active={currentPage === 'media'} onClick={navigateTo('media')}>Médias</NavLink>
+              <NavLink href="#news" active={currentPage === 'news'} onClick={navigateTo('news')}>Blog</NavLink>
               <NavLink href="#vip" red onClick={navigateTo('home', '#vip')}>VIP</NavLink>
-              <NavLink href="#footer" onClick={navigateTo('home', '#footer')}>Contact</NavLink>
+              <NavLink href="#contact" active={currentPage === 'contact'} onClick={navigateTo('contact')}>Contact</NavLink>
             </div>
 
             <div className="flex items-center gap-4">
@@ -419,6 +432,8 @@ export default function App() {
                 <div className="flex flex-col space-y-4 pl-4 border-l border-white/10">
                   <a href="#history" onClick={navigateTo('history')} className={`text-xl font-heading uppercase ${currentPage === 'history' ? 'text-primary' : 'text-white'}`}>Histoire</a>
                   <a href="#program" onClick={navigateTo('program')} className={`text-xl font-heading uppercase ${currentPage === 'program' ? 'text-primary' : 'text-white'}`}>Programme</a>
+                  <a href="#artistic" onClick={navigateTo('artistic')} className={`text-xl font-heading uppercase ${currentPage === 'artistic' ? 'text-primary' : 'text-white'}`}>Scène Artistique</a>
+                  <a href="#partners" onClick={navigateTo('partners')} className={`text-xl font-heading uppercase ${currentPage === 'partners' ? 'text-primary' : 'text-white'}`}>Partenaires</a>
                 </div>
               </div>
 
@@ -436,11 +451,12 @@ export default function App() {
                 <div className="flex flex-col space-y-4 pl-4 border-l border-white/10">
                   <a href="#tickets" onClick={navigateTo('tickets')} className={`text-xl font-heading uppercase ${currentPage === 'tickets' ? 'text-primary' : 'text-white'}`}>Billetterie</a>
                   <a href="#media" onClick={navigateTo('media')} className={`text-xl font-heading uppercase ${currentPage === 'media' ? 'text-primary' : 'text-white'}`}>Médias</a>
+                  <a href="#news" onClick={navigateTo('news')} className={`text-xl font-heading uppercase ${currentPage === 'news' ? 'text-primary' : 'text-white'}`}>Blog</a>
                   <a href="#vip" onClick={navigateTo('home', '#vip')} className="text-xl font-heading text-accent-red uppercase">Espace VIP</a>
                 </div>
               </div>
 
-              <a href="#footer" onClick={navigateTo('home', '#footer')} className="text-3xl font-heading text-white uppercase pt-4 border-t border-white/5">Contact</a>
+              <a href="#contact" onClick={navigateTo('contact')} className={`text-3xl font-heading uppercase ${currentPage === 'contact' ? 'text-primary' : 'text-white'}`}>Contact</a>
             </div>
           </motion.div>
         )}
@@ -858,7 +874,11 @@ export default function App() {
           </div>
           
           <div className="mt-20 text-center">
-            <a href="#" className="btn-luxury-primary inline-block shimmer-effect">
+            <a 
+              href="#partners" 
+              onClick={navigateTo('partners')}
+              className="btn-luxury-primary inline-block shimmer-effect"
+            >
               DEVENIR PARTENAIRE
             </a>
             <p className="text-slate-500 text-[10px] uppercase font-bold tracking-[0.3em] mt-6">Rejoignez l'élite de la culture urbaine africaine</p>
@@ -874,7 +894,13 @@ export default function App() {
               <span className="text-accent-red font-bold tracking-[0.3em] uppercase text-xs">Blog Officiel</span>
               <h2 className="font-heading text-5xl md:text-7xl text-white uppercase leading-none">ACTUALITÉS & NEWS</h2>
             </div>
-            <a href="#" className="text-slate-500 hover:text-white transition-colors uppercase font-bold text-xs tracking-widest pb-2 border-b border-primary/30">Voir toutes les actualités</a>
+            <a 
+              href="#news" 
+              onClick={navigateTo('news')}
+              className="text-slate-500 hover:text-white transition-colors uppercase font-bold text-xs tracking-widest pb-2 border-b border-primary/30"
+            >
+              Voir toutes les actualités
+            </a>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <NewsCard 
@@ -882,6 +908,7 @@ export default function App() {
               title="LANCEMENT OFFICIEL DU TOGO 2026" 
               desc="Découvrez les coulisses de la préparation de l'événement le plus attendu de l'année à Lomé." 
               tag="OFFICIEL" 
+              onClick={navigateTo('news', undefined, '1')}
             />
             <NewsCard 
               date="05 Février 2026" 
@@ -889,12 +916,14 @@ export default function App() {
               desc="Les plus grands noms de la scène Hip-Hop internationale confirment leur présence pour le festival." 
               tag="TALENTS" 
               color="accent-red"
+              onClick={navigateTo('news', undefined, '2')}
             />
             <NewsCard 
               date="20 Mars 2026" 
               title="DISPONIBILITÉ DES TICKETS" 
               desc="La billetterie en ligne est désormais ouverte. Réservez vos pass Early Bird avant épuisement." 
               tag="BILLETTERIE" 
+              onClick={navigateTo('news', undefined, '3')}
             />
           </div>
         </div>
@@ -903,7 +932,7 @@ export default function App() {
   ) : currentPage === 'competition' ? (
     <Competition />
   ) : currentPage === 'dancers' ? (
-    <Dancers />
+    <Dancers onViewPerformances={() => setCurrentPage('media')} />
   ) : currentPage === 'judges' ? (
     <Judges />
   ) : currentPage === 'history' ? (
@@ -912,6 +941,23 @@ export default function App() {
     <Tickets />
   ) : currentPage === 'program' ? (
     <Program onReserveTickets={() => setCurrentPage('tickets')} />
+  ) : currentPage === 'news' ? (
+    <News onBack={() => setCurrentPage('home')} initialArticleId={selectedArticleId} />
+  ) : currentPage === 'artistic' ? (
+    <ArtisticScene 
+      onNavigateToProgram={() => setCurrentPage('program')} 
+      onNavigateToTickets={() => setCurrentPage('tickets')} 
+    />
+  ) : currentPage === 'contact' ? (
+    <Contact onNavigateToFAQ={() => {
+      setCurrentPage('home');
+      setTimeout(() => {
+        const element = document.getElementById('faq');
+        if (element) element.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
+    }} />
+  ) : currentPage === 'partners' ? (
+    <Partners onContactClick={navigateTo('contact')} />
   ) : (
     <Media />
   )}
@@ -938,41 +984,50 @@ export default function App() {
               </div>
             </div>
             
-            <div>
-              <h4 className="text-white font-heading text-2xl uppercase tracking-widest mb-8 border-b border-primary/30 pb-2 inline-block">Navigation</h4>
+            <div className="col-span-1">
+              <h4 className="text-white font-heading text-xl uppercase tracking-widest mb-8 border-b border-primary/30 pb-2 inline-block">Le Festival</h4>
               <ul className="space-y-4">
-                <li><a href="#home" onClick={navigateTo('home')} className="text-slate-400 hover:text-primary transition-colors text-xs font-bold tracking-widest uppercase">Accueil</a></li>
-                <li><a href="#history" onClick={navigateTo('history')} className="text-slate-400 hover:text-primary transition-colors text-xs font-bold tracking-widest uppercase">Histoire</a></li>
-                <li><a href="#competition" onClick={navigateTo('competition')} className="text-slate-400 hover:text-primary transition-colors text-xs font-bold tracking-widest uppercase">La Compétition</a></li>
-                <li><a href="#dancers" onClick={navigateTo('dancers')} className="text-slate-400 hover:text-primary transition-colors text-xs font-bold tracking-widest uppercase">Les Danseurs</a></li>
-                <li><a href="#judges" onClick={navigateTo('judges')} className="text-slate-400 hover:text-primary transition-colors text-xs font-bold tracking-widest uppercase">Les Juges</a></li>
-                <li><a href="#tickets" onClick={navigateTo('tickets')} className="text-slate-400 hover:text-primary transition-colors text-xs font-bold tracking-widest uppercase">Billetterie</a></li>
-                <li><a href="#program" onClick={navigateTo('program')} className="text-slate-400 hover:text-primary transition-colors text-xs font-bold tracking-widest uppercase">Programme</a></li>
-                <li><a href="#media" onClick={navigateTo('media')} className="text-slate-400 hover:text-primary transition-colors text-xs font-bold tracking-widest uppercase">Médias</a></li>
-                <li><a href="#vip" onClick={navigateTo('home', '#vip')} className="text-slate-400 hover:text-primary transition-colors text-xs font-bold tracking-widest uppercase">Espace VIP</a></li>
+                <li><a href="#home" onClick={navigateTo('home')} className="text-slate-400 hover:text-primary transition-colors text-[10px] font-bold tracking-widest uppercase">Accueil</a></li>
+                <li><a href="#history" onClick={navigateTo('history')} className="text-slate-400 hover:text-primary transition-colors text-[10px] font-bold tracking-widest uppercase">Histoire</a></li>
+                <li><a href="#program" onClick={navigateTo('program')} className="text-slate-400 hover:text-primary transition-colors text-[10px] font-bold tracking-widest uppercase">Programme</a></li>
+                <li><a href="#artistic" onClick={navigateTo('artistic')} className="text-slate-400 hover:text-primary transition-colors text-[10px] font-bold tracking-widest uppercase">Scène Artistique</a></li>
               </ul>
             </div>
 
-            <div className="md:col-span-2">
-              <h4 className="text-white font-heading text-2xl uppercase tracking-widest mb-8 border-b border-primary/30 pb-2 inline-block">Newsletter</h4>
-              <p className="text-xs text-slate-500 mb-6 uppercase font-bold tracking-[0.2em]">Restez connectés à l'élite de la culture urbaine</p>
-              <form className="flex flex-col sm:flex-row gap-0">
-                <input 
-                  type="email" 
-                  className="flex-grow bg-surface-dark/50 border border-white/10 text-white focus:border-primary focus:ring-1 focus:ring-primary text-xs px-6 py-4 uppercase tracking-widest font-medium outline-none transition-all" 
-                  placeholder="VOTRE ADRESSE EMAIL"
-                />
-                <button className="btn-luxury-primary !px-10 !py-4 shimmer-effect">S'ABONNER</button>
-              </form>
-              <div className="mt-10 flex gap-8 items-center border-t border-white/5 pt-8">
-                <span className="text-[10px] text-slate-500 uppercase font-black tracking-widest">Suivez-nous :</span>
-                <div className="flex gap-8">
-                  <a href="#" className="text-white hover:text-primary transition-all hover:scale-125"><Instagram className="w-5 h-5" /></a>
-                  <a href="#" className="text-white hover:text-primary transition-all hover:scale-125"><Facebook className="w-5 h-5" /></a>
-                  <a href="#" className="text-white hover:text-primary transition-all hover:scale-125"><Twitter className="w-5 h-5" /></a>
-                  <a href="#" className="text-white hover:text-primary transition-all hover:scale-125"><Youtube className="w-5 h-5" /></a>
-                </div>
-              </div>
+            <div className="col-span-1">
+              <h4 className="text-white font-heading text-xl uppercase tracking-widest mb-8 border-b border-primary/30 pb-2 inline-block">Compétition</h4>
+              <ul className="space-y-4">
+                <li><a href="#brackets" onClick={navigateTo('home', '#brackets')} className="text-slate-400 hover:text-primary transition-colors text-[10px] font-bold tracking-widest uppercase">Tableau (Brackets)</a></li>
+                <li><a href="#dancers" onClick={navigateTo('dancers')} className="text-slate-400 hover:text-primary transition-colors text-[10px] font-bold tracking-widest uppercase">Les Danseurs</a></li>
+                <li><a href="#judges" onClick={navigateTo('judges')} className="text-slate-400 hover:text-primary transition-colors text-[10px] font-bold tracking-widest uppercase">Les Juges</a></li>
+              </ul>
+            </div>
+
+            <div className="col-span-1">
+              <h4 className="text-white font-heading text-xl uppercase tracking-widest mb-8 border-b border-primary/30 pb-2 inline-block">Expérience</h4>
+              <ul className="space-y-4">
+                <li><a href="#tickets" onClick={navigateTo('tickets')} className="text-slate-400 hover:text-primary transition-colors text-[10px] font-bold tracking-widest uppercase">Billetterie</a></li>
+                <li><a href="#media" onClick={navigateTo('media')} className="text-slate-400 hover:text-primary transition-colors text-[10px] font-bold tracking-widest uppercase">Médias</a></li>
+                <li><a href="#vip" onClick={navigateTo('home', '#vip')} className="text-slate-400 hover:text-primary transition-colors text-[10px] font-bold tracking-widest uppercase">Espace VIP</a></li>
+              </ul>
+            </div>
+
+            <div className="col-span-1 md:col-span-2 lg:col-span-1">
+              <h4 className="text-white font-heading text-xl uppercase tracking-widest mb-8 border-b border-primary/30 pb-2 inline-block">Contact</h4>
+              <ul className="space-y-4">
+                <li><a href="#contact" onClick={navigateTo('contact')} className="text-slate-400 hover:text-primary transition-colors text-[10px] font-bold tracking-widest uppercase">Nous Contacter</a></li>
+                <li><a href="#" className="text-slate-400 hover:text-primary transition-colors text-[10px] font-bold tracking-widest uppercase">FAQ</a></li>
+              </ul>
+            </div>
+          </div>
+          
+          <div className="mt-10 flex flex-col md:flex-row gap-8 items-center border-t border-white/5 pt-8">
+            <span className="text-[10px] text-slate-500 uppercase font-black tracking-widest">Suivez l'actualité :</span>
+            <div className="flex gap-8">
+              <a href="#" className="text-white hover:text-primary transition-all hover:scale-125"><Instagram className="w-5 h-5" /></a>
+              <a href="#" className="text-white hover:text-primary transition-all hover:scale-125"><Facebook className="w-5 h-5" /></a>
+              <a href="#" className="text-white hover:text-primary transition-all hover:scale-125"><Twitter className="w-5 h-5" /></a>
+              <a href="#" className="text-white hover:text-primary transition-all hover:scale-125"><Youtube className="w-5 h-5" /></a>
             </div>
           </div>
           
