@@ -26,10 +26,49 @@ const Partners = ({ onContactClick }: PartnersProps) => {
 
   const handleDownload = () => {
     setIsDownloading(true);
-    // Simulating a download delay
+    
+    // Simulating a small delay for the "preparation" effect
     setTimeout(() => {
+      const content = `
+ALL STARS BATTLE INTERNATIONAL 2026
+DOSSIER DE SPONSORING OFFICIEL
+-----------------------------------
+Lieu : Palais des Congrès de Lomé, Togo
+Dates : 14 - 16 Août 2026
+
+PRÉSENTATION :
+L'All Stars Battle International est le plus grand événement de breakdance 
+et de culture urbaine en Afrique de l'Ouest. Pour sa version 2026, nous 
+réunissons l'élite mondiale pour une compétition sans précédent.
+
+POURQUOI DEVENIR PARTENAIRE ?
+- Visibilité internationale (TV, Web, Presse)
+- Accès à une audience jeune et dynamique (15-35 ans)
+- Soutien à la culture et à la jeunesse africaine
+- Espaces VIP et networking exclusifs
+
+PACKS DE SPONSORING :
+1. PLATINE : Visibilité maximale, logo sur scène principale, 10 pass VIP.
+2. OR : Logo sur supports de communication, 5 pass VIP.
+3. ARGENT : Logo sur site web et réseaux sociaux, 2 pass VIP.
+
+CONTACT PARTENARIATS :
+Email : partners@allstarsbattle.tg
+Tel : +228 XX XX XX XX
+      `;
+
+      const blob = new Blob([content], { type: 'text/plain' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'Dossier_Sponsoring_ASB_2026.pdf');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+
       setIsDownloading(false);
-      alert("Le téléchargement du dossier de sponsoring a commencé.");
+      alert("Le téléchargement du dossier de sponsoring a commencé !");
     }, 1500);
   };
 
