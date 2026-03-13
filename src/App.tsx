@@ -291,6 +291,10 @@ export default function App() {
   const [selectedArticleId, setSelectedArticleId] = useState<string | undefined>(undefined);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [currentPage]);
+
   const navigateTo = (page: 'home' | 'competition' | 'dancers' | 'judges' | 'media' | 'history' | 'tickets' | 'program' | 'news' | 'artistic' | 'contact' | 'partners', anchor?: string, articleId?: string) => (e: React.MouseEvent) => {
     e.preventDefault();
     setCurrentPage(page);
@@ -304,8 +308,6 @@ export default function App() {
           element.scrollIntoView({ behavior: 'smooth' });
         }
       }, 100);
-    } else {
-      window.scrollTo(0, 0);
     }
   };
   const [scrolled, setScrolled] = useState(false);
@@ -492,13 +494,13 @@ export default function App() {
         </div>
         
         <div className="relative z-10 text-center px-4 w-full max-w-6xl mx-auto">
-          <motion.div 
+          <motion.span 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="inline-block bg-accent-red px-4 py-1 mb-6 transform -skew-x-12"
+            className="text-accent-red font-heading text-2xl tracking-[0.3em] block uppercase mb-6"
           >
-            <span className="text-white font-heading text-2xl tracking-widest uppercase">TOGO 2026</span>
-          </motion.div>
+            TOGO 2026
+          </motion.span>
           
           <motion.h1 
             initial={{ opacity: 0, scale: 0.9 }}

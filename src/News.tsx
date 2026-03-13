@@ -82,6 +82,10 @@ export default function News({ onBack, initialArticleId }: NewsProps) {
     initialArticleId ? articles.find(a => a.id === initialArticleId) || null : null
   );
 
+  React.useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [selectedArticle]);
+
   if (selectedArticle) {
     return (
       <div className="bg-background-dark min-h-screen text-slate-100 font-display pt-24 pb-20">

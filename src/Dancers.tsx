@@ -154,6 +154,10 @@ const Dancers = ({ onViewPerformances }: DancersProps) => {
   const [showAll, setShowAll] = useState(false);
   const [selectedDancer, setSelectedDancer] = useState<any>(null);
 
+  React.useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [selectedDancer]);
+
   const filteredDancers = filter === 'All' 
     ? dancersData 
     : dancersData.filter(d => d.category === filter);
