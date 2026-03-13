@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'motion/react';
+import { jsPDF } from 'jspdf';
 import { 
   Theater, 
   Utensils, 
@@ -27,48 +28,90 @@ const Partners = ({ onContactClick }: PartnersProps) => {
   const handleDownload = () => {
     setIsDownloading(true);
     
-    // Simulating a small delay for the "preparation" effect
     setTimeout(() => {
-      const content = `
-ALL STARS BATTLE INTERNATIONAL 2026
-DOSSIER DE SPONSORING OFFICIEL
------------------------------------
-Lieu : Palais des Congrès de Lomé, Togo
-Dates : 14 - 16 Août 2026
-
-PRÉSENTATION :
-L'All Stars Battle International est le plus grand événement de breakdance 
-et de culture urbaine en Afrique de l'Ouest. Pour sa version 2026, nous 
-réunissons l'élite mondiale pour une compétition sans précédent.
-
-POURQUOI DEVENIR PARTENAIRE ?
-- Visibilité internationale (TV, Web, Presse)
-- Accès à une audience jeune et dynamique (15-35 ans)
-- Soutien à la culture et à la jeunesse africaine
-- Espaces VIP et networking exclusifs
-
-PACKS DE SPONSORING :
-1. PLATINE : Visibilité maximale, logo sur scène principale, 10 pass VIP.
-2. OR : Logo sur supports de communication, 5 pass VIP.
-3. ARGENT : Logo sur site web et réseaux sociaux, 2 pass VIP.
-
-CONTACT PARTENARIATS :
-Email : partners@allstarsbattle.tg
-Tel : +228 XX XX XX XX
-      `;
-
-      const blob = new Blob([content], { type: 'text/plain' });
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', 'Dossier_Sponsoring_ASB_2026.pdf');
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
-
-      setIsDownloading(false);
-      alert("Le téléchargement du dossier de sponsoring a commencé !");
+      try {
+        const doc = new jsPDF();
+        const primaryColor = '#d35f17';
+        
+        // Header
+        doc.setFillColor(10, 8, 7); // Background dark
+        doc.rect(0, 0, 210, 40, 'F');
+        
+        doc.setTextColor(211, 95, 23); // Primary color
+        doc.setFontSize(22);
+        doc.setFont('helvetica', 'bold');
+        doc.text('ALL STARS BATTLE INTERNATIONAL 2026', 105, 20, { align: 'center' });
+        
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(12);
+        doc.text('DOSSIER DE SPONSORING OFFICIEL', 105, 30, { align: 'center' });
+        
+        // Content
+        doc.setTextColor(0, 0, 0);
+        doc.setFontSize(16);
+        doc.text('PRÉSENTATION DE L\'ÉVÉNEMENT', 20, 55);
+        doc.setDrawColor(211, 95, 23);
+        doc.line(20, 57, 100, 57);
+        
+        doc.setFontSize(11);
+        doc.setFont('helvetica', 'normal');
+        const intro = "L'All Stars Battle International est le plus grand événement de breakdance et de culture urbaine en Afrique de l'Ouest. Pour sa version 2026, nous réunissons l'élite mondiale au Palais des Congrès de Lomé pour une compétition sans précédent.";
+        const splitIntro = doc.splitTextToSize(intro, 170);
+        doc.text(splitIntro, 20, 65);
+        
+        doc.setFontSize(16);
+        doc.setFont('helvetica', 'bold');
+        doc.text('POURQUOI NOUS REJOINDRE ?', 20, 90);
+        doc.line(20, 92, 100, 92);
+        
+        doc.setFontSize(11);
+        doc.setFont('helvetica', 'normal');
+        const benefits = [
+          "- Visibilité internationale (TV, Web, Presse)",
+          "- Accès à une audience jeune et dynamique (15-35 ans)",
+          "- Soutien à la culture et à la jeunesse africaine",
+          "- Espaces VIP et networking exclusifs"
+        ];
+        doc.text(benefits, 20, 100);
+        
+        doc.setFontSize(16);
+        doc.setFont('helvetica', 'bold');
+        doc.text('NOS PACKS DE PARTENARIAT', 20, 130);
+        doc.line(20, 132, 100, 132);
+        
+        doc.setFontSize(11);
+        doc.setFont('helvetica', 'bold');
+        doc.text('1. PACK PLATINE', 20, 140);
+        doc.setFont('helvetica', 'normal');
+        doc.text('Visibilité maximale, logo sur scène principale, 10 pass VIP.', 20, 145);
+        
+        doc.setFont('helvetica', 'bold');
+        doc.text('2. PACK OR', 20, 155);
+        doc.setFont('helvetica', 'normal');
+        doc.text('Logo sur supports de communication, 5 pass VIP.', 20, 160);
+        
+        doc.setFont('helvetica', 'bold');
+        doc.text('3. PACK ARGENT', 20, 170);
+        doc.setFont('helvetica', 'normal');
+        doc.text('Logo sur site web et réseaux sociaux, 2 pass VIP.', 20, 175);
+        
+        // Footer
+        doc.setDrawColor(200, 200, 200);
+        doc.line(20, 260, 190, 260);
+        doc.setFontSize(10);
+        doc.setTextColor(100, 100, 100);
+        doc.text('Contact : partners@allstarsbattle.tg | Lomé, Togo', 105, 270, { align: 'center' });
+        doc.text('www.allstarsbattle.tg', 105, 275, { align: 'center' });
+        
+        doc.save('Dossier_Sponsoring_ASB_2026.pdf');
+        
+        setIsDownloading(false);
+        alert("Le dossier de sponsoring a été généré avec succès !");
+      } catch (error) {
+        console.error("Erreur lors de la génération du PDF:", error);
+        setIsDownloading(false);
+        alert("Une erreur est survenue lors de la création du PDF. Veuillez réessayer.");
+      }
     }, 1500);
   };
 
