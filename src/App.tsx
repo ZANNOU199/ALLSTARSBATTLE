@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Competition from './Competition';
 import Dancers from './Dancers';
 import Judges from './Judges';
@@ -7,6 +8,15 @@ import History from './History';
 import Tickets from './Tickets';
 import Program from './Program';
 import News from './News';
+
+// Admin Imports
+import AdminLayout from './admin/AdminLayout';
+import Dashboard from './admin/Dashboard';
+import Login from './admin/Login';
+import ProtectedRoute from './admin/ProtectedRoute';
+import ArtisticSceneAdmin from './admin/modules/ArtisticSceneAdmin';
+import ParticipantsAdmin from './admin/modules/ParticipantsAdmin';
+import SettingsAdmin from './admin/modules/SettingsAdmin';
 import { 
   Menu, 
   X, 
@@ -286,7 +296,7 @@ import ArtisticScene from './ArtisticScene';
 import Contact from './Contact';
 import Partners from './Partners';
 
-export default function App() {
+function MainSite() {
   const [currentPage, setCurrentPage] = useState<'home' | 'competition' | 'dancers' | 'judges' | 'media' | 'history' | 'tickets' | 'program' | 'news' | 'artistic' | 'contact' | 'partners'>('home');
   const [selectedArticleId, setSelectedArticleId] = useState<string | undefined>(undefined);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -1046,5 +1056,67 @@ export default function App() {
         </div>
       </footer>
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        {/* Public Site */}
+        <Route path="/" element={<MainSite />} />
+        
+        {/* Admin Login */}
+        <Route path="/admin/login" element={<Login />} />
+        
+        {/* Admin Space */}
+        <Route path="/admin" element={
+          <ProtectedRoute>
+            <AdminLayout>
+              <Dashboard />
+            </AdminLayout>
+          </ProtectedRoute>
+        } />
+        
+        <Route path="/admin/artistic" element={
+          <ProtectedRoute>
+            <AdminLayout>
+              <ArtisticSceneAdmin />
+            </AdminLayout>
+          </ProtectedRoute>
+        } />
+        
+        <Route path="/admin/participants" element={
+          <ProtectedRoute>
+            <AdminLayout>
+              <ParticipantsAdmin />
+            </AdminLayout>
+          </ProtectedRoute>
+        } />
+        
+        <Route path="/admin/settings" element={
+          <ProtectedRoute>
+            <AdminLayout>
+              <SettingsAdmin />
+            </AdminLayout>
+          </ProtectedRoute>
+        } />
+
+        {/* Placeholder for other admin modules */}
+        <Route path="/admin/:module" element={
+          <ProtectedRoute>
+            <AdminLayout>
+              <div className="flex flex-col items-center justify-center py-20 gap-4">
+                <h2 className="text-2xl font-heading text-white uppercase tracking-tight">Module en cours de développement</h2>
+                <p className="text-slate-500 uppercase tracking-widest text-xs font-bold">Ce module sera bientôt disponible pour la gestion dynamique.</p>
+              </div>
+            </AdminLayout>
+          </ProtectedRoute>
+        } />
+        
+        {/* Fallback */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
