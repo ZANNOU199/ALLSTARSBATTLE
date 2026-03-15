@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import { cmsService } from './services/cmsService';
 import { 
   Calendar, 
   Clock, 
@@ -28,9 +29,38 @@ const Program: React.FC<ProgramProps> = ({ onReserveTickets }) => {
   const [selectedCategory, setSelectedCategory] = useState("Tous");
   const [startIndex, setStartIndex] = useState(0);
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
+  const [schedule, setSchedule] = useState<any[]>([]);
   
   // Responsive days per page
   const [daysPerPage, setDaysPerPage] = useState(5);
+
+  useEffect(() => {
+    const data = cmsService.getData();
+    const getIcon = (category: string) => {
+      switch (category) {
+        case 'Competition': return <Trophy className="w-5 h-5" />;
+        case 'Workshop': return <Users className="w-5 h-5" />;
+        case 'Show': return <Star className="w-5 h-5" />;
+        case 'Talk': return <Star className="w-5 h-5" />;
+        case 'Social': return <Music className="w-5 h-5" />;
+        default: return <Calendar className="w-5 h-5" />;
+      }
+    };
+
+    const formattedSchedule = data.program.map(day => ({
+      date: day.label,
+      theme: day.date, // Using date string as theme for now or we could add theme to CMS
+      events: day.activities.map(act => ({
+        time: act.time,
+        title: act.title,
+        location: act.location,
+        category: act.category,
+        desc: act.description,
+        icon: getIcon(act.category)
+      }))
+    }));
+    setSchedule(formattedSchedule);
+  }, []);
 
   useEffect(() => {
     const handleResize = () => {
@@ -50,228 +80,13 @@ const Program: React.FC<ProgramProps> = ({ onReserveTickets }) => {
 
   const categories = ["Tous", "Competition", "Workshop", "Show", "Talk", "Social"];
 
-  const schedule = [
-    {
-      date: "14 AOÛT",
-      theme: "CULTURE & TRANSMISSION",
-      events: [
-        {
-          time: "10:00",
-          title: "MASTERCLASS BREAKING FOUNDATIONS",
-          location: "Studio A - Palais des Congrès",
-          category: "Workshop",
-          desc: "Apprenez les bases du footwork avec les pionniers du mouvement.",
-          icon: <Users className="w-5 h-5" />
-        },
-        {
-          time: "14:00",
-          title: "CONFÉRENCE : L'ÉVOLUTION DU BREAK",
-          location: "Auditorium",
-          category: "Talk",
-          desc: "Discussion sur l'intégration du breaking aux Jeux Olympiques et son futur.",
-          icon: <Star className="w-5 h-5" />
-        },
-        {
-          time: "18:00",
-          title: "OPENING CEREMONY",
-          location: "Main Stage",
-          category: "Show",
-          desc: "Spectacle chorégraphique mêlant danses traditionnelles togolaises et breaking moderne.",
-          icon: <Music className="w-5 h-5" />
-        },
-        {
-          time: "21:00",
-          title: "WELCOME PARTY",
-          location: "Rooftop Hotel 2 Février",
-          category: "Social",
-          desc: "Soirée de réseautage pour les danseurs, juges et partenaires.",
-          icon: <Music className="w-5 h-5" />
-        }
-      ]
-    },
-    {
-      date: "15 AOÛT",
-      theme: "THE BATTLE BEGINS",
-      events: [
-        {
-          time: "09:00",
-          title: "QUALIFICATIONS OPEN 1VS1",
-          location: "Arena B",
-          category: "Competition",
-          desc: "Plus de 100 danseurs s'affrontent pour intégrer le Top 16.",
-          icon: <Trophy className="w-5 h-5" />
-        },
-        {
-          time: "13:00",
-          title: "BATTLE KIDS EXHIBITION",
-          location: "Main Stage",
-          category: "Show",
-          desc: "La relève du breakdance africain montre son talent.",
-          icon: <Star className="w-5 h-5" />
-        },
-        {
-          time: "15:00",
-          title: "TOP 16 - 2VS2 MIXED GENDER",
-          location: "Main Stage",
-          category: "Competition",
-          desc: "Les duos s'affrontent pour une place en finale.",
-          icon: <Trophy className="w-5 h-5" />
-        },
-        {
-          time: "20:00",
-          title: "BEATBOX SHOWCASE",
-          location: "Main Stage",
-          category: "Show",
-          desc: "Performance live des meilleurs beatboxers de la région.",
-          icon: <Music className="w-5 h-5" />
-        }
-      ]
-    },
-    {
-      date: "16 AOÛT",
-      theme: "THE GRAND FINALE",
-      events: [
-        {
-          time: "11:00",
-          title: "WORKSHOP : ADVANCED POWERMOVES",
-          location: "Studio A",
-          category: "Workshop",
-          desc: "Session technique intensive sur les rotations et acrobaties.",
-          icon: <Users className="w-5 h-5" />
-        },
-        {
-          time: "15:00",
-          title: "FINALES 2VS2",
-          location: "Main Stage",
-          category: "Competition",
-          desc: "Le couronnement des meilleurs duos de l'édition 2026.",
-          icon: <Trophy className="w-5 h-5" />
-        },
-        {
-          time: "19:00",
-          title: "WORLD FINALS - TOP 16 1VS1",
-          location: "Main Stage",
-          category: "Competition",
-          desc: "L'événement principal. Le combat pour le trône international.",
-          icon: <Trophy className="w-5 h-5" />
-        },
-        {
-          time: "23:00",
-          title: "OFFICIAL AFTER-PARTY",
-          location: "Club VIP",
-          category: "Social",
-          desc: "Célébration finale avec DJ sets internationaux.",
-          icon: <Music className="w-5 h-5" />
-        }
-      ]
-    },
-    {
-      date: "17 AOÛT",
-      theme: "RECOVERY & COMMUNITY",
-      events: [
-        {
-          time: "12:00",
-          title: "YOGA FOR DANCERS",
-          location: "Plage de Lomé",
-          category: "Workshop",
-          desc: "Session de récupération et de mobilité face à l'océan.",
-          icon: <Users className="w-5 h-5" />
-        },
-        {
-          time: "16:00",
-          title: "COMMUNITY JAM",
-          location: "Place de l'Indépendance",
-          category: "Social",
-          desc: "Cercle ouvert pour tous les niveaux. Danse libre et partage.",
-          icon: <Music className="w-5 h-5" />
-        }
-      ]
-    },
-    {
-      date: "18 AOÛT",
-      theme: "STREET ART DAY",
-      events: [
-        {
-          time: "10:00",
-          title: "GRAFFITI LIVE SESSION",
-          location: "Murs du Palais",
-          category: "Show",
-          desc: "Fresque géante réalisée en direct par des artistes locaux.",
-          icon: <Star className="w-5 h-5" />
-        }
-      ]
-    },
-    {
-      date: "19 AOÛT",
-      theme: "FASHION & STYLE",
-      events: [
-        {
-          time: "18:00",
-          title: "URBAN FASHION SHOW",
-          location: "Main Stage",
-          category: "Show",
-          desc: "Défilé des marques de streetwear émergentes du Togo.",
-          icon: <Star className="w-5 h-5" />
-        }
-      ]
-    },
-    {
-      date: "20 AOÛT",
-      theme: "DJ BATTLES",
-      events: [
-        {
-          time: "20:00",
-          title: "SCRATCH CHAMPIONSHIP",
-          location: "Main Stage",
-          category: "Competition",
-          desc: "Les meilleurs DJs s'affrontent sur les platines.",
-          icon: <Music className="w-5 h-5" />
-        }
-      ]
-    },
-    {
-      date: "21 AOÛT",
-      theme: "EXPERIMENTAL DANCE",
-      events: [
-        {
-          time: "17:00",
-          title: "ALL STYLES EXPERIMENTAL",
-          location: "Arena B",
-          category: "Competition",
-          desc: "Battle sans limites de style, focus sur la créativité pure.",
-          icon: <Trophy className="w-5 h-5" />
-        }
-      ]
-    },
-    {
-      date: "22 AOÛT",
-      theme: "CLOSING WORKSHOPS",
-      events: [
-        {
-          time: "10:00",
-          title: "FINAL MASTERCLASS",
-          location: "Studio A",
-          category: "Workshop",
-          desc: "Dernière session intensive avant la clôture du festival.",
-          icon: <Users className="w-5 h-5" />
-        }
-      ]
-    },
-    {
-      date: "23 AOÛT",
-      theme: "GRAND FINALE CONCERT",
-      events: [
-        {
-          time: "20:00",
-          title: "CLOSING CONCERT",
-          location: "Stade de Lomé",
-          category: "Show",
-          desc: "Concert géant avec des têtes d'affiche internationales.",
-          icon: <Music className="w-5 h-5" />
-        }
-      ]
-    }
-  ];
+  if (schedule.length === 0) {
+    return (
+      <div className="min-h-screen bg-background-dark flex items-center justify-center">
+        <Loader2 className="w-12 h-12 text-primary animate-spin" />
+      </div>
+    );
+  }
 
   const generatePDF = async () => {
     setIsGeneratingPDF(true);

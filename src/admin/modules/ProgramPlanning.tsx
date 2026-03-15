@@ -1,0 +1,217 @@
+import React, { useState } from 'react';
+import { CMSData, ProgramDay, Activity } from '../../types';
+import { Plus, Trash2, Edit, Save, X, Clock, MapPin, Tag } from 'lucide-react';
+
+export default function ProgramPlanning({ data, setData }: { data: CMSData, setData: React.Dispatch<React.SetStateAction<CMSData>> }) {
+  const [selectedDayId, setSelectedDayId] = useState<string>(data.program[0]?.id || '');
+  const [isAddingDay, setIsAddingDay] = useState(false);
+  const [isAddingActivity, setIsAddingActivity] = useState(false);
+  const [editingActivityId, setEditingActivityId] = useState<string | null>(null);
+  const [dayFormData, setDayFormData] = useState<Partial<ProgramDay>>({});
+  const [activityFormData, setActivityFormData] = useState<Partial<Activity>>({});
+
+  const handleAddDay = () => {
+    const newDay: ProgramDay = {
+      id: Date.now().toString(),
+      date: dayFormData.date || '',
+      label: dayFormData.label || '',
+      activities: []
+    };
+    setData(prev => ({ ...prev, program: [...prev.program, newDay] }));
+    setIsAddingDay(false);
+    setDayFormData({});
+  };
+
+  const handleAddActivity = () => {
+    const newActivity: Activity = {
+      id: Date.now().toString(),
+      time: activityFormData.time || '',
+      title: activityFormData.title || '',
+      location: activityFormData.location || '',
+      description: activityFormData.description || '',
+      category: activityFormData.category || 'other'
+    };
+    setData(prev => ({
+      ...prev,
+      program: prev.program.map(d => d.id === selectedDayId ? { ...d, activities: [...d.activities, newActivity] } : d)
+    }));
+    setIsAddingActivity(false);
+    setActivityFormData({});
+  };
+
+  const handleUpdateActivity = () => {
+    setData(prev => ({
+      ...prev,
+      program: prev.program.map(d => d.id === selectedDayId ? {
+        ...d,
+        activities: d.activities.map(a => a.id === editingActivityId ? { ...a, ...activityFormData } : a)
+      } : d)
+    }));
+    setEditingActivityId(null);
+    setActivityFormData({});
+  };
+
+  const handleDeleteActivity = (activityId: string) => {
+    if (confirm('Supprimer cette activité ?')) {
+      setData(prev => ({
+        ...prev,
+        program: prev.program.map(d => d.id === selectedDayId ? {
+          ...d,
+          activities: d.activities.filter(a => a.id !== activityId)
+        } : d)
+      }));
+    }
+  };
+
+  const selectedDay = data.program.find(d => d.id === selectedDayId);
+
+  return (
+    <div className="space-y-8">
+      {/* Days Tabs */}
+      <div className="flex justify-between items-center">
+        <div className="flex gap-4 overflow-x-auto pb-2 custom-scrollbar">
+          {data.program.map(day => (
+            <button
+              key={day.id}
+              onClick={() => setSelectedDayId(day.id)}
+              className={`px-6 py-3 rounded-xl text-xs font-bold uppercase tracking-widest transition-all whitespace-nowrap ${
+                selectedDayId === day.id ? 'bg-primary text-background-dark' : 'bg-white/5 text-slate-400 hover:text-white'
+              }`}
+            >
+              {day.label} <span className="opacity-50 ml-2">({day.date})</span>
+            </button>
+          ))}
+          <button 
+            onClick={() => setIsAddingDay(true)}
+            className="px-4 py-3 rounded-xl bg-white/5 text-primary hover:bg-primary/10 transition-all"
+          >
+            <Plus size={18} />
+          </button>
+        </div>
+      </div>
+
+      {isAddingDay && (
+        <div className="bg-[#111] border border-white/10 p-6 rounded-2xl flex gap-4 items-end">
+          <div className="flex-1 space-y-2">
+            <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Label (ex: JOUR 01)</label>
+            <input 
+              type="text" 
+              value={dayFormData.label || ''} 
+              onChange={e => setDayFormData({ ...dayFormData, label: e.target.value })}
+              className="w-full bg-white/5 border border-white/10 rounded-xl p-3 focus:border-primary outline-none transition-all"
+            />
+          </div>
+          <div className="flex-1 space-y-2">
+            <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Date</label>
+            <input 
+              type="text" 
+              placeholder="14 AOÛT"
+              value={dayFormData.date || ''} 
+              onChange={e => setDayFormData({ ...dayFormData, date: e.target.value })}
+              className="w-full bg-white/5 border border-white/10 rounded-xl p-3 focus:border-primary outline-none transition-all"
+            />
+          </div>
+          <button onClick={handleAddDay} className="px-6 py-3 bg-primary text-background-dark rounded-xl font-bold uppercase text-[10px] tracking-widest">Ajouter</button>
+          <button onClick={() => setIsAddingDay(false)} className="px-6 py-3 bg-white/5 text-slate-400 rounded-xl font-bold uppercase text-[10px] tracking-widest">Annuler</button>
+        </div>
+      )}
+
+      {/* Activities List */}
+      <div className="space-y-6">
+        <div className="flex justify-between items-center">
+          <h3 className="text-xl font-heading">Activités du {selectedDay?.label}</h3>
+          <button 
+            onClick={() => setIsAddingActivity(true)}
+            className="flex items-center gap-2 px-4 py-2 bg-white/5 text-primary border border-primary/20 font-bold rounded-xl hover:bg-primary/10 transition-all"
+          >
+            <Plus size={18} /> Nouvelle Activité
+          </button>
+        </div>
+
+        {(isAddingActivity || editingActivityId) && (
+          <div className="bg-[#111] border border-white/10 p-8 rounded-2xl space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Heure (ex: 10:00 - 12:00)</label>
+                <input 
+                  type="text" 
+                  value={activityFormData.time || ''} 
+                  onChange={e => setActivityFormData({ ...activityFormData, time: e.target.value })}
+                  className="w-full bg-white/5 border border-white/10 rounded-xl p-3 focus:border-primary outline-none transition-all"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Titre</label>
+                <input 
+                  type="text" 
+                  value={activityFormData.title || ''} 
+                  onChange={e => setActivityFormData({ ...activityFormData, title: e.target.value })}
+                  className="w-full bg-white/5 border border-white/10 rounded-xl p-3 focus:border-primary outline-none transition-all"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Lieu</label>
+                <input 
+                  type="text" 
+                  value={activityFormData.location || ''} 
+                  onChange={e => setActivityFormData({ ...activityFormData, location: e.target.value })}
+                  className="w-full bg-white/5 border border-white/10 rounded-xl p-3 focus:border-primary outline-none transition-all"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Catégorie</label>
+                <select 
+                  value={activityFormData.category || 'other'} 
+                  onChange={e => setActivityFormData({ ...activityFormData, category: e.target.value as any })}
+                  className="w-full bg-white/5 border border-white/10 rounded-xl p-3 focus:border-primary outline-none transition-all appearance-none"
+                >
+                  <option value="workshop">Workshop</option>
+                  <option value="battle">Battle</option>
+                  <option value="after-party">After-party</option>
+                  <option value="other">Autre</option>
+                </select>
+              </div>
+              <div className="space-y-2 md:col-span-2">
+                <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Description</label>
+                <textarea 
+                  rows={2}
+                  value={activityFormData.description || ''} 
+                  onChange={e => setActivityFormData({ ...activityFormData, description: e.target.value })}
+                  className="w-full bg-white/5 border border-white/10 rounded-xl p-3 focus:border-primary outline-none transition-all resize-none"
+                />
+              </div>
+            </div>
+            <div className="flex justify-end gap-4">
+              <button onClick={() => { setIsAddingActivity(false); setEditingActivityId(null); }} className="px-6 py-2 text-xs font-bold uppercase tracking-widest text-slate-500">Annuler</button>
+              <button onClick={isAddingActivity ? handleAddActivity : handleUpdateActivity} className="px-6 py-2 bg-primary text-background-dark rounded-xl font-bold text-xs uppercase tracking-widest">Enregistrer</button>
+            </div>
+          </div>
+        )}
+
+        <div className="space-y-4">
+          {selectedDay?.activities.map(activity => (
+            <div key={activity.id} className="bg-[#111] border border-white/5 p-6 rounded-2xl flex items-center justify-between group hover:border-white/10 transition-all">
+              <div className="flex items-center gap-8">
+                <div className="text-primary font-mono text-sm w-32">{activity.time}</div>
+                <div>
+                  <h4 className="font-bold text-lg">{activity.title}</h4>
+                  <div className="flex gap-4 mt-2 text-[10px] font-bold uppercase tracking-widest text-slate-500">
+                    <span className="flex items-center gap-1"><MapPin size={12} /> {activity.location}</span>
+                    <span className="flex items-center gap-1"><Tag size={12} /> {activity.category}</span>
+                  </div>
+                </div>
+              </div>
+              <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                <button onClick={() => { setEditingActivityId(activity.id); setActivityFormData(activity); }} className="p-2 hover:bg-white/5 rounded-lg text-slate-400 hover:text-white"><Edit size={18} /></button>
+                <button onClick={() => handleDeleteActivity(activity.id)} className="p-2 hover:bg-white/5 rounded-lg text-slate-400 hover:text-accent-red"><Trash2 size={18} /></button>
+              </div>
+            </div>
+          ))}
+          {selectedDay?.activities.length === 0 && (
+            <div className="text-center py-12 text-slate-500 italic">Aucune activité pour ce jour.</div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}

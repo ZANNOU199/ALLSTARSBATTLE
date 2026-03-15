@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   MapPin, 
@@ -11,17 +11,30 @@ import {
   ChevronDown,
   Send
 } from 'lucide-react';
+import { cmsService } from './services/cmsService';
+import { GlobalConfig, FAQItem as FAQType } from './types';
 
 interface ContactProps {
   onNavigateToFAQ?: () => void;
 }
 
 const Contact = ({ onNavigateToFAQ }: ContactProps) => {
+  const [config, setConfig] = useState<GlobalConfig | null>(null);
+  const [faqs, setFaqs] = useState<FAQType[]>([]);
+
+  useEffect(() => {
+    const data = cmsService.getData();
+    setConfig(data.globalConfig);
+    setFaqs(data.ticketing.faqs.slice(0, 3));
+  }, []);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // Logic for form submission would go here
     alert("Message envoyé ! Notre équipe vous répondra sous 24h.");
   };
+
+  if (!config) return null;
 
   return (
     <div className="bg-background-dark text-slate-100 font-sans selection:bg-primary selection:text-background-dark">
@@ -135,7 +148,7 @@ const Contact = ({ onNavigateToFAQ }: ContactProps) => {
             ></div>
             <div className="absolute bottom-6 left-6 z-20 bg-background-dark/90 backdrop-blur-md border border-primary/30 p-6 rounded-sm shadow-2xl">
               <p className="text-primary font-black text-sm uppercase tracking-widest mb-1">Siège ASBI Togo</p>
-              <p className="text-white text-xs font-light uppercase tracking-wider">Quartier Administratif, Lomé</p>
+              <p className="text-white text-xs font-light uppercase tracking-wider">{config.contact.address}</p>
             </div>
           </motion.div>
         </section>
@@ -158,7 +171,7 @@ const Contact = ({ onNavigateToFAQ }: ContactProps) => {
                 </div>
                 <div>
                   <p className="text-white font-bold uppercase tracking-wider mb-1">Lomé, Togo</p>
-                  <p className="text-slate-400 text-sm font-light italic">Rue de l'Ocam, Face au Palais des Congrès</p>
+                  <p className="text-slate-400 text-sm font-light italic">{config.contact.address}</p>
                 </div>
               </div>
               <div className="flex gap-6">
@@ -166,7 +179,7 @@ const Contact = ({ onNavigateToFAQ }: ContactProps) => {
                   <Phone className="text-primary w-6 h-6" />
                 </div>
                 <div>
-                  <p className="text-white font-bold uppercase tracking-wider mb-1">+228 90 00 00 00</p>
+                  <p className="text-white font-bold uppercase tracking-wider mb-1">{config.contact.phone}</p>
                   <p className="text-slate-400 text-sm font-light italic">Lun-Ven, 09h00 - 18h00</p>
                 </div>
               </div>
@@ -175,7 +188,7 @@ const Contact = ({ onNavigateToFAQ }: ContactProps) => {
                   <Mail className="text-primary w-6 h-6" />
                 </div>
                 <div>
-                  <p className="text-white font-bold uppercase tracking-wider mb-1">contact@asbi-togo2026.com</p>
+                  <p className="text-white font-bold uppercase tracking-wider mb-1">{config.contact.email}</p>
                   <p className="text-slate-400 text-sm font-light italic">Réponse sous 24h</p>
                 </div>
               </div>
@@ -185,13 +198,13 @@ const Contact = ({ onNavigateToFAQ }: ContactProps) => {
             <div className="pt-10 border-t border-white/5">
               <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500 mb-6">Suivez le mouvement</p>
               <div className="flex gap-4">
-                <a href="#" className="w-12 h-12 rounded-sm bg-background-dark border border-white/10 flex items-center justify-center hover:border-primary hover:text-primary transition-all text-white group">
+                <a href={config.socials.facebook} target="_blank" rel="noopener noreferrer" className="w-12 h-12 rounded-sm bg-background-dark border border-white/10 flex items-center justify-center hover:border-primary hover:text-primary transition-all text-white group">
                   <Facebook className="w-5 h-5 group-hover:scale-110 transition-transform" />
                 </a>
-                <a href="#" className="w-12 h-12 rounded-sm bg-background-dark border border-white/10 flex items-center justify-center hover:border-accent-pink hover:text-accent-pink transition-all text-white group">
+                <a href={config.socials.instagram} target="_blank" rel="noopener noreferrer" className="w-12 h-12 rounded-sm bg-background-dark border border-white/10 flex items-center justify-center hover:border-accent-pink hover:text-accent-pink transition-all text-white group">
                   <Instagram className="w-5 h-5 group-hover:scale-110 transition-transform" />
                 </a>
-                <a href="#" className="w-12 h-12 rounded-sm bg-background-dark border border-white/10 flex items-center justify-center hover:border-primary hover:text-primary transition-all text-white group">
+                <a href={config.socials.youtube} target="_blank" rel="noopener noreferrer" className="w-12 h-12 rounded-sm bg-background-dark border border-white/10 flex items-center justify-center hover:border-primary hover:text-primary transition-all text-white group">
                   <Youtube className="w-5 h-5 group-hover:scale-110 transition-transform" />
                 </a>
               </div>
@@ -207,18 +220,13 @@ const Contact = ({ onNavigateToFAQ }: ContactProps) => {
           >
             <h3 className="text-3xl font-heading uppercase italic tracking-tighter text-white">Foire Aux Questions</h3>
             <div className="space-y-4">
-              <FAQItem 
-                question="Quand ouvrent les inscriptions ?" 
-                answer="Les inscriptions pour les compétiteurs ouvriront officiellement en Septembre 2025. Restez connectés à nos réseaux sociaux pour l'annonce des pré-sélections."
-              />
-              <FAQItem 
-                question="Où acheter mon billet ?" 
-                answer="La billetterie en ligne sera accessible directement sur ce site via l'onglet 'Billetterie' dès Janvier 2026. Des points de vente physiques seront également installés à Lomé."
-              />
-              <FAQItem 
-                question="Accès pour les VIP ?" 
-                answer="Les packs VIP incluent un accès prioritaire, des places en bord de scène, un accès au lounge All Stars et des rencontres exclusives avec les juges internationaux."
-              />
+              {faqs.map((faq, idx) => (
+                <FAQItem 
+                  key={faq.id}
+                  question={faq.question} 
+                  answer={faq.answer}
+                />
+              ))}
             </div>
             <button 
               onClick={onNavigateToFAQ}
@@ -233,7 +241,12 @@ const Contact = ({ onNavigateToFAQ }: ContactProps) => {
   );
 };
 
-const FAQItem = ({ question, answer }: { question: string, answer: string }) => {
+interface FAQItemProps {
+  question: string;
+  answer: string;
+}
+
+const FAQItem: React.FC<FAQItemProps> = ({ question, answer }) => {
   const [isOpen, setIsOpen] = React.useState(false);
 
   return (

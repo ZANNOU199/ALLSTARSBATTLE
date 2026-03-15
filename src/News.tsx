@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'motion/react';
+import { cmsService } from './services/cmsService';
 import { ArrowLeft, Calendar, User, Tag, Share2 } from 'lucide-react';
 
 interface Article {
@@ -14,63 +15,7 @@ interface Article {
   category: string;
 }
 
-const articles: Article[] = [
-  {
-    id: '1',
-    date: "12 Janvier 2026",
-    title: "LANCEMENT OFFICIEL DU TOGO 2026",
-    desc: "Découvrez les coulisses de la préparation de l'événement le plus attendu de l'année à Lomé.",
-    tag: "OFFICIEL",
-    author: "Admin All Stars",
-    category: "Organisation",
-    image: "https://picsum.photos/seed/news1/1200/600",
-    content: `
-      Le All Stars Battle International 2026 s'annonce comme l'édition la plus ambitieuse de l'histoire du festival. 
-      Réunissant plus de 50 nations à Lomé, le Togo devient pour 10 jours la capitale mondiale de la culture urbaine.
-      
-      Les préparatifs avancent à grands pas. Le stade de Lomé est en cours de transformation pour accueillir une scène 
-      à la pointe de la technologie, capable de supporter des performances athlétiques de haut niveau tout en offrant 
-      un spectacle visuel époustouflant.
-      
-      "Nous voulons que chaque danseur, chaque spectateur, ressente l'énergie unique du Togo," déclare le comité d'organisation.
-    `
-  },
-  {
-    id: '2',
-    date: "05 Février 2026",
-    title: "LINEUP DES ARTISTES DÉVOILÉ",
-    desc: "Les plus grands noms de la scène Hip-Hop internationale confirment leur présence pour le festival.",
-    tag: "TALENTS",
-    author: "Music Dept",
-    category: "Concerts",
-    image: "https://picsum.photos/seed/news2/1200/600",
-    content: `
-      La musique est l'âme du All Stars Battle. Cette année, nous avons concocté un lineup qui mélange légendes du Hip-Hop 
-      et nouvelles pépites de l'Afrobeat.
-      
-      Parmi les têtes d'affiche, nous confirmons la présence de stars internationales qui se produiront lors du concert 
-      de clôture le 23 août. Les DJs officiels du tournoi ont également été sélectionnés pour garantir des beats 
-      percutants lors des battles.
-    `
-  },
-  {
-    id: '3',
-    date: "20 Mars 2026",
-    title: "DISPONIBILITÉ DES TICKETS",
-    desc: "La billetterie en ligne est désormais ouverte. Réservez vos pass Early Bird avant épuisement.",
-    tag: "BILLETTERIE",
-    author: "Sales Team",
-    category: "Billetterie",
-    image: "https://picsum.photos/seed/news3/1200/600",
-    content: `
-      C'est officiel : les tickets pour le All Stars Battle 2026 sont en vente ! 
-      Trois catégories de pass sont disponibles : Standard, Premium et VIP.
-      
-      Les pass "Early Bird" offrent une réduction de 20% pour les 500 premiers acheteurs. 
-      Ne manquez pas votre chance de vivre l'expérience ultime du breakdance en Afrique.
-    `
-  }
-];
+const articles: Article[] = []; // Removed hardcoded data
 
 interface NewsProps {
   onBack: () => void;
@@ -78,9 +23,29 @@ interface NewsProps {
 }
 
 export default function News({ onBack, initialArticleId }: NewsProps) {
-  const [selectedArticle, setSelectedArticle] = React.useState<Article | null>(
-    initialArticleId ? articles.find(a => a.id === initialArticleId) || null : null
-  );
+  const [articles, setArticles] = React.useState<Article[]>([]);
+  const [selectedArticle, setSelectedArticle] = React.useState<Article | null>(null);
+
+  React.useEffect(() => {
+    const data = cmsService.getData();
+    const formattedArticles = data.blog.articles.map(a => ({
+      id: a.id,
+      date: a.date,
+      title: a.title,
+      desc: a.content.substring(0, 150) + "...",
+      tag: a.category,
+      content: a.content,
+      image: a.coverImage,
+      author: "Admin All Stars", // Default author
+      category: a.category
+    }));
+    setArticles(formattedArticles);
+    
+    if (initialArticleId) {
+      const found = formattedArticles.find(a => a.id === initialArticleId);
+      if (found) setSelectedArticle(found);
+    }
+  }, [initialArticleId]);
 
   React.useEffect(() => {
     window.scrollTo(0, 0);

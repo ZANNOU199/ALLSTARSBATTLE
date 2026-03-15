@@ -1,135 +1,59 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { Play } from 'lucide-react';
+import { cmsService } from './services/cmsService';
+import { MediaItem } from './types';
 
 const Media = () => {
   const [activeTab, setActiveTab] = useState('photos');
   const [selectedYear, setSelectedYear] = useState(2026);
+  const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
 
-  const mediaData: any = {
-    2026: {
-      photos: [
-        "https://lh3.googleusercontent.com/aida-public/AB6AXuD9xPXChwqoHKYNjo6-R2Iielz0x1_qdIaedLHTI-SxhMsLB2uZjRgmQZt55dP7f1Qawd3uU-df4W1wi6UxJcHsq5LrEgCU4iDgMEe2oBm5k50RdXP3uvyj_IQJ86Mu0mzEjefEM_kwogdioXdVnC3ZRJAc2RhKLqVbwkgueQP4-v8GPLV9qM_CZQQARhn2kcLpupXzhH1ZIhC0CLoyBeSwTQH2vUK0_K5twIrvHM0b96u_Y5_0X_1WooLz1zJhuH3B_cf_UO8LGkaN",
-        "https://lh3.googleusercontent.com/aida-public/AB6AXuDUhFl2n0qh-ZGeucLIhUqCXQgpDjQce1YXl1v1DXlyMEirhTmaz0Xl3sNoOUhMKNabQVLMsIRx3jZoQoxGXwENVOn6AC9OdUhu3Z6p6RkZckIwfOEGtpYMa_uklFtAg5hnxv6UtyqUsjIjENF3YtJGd_6SHhY2spXJrnQQ2cvzwoQno8Cr8DqKYT1ZNdiyRy8cUB8VaxazhlsVERIASD30T0EuwR2WvLOuuO6ul2rAcGiyXdMACpxKxpvdYNiZGqRsJ6qWOKuEDXYn",
-        "https://lh3.googleusercontent.com/aida-public/AB6AXuDlYi46n2V_gWoARvufGOALxqIMik-sJTRgYn9sWhELo8icVITWM8I0ia9AOgZF6NkDu_WUwsLOO5UJdckyMsXG4TsilpOdOL8ZRRGbXIVhxOfz5p7Dt2Nmf6QRKyfMchgX2saH9Yx5Nu13Md0fr5La_D-XHELIkBnS3T3GTkTX-xZvBSJjTUXdBs_uZzDdTDILrI8F-NwxaRaEH-FZbqRzV1a_xqCl78heyGFQyofoxQ2ipdHrApQf3UQ-PGGlAgJ8I-xG_YofUz7M",
-        "https://lh3.googleusercontent.com/aida-public/AB6AXuAPY8pW4yquxlXj_gmPW3ktaDHPZqc0Lg34Ca7SDGSN7TJDvgMLm8AziEWmiz7I-1NtsriRVLpPAWoM6UKbhWHOknaUkZlCc4suS0FtAwSAenU2BuJxsOHOXokg0-Kafj0nBWFgG7lXKalvYvdydYxNstKAjZ7FiOAEf1nnYTRoxMHpddETmdeAlPXVS6_gFe-3ZMDqFUpAi2Dk8VxmmmpaEYLwCJF1U45Yrdwpnx7jvGto3bN3sWc8xspsFi4tOQWzcB70ut25zfxk",
-        "https://lh3.googleusercontent.com/aida-public/AB6AXuDv7dDfTrKQfSOcHBSioqejsrURxghmsb7VGJEVYb2fRLG-ZDez3Q1u-Xx-5jES8SPGeVrvX4xiJzuEYdy9-F9SUdpmrVyJy08_KisCwo3T1zhGkWHQZQCvbzfiW-tZLGm2SB08DQl74G5KPLX5UyKGhi825Vdd2XTOmXTnnXddg67VMJu1utljtmjZZpatzp3O8GSCAEAlRfZYyC7e72iHdVjEOuSS0nQrApz8jibMt_FH4PRH7DrmSrQLhY1sATbUmluqmmNJU8fY",
-        "https://lh3.googleusercontent.com/aida-public/AB6AXuAxwPxmZ5ltHpl70EHoIX88NCXfX-CnA-Msk8H7itZuOsFeaoVvx6pPIWSQhziLpKmbhbavNo8aVptJcrDWAeYjG14DBqxxOUwV15Lr8K2u9VQxhLVE2u_dB_0NNgYdy6ni-UMr-_rCHFz5HP3206TmmVZGQ0OWC4LNOBXETMl6qqWRa4tp0JsR_yNkCCHZsjIVcOgeQg_fTeAyydukjadNfoNKNBIzAIlBxQflStxan25vcLIeUEf9eoTnJ_1fiEyD10rj-0oLiCQj"
-      ],
-      videos: [
-        {
-          title: "Grande Finale : Junior vs Flash | Edition 2026",
-          desc: "Une bataille épique pour le titre de champion d'Afrique. Intensité maximum au Palais des Congrès.",
-          thumb: "https://lh3.googleusercontent.com/aida-public/AB6AXuDMkGNpuifFwnVWmRyAEi62j4okjsk2AGk7htsWqJJ5Tgq2tcP3SJAyJ1rdE3dGctaaGP9fviSs9AJ7eQ-W8v_wa1YiAVPUcll9BPeXmpOKbxc639NFT_BIoDxo0PllGZheqyXUk3J172KVKat4u56ZikImlZNkV8lF3fDwC5h0EqrtHFkBvgXp1PmQRk_7Hwt9FDuAzEzStye-cDpUfIV-wt5BJxS6F_752z7NIIDm6iMn_NHIFBQ3clAQvAJonPZTHTf4FE4rb_FB",
-          duration: "12:45",
-          tag: "Replay"
-        },
-        {
-          title: "Aftermovie Officiel : L'énergie de Lomé",
-          desc: "Plongez dans les coulisses et l'ambiance électrique de l'ASBI Togo 2026.",
-          thumb: "https://lh3.googleusercontent.com/aida-public/AB6AXuC6Y5KhdIdLdMWZqG8ujhfsSHsWDUItyVRMHAkK1iti02_vL4V-f94Xqm6b8UExrKratgJMlIqoUupZFn3v8_8qaC-ZZEdoHIweTlolLZfwbawWlTIUHH1bdwLjjfzQo2uu_3TAAT3ogtMPDIrSeRdJA3hpbH4fDGtfLmN_aHJb4JBCYRlMP3pVmysYXurV2VXW2-bWBek0rxLu6OEjVRSfng3r6UdcAYcPl6O1mtCqAujrPGczBSXa0O-0xFI7IeI-lyVJ46RGgTJI",
-          duration: "04:20",
-          tag: "Exclusif"
-        }
-      ]
+  useEffect(() => {
+    const data = cmsService.getData();
+    setMediaItems(data.media || []);
+  }, []);
+
+  // Fallback data if CMS is empty
+  const fallbackPhotos = [
+    "https://lh3.googleusercontent.com/aida-public/AB6AXuD9xPXChwqoHKYNjo6-R2Iielz0x1_qdIaedLHTI-SxhMsLB2uZjRgmQZt55dP7f1Qawd3uU-df4W1wi6UxJcHsq5LrEgCU4iDgMEe2oBm5k50RdXP3uvyj_IQJ86Mu0mzEjefEM_kwogdioXdVnC3ZRJAc2RhKLqVbwkgueQP4-v8GPLV9qM_CZQQARhn2kcLpupXzhH1ZIhC0CLoyBeSwTQH2vUK0_K5twIrvHM0b96u_Y5_0X_1WooLz1zJhuH3B_cf_UO8LGkaN",
+    "https://lh3.googleusercontent.com/aida-public/AB6AXuDUhFl2n0qh-ZGeucLIhUqCXQgpDjQce1YXl1v1DXlyMEirhTmaz0Xl3sNoOUhMKNabQVLMsIRx3jZoQoxGXwENVOn6AC9OdUhu3Z6p6RkZckIwfOEGtpYMa_uklFtAg5hnxv6UtyqUsjIjENF3YtJGd_6SHhY2spXJrnQQ2cvzwoQno8Cr8DqKYT1ZNdiyRy8cUB8VaxazhlsVERIASD30T0EuwR2WvLOuuO6ul2rAcGiyXdMACpxKxpvdYNiZGqRsJ6qWOKuEDXYn",
+    "https://lh3.googleusercontent.com/aida-public/AB6AXuDlYi46n2V_gWoARvufGOALxqIMik-sJTRgYn9sWhELo8icVITWM8I0ia9AOgZF6NkDu_WUwsLOO5UJdckyMsXG4TsilpOdOL8ZRRGbXIVhxOfz5p7Dt2Nmf6QRKyfMchgX2saH9Yx5Nu13Md0fr5La_D-XHELIkBnS3T3GTkTX-xZvBSJjTUXdBs_uZzDdTDILrI8F-NwxaRaEH-FZbqRzV1a_xqCl78heyGFQyofoxQ2ipdHrApQf3UQ-PGGlAgJ8I-xG_YofUz7M",
+    "https://lh3.googleusercontent.com/aida-public/AB6AXuAPY8pW4yquxlXj_gmPW3ktaDHPZqc0Lg34Ca7SDGSN7TJDvgMLm8AziEWmiz7I-1NtsriRVLpPAWoM6UKbhWHOknaUkZlCc4suS0FtAwSAenU2BuJxsOHOXokg0-Kafj0nBWFgG7lXKalvYvdydYxNstKAjZ7FiOAEf1nnYTRoxMHpddETmdeAlPXVS6_gFe-3ZMDqFUpAi2Dk8VxmmmpaEYLwCJF1U45Yrdwpnx7jvGto3bN3sWc8xspsFi4tOQWzcB70ut25zfxk",
+    "https://lh3.googleusercontent.com/aida-public/AB6AXuDv7dDfTrKQfSOcHBSioqejsrURxghmsb7VGJEVYb2fRLG-ZDez3Q1u-Xx-5jES8SPGeVrvX4xiJzuEYdy9-F9SUdpmrVyJy08_KisCwo3T1zhGkWHQZQCvbzfiW-tZLGm2SB08DQl74G5KPLX5UyKGhi825Vdd2XTOmXTnnXddg67VMJu1utljtmjZZpatzp3O8GSCAEAlRfZYyC7e72iHdVjEOuSS0nQrApz8jibMt_FH4PRH7DrmSrQLhY1sATbUmluqmmNJU8fY",
+    "https://lh3.googleusercontent.com/aida-public/AB6AXuAxwPxmZ5ltHpl70EHoIX88NCXfX-CnA-Msk8H7itZuOsFeaoVvx6pPIWSQhziLpKmbhbavNo8aVptJcrDWAeYjG14DBqxxOUwV15Lr8K2u9VQxhLVE2u_dB_0NNgYdy6ni-UMr-_rCHFz5HP3206TmmVZGQ0OWC4LNOBXETMl6qqWRa4tp0JsR_yNkCCHZsjIVcOgeQg_fTeAyydukjadNfoNKNBIzAIlBxQflStxan25vcLIeUEf9eoTnJ_1fiEyD10rj-0oLiCQj"
+  ];
+
+  const fallbackVideos = [
+    {
+      title: "Grande Finale : Junior vs Flash | Edition 2026",
+      desc: "Une bataille épique pour le titre de champion d'Afrique. Intensité maximum au Palais des Congrès.",
+      thumb: "https://lh3.googleusercontent.com/aida-public/AB6AXuDMkGNpuifFwnVWmRyAEi62j4okjsk2AGk7htsWqJJ5Tgq2tcP3SJAyJ1rdE3dGctaaGP9fviSs9AJ7eQ-W8v_wa1YiAVPUcll9BPeXmpOKbxc639NFT_BIoDxo0PllGZheqyXUk3J172KVKat4u56ZikImlZNkV8lF3fDwC5h0EqrtHFkBvgXp1PmQRk_7Hwt9FDuAzEzStye-cDpUfIV-wt5BJxS6F_752z7NIIDm6iMn_NHIFBQ3clAQvAJonPZTHTf4FE4rb_FB",
+      duration: "12:45",
+      tag: "Replay"
     },
-    2024: {
-      photos: [
-        "https://picsum.photos/seed/dance2024-1/800/600",
-        "https://picsum.photos/seed/dance2024-2/800/600",
-        "https://picsum.photos/seed/dance2024-3/800/600",
-        "https://picsum.photos/seed/dance2024-4/800/600",
-        "https://picsum.photos/seed/dance2024-5/800/600",
-        "https://picsum.photos/seed/dance2024-6/800/600"
-      ],
-      videos: [
-        {
-          title: "Highlights Edition 2024",
-          desc: "Le meilleur de la compétition 2024. Des moments inoubliables.",
-          thumb: "https://picsum.photos/seed/v2024/800/450",
-          duration: "08:15",
-          tag: "Archive"
-        }
-      ]
-    },
-    2022: {
-      photos: [
-        "https://picsum.photos/seed/dance2022-1/800/600",
-        "https://picsum.photos/seed/dance2022-2/800/600",
-        "https://picsum.photos/seed/dance2022-3/800/600",
-        "https://picsum.photos/seed/dance2022-4/800/600"
-      ],
-      videos: [
-        {
-          title: "Best of 2022",
-          desc: "Retour sur la première édition internationale.",
-          thumb: "https://picsum.photos/seed/v2022/800/450",
-          duration: "05:30",
-          tag: "Archive"
-        }
-      ]
-    },
-    2020: {
-      photos: [
-        "https://picsum.photos/seed/dance2020-1/800/600",
-        "https://picsum.photos/seed/dance2020-2/800/600"
-      ],
-      videos: [
-        {
-          title: "Edition Spéciale 2020",
-          desc: "Le battle continue malgré les défis.",
-          thumb: "https://picsum.photos/seed/v2020/800/450",
-          duration: "10:00",
-          tag: "Archive"
-        }
-      ]
-    },
-    2018: {
-      photos: [
-        "https://picsum.photos/seed/dance2018-1/800/600",
-        "https://picsum.photos/seed/dance2018-2/800/600"
-      ],
-      videos: [
-        {
-          title: "L'ascension 2018",
-          desc: "L'année où tout a changé.",
-          thumb: "https://picsum.photos/seed/v2018/800/450",
-          duration: "07:45",
-          tag: "Archive"
-        }
-      ]
-    },
-    2016: {
-      photos: [
-        "https://picsum.photos/seed/dance2016-1/800/600"
-      ],
-      videos: [
-        {
-          title: "Les Racines 2016",
-          desc: "L'essence du breakdance togolais.",
-          thumb: "https://picsum.photos/seed/v2016/800/450",
-          duration: "04:20",
-          tag: "Archive"
-        }
-      ]
-    },
-    2015: {
-      photos: [
-        "https://picsum.photos/seed/dance2015-1/800/600"
-      ],
-      videos: [
-        {
-          title: "L'Origine 2015",
-          desc: "Là où tout a commencé.",
-          thumb: "https://picsum.photos/seed/v2015/800/450",
-          duration: "03:15",
-          tag: "Archive"
-        }
-      ]
+    {
+      title: "Aftermovie Officiel : L'énergie de Lomé",
+      desc: "Plongez dans les coulisses et l'ambiance électrique de l'ASBI Togo 2026.",
+      thumb: "https://lh3.googleusercontent.com/aida-public/AB6AXuC6Y5KhdIdLdMWZqG8ujhfsSHsWDUItyVRMHAkK1iti02_vL4V-f94Xqm6b8UExrKratgJMlIqoUupZFn3v8_8qaC-ZZEdoHIweTlolLZfwbawWlTIUHH1bdwLjjfzQo2uu_3TAAT3ogtMPDIrSeRdJA3hpbH4fDGtfLmN_aHJb4JBCYRlMP3pVmysYXurV2VXW2-bWBek0rxLu6OEjVRSfng3r6UdcAYcPl6O1mtCqAujrPGczBSXa0O-0xFI7IeI-lyVJ46RGgTJI",
+      duration: "04:20",
+      tag: "Exclusif"
     }
-  };
+  ];
 
-  const currentContent = mediaData[selectedYear] || mediaData[2026];
+  const filteredPhotos = mediaItems.length > 0 
+    ? mediaItems.filter(item => item.year === selectedYear && item.type === 'photo').map(item => item.url)
+    : (selectedYear === 2026 ? fallbackPhotos : []);
+
+  const filteredVideos = mediaItems.length > 0
+    ? mediaItems.filter(item => item.year === selectedYear && item.type === 'video').map(item => ({
+        title: item.title,
+        desc: item.description,
+        thumb: item.thumbnail || item.url,
+        duration: item.duration,
+        tag: item.tag
+      }))
+    : (selectedYear === 2026 ? fallbackVideos : []);
 
   return (
     <div className="bg-background-dark text-slate-100 font-display min-h-screen grainy-bg">
@@ -193,7 +117,7 @@ const Media = () => {
             animate={{ opacity: 1, y: 0 }}
             className="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6 mb-24"
           >
-            {currentContent.photos.map((src: string, i: number) => (
+            {filteredPhotos.map((src: string, i: number) => (
               <div key={i} className="masonry-item relative group overflow-hidden rounded-xl border-2 border-white/5 hover:border-primary transition-all">
                 <img 
                   src={src} 
@@ -223,7 +147,7 @@ const Media = () => {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-24">
-              {currentContent.videos.map((video: any, i: number) => (
+              {filteredVideos.map((video: any, i: number) => (
                 <div key={i} className="group relative bg-white/5 rounded-xl overflow-hidden border border-white/10 hover:border-primary/50 transition-all">
                   <div className="relative aspect-video">
                     <img 

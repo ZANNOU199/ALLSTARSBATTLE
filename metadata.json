@@ -1,5 +1,5 @@
 {
-  "name": "All Stars Battle International Togo 2026",
-  "description": "Site officiel de la plus grande compétition de breakdance et culture urbaine en Afrique.",
+  "name": "ASBI Admin & CMS",
+  "description": "Système de gestion de contenu pour le All Stars Battle International 2026. Gérez les participants, le programme, les brackets et la configuration globale en temps réel.",
   "requestFramePermissions": []
 }

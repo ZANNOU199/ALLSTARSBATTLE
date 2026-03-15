@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
+import { cmsService } from './services/cmsService';
 import { 
   CheckCircle2, 
   MinusCircle, 
@@ -15,65 +16,33 @@ import {
 
 const Tickets = () => {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [ticketTypes, setTicketTypes] = useState<any[]>([]);
+  const [faqs, setFaqs] = useState<any[]>([]);
 
-  const ticketTypes = [
-    {
-      name: "PASS FESTIVAL",
-      tag: "3 Jours Complet",
-      price: "25.000 FCFA",
-      period: "/ 3 jours",
-      features: [
-        { text: "Accès à tous les battles (J1, J2, J3)", included: true },
-        { text: "Zone debout (Fosse)", included: true },
-        { text: "Accès aux workshops inclus", included: true },
-      ],
-      buttonText: "RÉSERVER LE PASS",
-      color: "white"
-    },
-    {
-      name: "VIP PREMIUM",
-      tag: "Luxe & Networking",
-      price: "75.000 FCFA",
-      period: "/ event pass",
-      features: [
-        { text: "Places assises au premier rang", included: true },
-        { text: "Accès Lounge VIP avec catering", included: true },
-        { text: "Meet & Greet avec les Danseurs", included: true },
-        { text: "Accès à toutes les After-Parties", included: true },
-      ],
-      buttonText: "RÉSERVER LE LUXE",
-      color: "primary",
-      recommended: true
-    },
-    {
-      name: "BILLET UNITAIRE",
-      tag: "Jour au Choix",
-      price: "10.000 FCFA",
-      period: "/ jour",
-      features: [
-        { text: "Accès pour 1 journée spécifique", included: true },
-        { text: "Zone debout (Fosse)", included: true },
-        { text: "Accès Lounge VIP exclus", included: false },
-      ],
-      buttonText: "CHOISIR MON JOUR",
-      color: "accent-red"
-    }
-  ];
+  useEffect(() => {
+    const data = cmsService.getData();
+    
+    setTicketTypes(data.ticketing.tickets.map((t, idx) => ({
+      name: t.name,
+      tag: t.tag,
+      price: t.price,
+      period: t.period,
+      features: t.features.map(f => ({ text: f, included: true })),
+      buttonText: t.buttonText,
+      color: t.color,
+      recommended: t.recommended,
+      paymentLink: t.paymentLink
+    })));
 
-  const faqs = [
-    {
-      q: "Accès pour les enfants ?",
-      a: "L'entrée est gratuite pour les enfants de moins de 12 ans accompagnés d'un adulte."
-    },
-    {
-      q: "Restauration sur place ?",
-      a: "Un \"Street Food Court\" est disponible à l'extérieur avec des spécialités locales et internationales."
-    },
-    {
-      q: "Parking & Sécurité ?",
-      a: "Un parking surveillé de 500 places est disponible. Sécurité assurée 24/7 durant l'événement."
-    }
-  ];
+    setFaqs(data.ticketing.faqs.map(f => ({
+      q: f.question,
+      a: f.answer
+    })));
+  }, []);
+
+  const handleTicketClick = (link: string) => {
+    if (link) window.open(link, '_blank');
+  };
 
   return (
     <div className="bg-background-dark text-slate-100 font-display antialiased">
@@ -158,7 +127,9 @@ const Tickets = () => {
                 </ul>
               </div>
 
-              <button className={`w-full py-6 font-heading text-2xl tracking-widest transition-all duration-300 uppercase
+              <button 
+                onClick={() => handleTicketClick(ticket.paymentLink)}
+                className={`w-full py-6 font-heading text-2xl tracking-widest transition-all duration-300 uppercase
                 ${ticket.color === 'primary' ? 'bg-primary text-background-dark hover:bg-white' : 
                   ticket.color === 'accent-red' ? 'bg-white/5 text-white hover:bg-accent-red hover:text-white' : 
                   'bg-white/5 text-white hover:bg-primary hover:text-background-dark'}`}

@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import { cmsService } from './services/cmsService';
+import { Company } from './types';
 import { 
   ArrowRight, 
   Play, 
@@ -9,73 +11,6 @@ import {
   X
 } from 'lucide-react';
 
-const companies = [
-  {
-    id: "kafig",
-    name: "Compagnie Käfig",
-    choreographer: "Mourad Merzouki",
-    piece: "PIXEL",
-    origin: "FRANCE",
-    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuCQD_e2Ugg5Ao_csW1_ZauvToZyXVbsC9zYKaKAwM9g7x1EpbT2W736B02i7sqZR11XsIrun2dEhCv1ePLfqQjJKOmo9lyfNNeaVUo4MV0GfHi1nyIGaQRpPGS-yd_L3yD7X7DBb2Dc6-9cB-qSHrqPGkMfra2yTIgFdobWZz55gQzdy7oQll5T5xTwFNTvxM9EAx6_UwUTOg1_3rOcgSOfRBz1m6x3HyNQiEXHpbHrxTtFqH2IVsahk3f86yrlCUv8X1Pomurbnppk",
-    description: "Véritable pionnier de la scène hip-hop française, Mourad Merzouki fusionne les arts avec une virtuosité rare. 'PIXEL' est une œuvre où le monde virtuel rencontre la réalité physique, créant un dialogue fascinant entre les corps et les projections numériques.",
-    bio: "Mourad Merzouki, figure emblématique de la danse contemporaine, dirige le Centre Chorégraphique National de Créteil. Son travail se caractérise par une ouverture constante vers d'autres disciplines : cirque, arts martiaux, musique classique et arts numériques.",
-    gallery: [
-      "https://picsum.photos/seed/kafig1/800/600",
-      "https://picsum.photos/seed/kafig2/800/600",
-      "https://picsum.photos/seed/kafig3/800/600"
-    ],
-    performances: ["15 Juillet - 20h30", "16 Juillet - 18h00"]
-  },
-  {
-    id: "ruggeds",
-    name: "The Ruggeds",
-    choreographer: "Niek Traa",
-    piece: "STATE OF MIND",
-    origin: "PAYS-BAS",
-    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuCjvDKsA9eqB3p7B9q4DN0X_u7eLvnEGioJXTVAA776wNcnzNxkhfSuWDuUDx8QZjVHQSWYKbWtNmhSUQ2V6mMl028GzkI_3dbJp5QC6YBeUibwBVbleu3GvUFbXP0-GFTIXXVegaxdF6V6_saoqnU46EJNeWmey90qKxRZdAhIY0jNoEr2qsyf-DjOdcVtrqglL0XjgJpodoCJvXoyVMwn_Dzq3f6Q1P5ao_XvRSdiUTRfePYGmVDdc9C6EvkJCcbKiMzhLbza3k-m",
-    description: "The Ruggeds sont connus pour leur style explosif et leur créativité sans limites. 'STATE OF MIND' explore les méandres de la psyché humaine à travers des mouvements acrobatiques d'une précision chirurgicale.",
-    bio: "Originaire d'Eindhoven, ce collectif a révolutionné le breakdance mondial en remportant les plus prestigieuses compétitions avant de se tourner vers la création scénique pure.",
-    gallery: [
-      "https://picsum.photos/seed/ruggeds1/800/600",
-      "https://picsum.photos/seed/ruggeds2/800/600",
-      "https://picsum.photos/seed/ruggeds3/800/600"
-    ],
-    performances: ["17 Juillet - 21h00", "18 Juillet - 19h30"]
-  },
-  {
-    id: "kpalime",
-    name: "Kpalimé Crew",
-    choreographer: "Yao Mensah",
-    piece: "RACINES",
-    origin: "TOGO",
-    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuAN8Up_R0QknhWYOyC-m1mXZCBp-eS_om9wYMAo5PNS54lAz2hjBqPncm7PvcBhwy99Z7OsV4Zhb97k6eGeq-RCakEZ73NDRildr61SANWYtG8isu8c6xOb_A6PQW8sbbTqjTERfD9lIZQt7ggmvQ73lc3aug-myqIaX_B0sqewStg78nyvWbEgQmyVowm83eu2dtAIbUM4B6Dxe4fdaRHCC6W67SIXnXum2_jiPUwN7O_zIYEb65PbpvDLbbXcHQY0KmuRd4Lx-aGA",
-    description: "Une fusion puissante entre les danses traditionnelles d'Afrique de l'Ouest et le breakdance contemporain. 'RACINES' est un hommage vibrant à la terre et à l'héritage culturel.",
-    bio: "Yao Mensah puise son inspiration dans les rituels de son enfance au Togo pour créer un langage corporel unique, à la fois ancestral et résolument moderne.",
-    gallery: [
-      "https://picsum.photos/seed/kpalime1/800/600",
-      "https://picsum.photos/seed/kpalime2/800/600",
-      "https://picsum.photos/seed/kpalime3/800/600"
-    ],
-    performances: ["14 Juillet - 22h00", "15 Juillet - 17h00"]
-  },
-  {
-    id: "redbull",
-    name: "Red Bull All Stars",
-    choreographer: "RoxRite",
-    piece: "THE ROOTS",
-    origin: "USA",
-    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuDQtiKDmauhpZwRdkNTYXXYzYZmWV6qF2_9bTzvqFVko1GI1WEU5NqA3z81HPkLM0AloURvbd_WB8o63dBmJL2Q7xyKk6Z4kFsNcR2F1LvXF5fOu_zy15dGDIiqOydu77K-R8uqrcAjTpJ5bh0Em3Eqxx48eUiWYJIHoQaLGi2GaY42lE0F99gtE-0pb6UOvwI5joVeCh-BBBJN9j9GnCoUIgbWg6OoRyS3ITi0-uzUnFCSvlP-H9l4vqQAEnRiwLYFfnD98prEFn9y",
-    description: "Les meilleurs danseurs du monde réunis pour une pièce qui retrace l'histoire du breakdance, de ses origines dans le Bronx jusqu'aux scènes internationales.",
-    bio: "RoxRite, légende vivante du breakdance avec plus de 100 victoires internationales, signe ici sa première grande chorégraphie d'ensemble.",
-    gallery: [
-      "https://picsum.photos/seed/redbull1/800/600",
-      "https://picsum.photos/seed/redbull2/800/600",
-      "https://picsum.photos/seed/redbull3/800/600"
-    ],
-    performances: ["16 Juillet - 22h30", "17 Juillet - 20h00"]
-  }
-];
-
 interface ArtisticSceneProps {
   onNavigateToProgram?: () => void;
   onNavigateToTickets?: () => void;
@@ -83,7 +18,13 @@ interface ArtisticSceneProps {
 
 const ArtisticScene = ({ onNavigateToProgram, onNavigateToTickets }: ArtisticSceneProps) => {
   const [showSynopsis, setShowSynopsis] = useState(false);
-  const [selectedCompany, setSelectedCompany] = useState<typeof companies[0] | null>(null);
+  const [companies, setCompanies] = useState<Company[]>([]);
+  const [selectedCompany, setSelectedCompany] = useState<Company | null>(null);
+
+  useEffect(() => {
+    const data = cmsService.getData();
+    setCompanies(data.companies);
+  }, []);
 
   return (
     <div className="bg-background-dark text-slate-100 font-sans selection:bg-primary selection:text-background-dark">

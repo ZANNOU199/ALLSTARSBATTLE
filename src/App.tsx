@@ -115,7 +115,16 @@ const ProgramItem = ({ time, title, desc, color = "primary" }: { time: string, t
   </div>
 );
 
-const NewsCard = ({ date, title, desc, tag, color = "primary", onClick }: { date: string, title: string, desc: string, tag: string, color?: "primary" | "accent-red", onClick?: (e: React.MouseEvent) => void }) => (
+interface NewsCardProps {
+  date: string;
+  title: string;
+  desc: string;
+  tag: string;
+  color?: "primary" | "accent-red";
+  onClick?: (e: React.MouseEvent) => void;
+}
+
+const NewsCard: React.FC<NewsCardProps> = ({ date, title, desc, tag, color = "primary", onClick }) => (
   <motion.div 
     whileHover={{ y: -10 }}
     className={`group bg-surface-dark border border-white/5 overflow-hidden transition-all duration-500 hover:border-${color}/50 hover:shadow-[0_20px_40px_rgba(0,0,0,0.4)]`}
@@ -285,17 +294,53 @@ const BracketContent = () => (
 import ArtisticScene from './ArtisticScene';
 import Contact from './Contact';
 import Partners from './Partners';
+import AdminDashboard from './admin/AdminDashboard';
+import { cmsService } from './services/cmsService';
+import { GlobalConfig } from './types';
 
 export default function App() {
-  const [currentPage, setCurrentPage] = useState<'home' | 'competition' | 'dancers' | 'judges' | 'media' | 'history' | 'tickets' | 'program' | 'news' | 'artistic' | 'contact' | 'partners'>('home');
+  const [currentPage, setCurrentPage] = useState<'home' | 'competition' | 'dancers' | 'judges' | 'media' | 'history' | 'tickets' | 'program' | 'news' | 'artistic' | 'contact' | 'partners' | 'admin'>('home');
+  const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
   const [selectedArticleId, setSelectedArticleId] = useState<string | undefined>(undefined);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [config, setConfig] = useState<GlobalConfig | null>(null);
+  const [stats, setStats] = useState<any[]>([]);
+  const [recentNews, setRecentNews] = useState<any[]>([]);
+
+  useEffect(() => {
+    const data = cmsService.getData();
+    setConfig(data.globalConfig);
+    setStats(data.globalConfig.homepageStats);
+    setRecentNews(data.blog.articles.slice(0, 3));
+  }, []);
+
+  const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+
+  useEffect(() => {
+    const targetDate = config?.eventDate ? new Date(config.eventDate) : new Date('2026-03-20T00:00:00');
+    
+    const timer = setInterval(() => {
+      const now = new Date();
+      const difference = targetDate.getTime() - now.getTime();
+      
+      if (difference > 0) {
+        setTimeLeft({
+          days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+          hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
+          minutes: Math.floor((difference / 1000 / 60) % 60),
+          seconds: Math.floor((difference / 1000) % 60)
+        });
+      }
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [config?.eventDate]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [currentPage]);
 
-  const navigateTo = (page: 'home' | 'competition' | 'dancers' | 'judges' | 'media' | 'history' | 'tickets' | 'program' | 'news' | 'artistic' | 'contact' | 'partners', anchor?: string, articleId?: string) => (e: React.MouseEvent) => {
+  const navigateTo = (page: 'home' | 'competition' | 'dancers' | 'judges' | 'media' | 'history' | 'tickets' | 'program' | 'news' | 'artistic' | 'contact' | 'partners' | 'admin', anchor?: string, articleId?: string) => (e: React.MouseEvent) => {
     e.preventDefault();
     setCurrentPage(page);
     setSelectedArticleId(articleId);
@@ -499,7 +544,7 @@ export default function App() {
             animate={{ opacity: 1, y: 0 }}
             className="text-accent-red font-heading text-2xl tracking-[0.3em] block uppercase mb-6"
           >
-            TOGO 2026
+            {config?.hero.location || "TOGO 2026"}
           </motion.span>
           
           <motion.h1 
@@ -508,8 +553,8 @@ export default function App() {
             transition={{ delay: 0.2 }}
             className="font-heading text-6xl md:text-8xl lg:text-[10rem] leading-none mb-4 tracking-tighter text-white text-luxury-glow"
           >
-            ALL STARS BATTLE <br/>
-            <span className="text-primary">INTERNATIONAL</span>
+            {config?.hero.title.split(' ').slice(0, -1).join(' ') || "ALL STARS BATTLE"} <br/>
+            <span className="text-primary">{config?.hero.title.split(' ').slice(-1) || "INTERNATIONAL"}</span>
           </motion.h1>
           
           <motion.p 
@@ -518,7 +563,7 @@ export default function App() {
             transition={{ delay: 0.4 }}
             className="text-lg md:text-xl font-light tracking-[0.5em] uppercase mb-12 text-slate-400"
           >
-            Le Trône. Le Respect. La Légende.
+            {config?.hero.subtitle || "Le Trône. Le Respect. La Légende."}
           </motion.p>
 
           <motion.div 
@@ -527,10 +572,10 @@ export default function App() {
             transition={{ delay: 0.6 }}
             className="grid grid-cols-4 gap-4 max-w-2xl mx-auto mb-16 border-y border-white/10 py-8"
           >
-            <CountdownItem value="180" label="Jours" />
-            <CountdownItem value="12" label="Heures" />
-            <CountdownItem value="44" label="Minutes" />
-            <CountdownItem value="05" label="Secondes" />
+            <CountdownItem value={timeLeft.days} label="Jours" />
+            <CountdownItem value={timeLeft.hours} label="Heures" />
+            <CountdownItem value={timeLeft.minutes} label="Minutes" />
+            <CountdownItem value={timeLeft.seconds} label="Secondes" />
           </motion.div>
 
           <motion.div 
@@ -746,18 +791,12 @@ export default function App() {
         </div>
 
         <div className="max-w-7xl mx-auto px-4 mt-32 grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10">
-          <div className="bg-white/5 p-8 rounded-xl border border-white/10 hover:border-primary/30 transition-all">
-            <h4 className="font-heading text-4xl text-primary mb-2">16</h4>
-            <p className="text-slate-400 uppercase text-xs font-bold tracking-widest">Danseurs Qualifiés</p>
-          </div>
-          <div className="bg-white/5 p-8 rounded-xl border border-white/10 hover:border-accent-red/30 transition-all">
-            <h4 className="font-heading text-4xl text-accent-red mb-2">12</h4>
-            <p className="text-slate-400 uppercase text-xs font-bold tracking-widest">Nations Représentées</p>
-          </div>
-          <div className="bg-white/5 p-8 rounded-xl border border-white/10 hover:border-white/30 transition-all">
-            <h4 className="font-heading text-4xl text-white mb-2">8</h4>
-            <p className="text-slate-400 uppercase text-xs font-bold tracking-widest">Juges Internationaux</p>
-          </div>
+          {stats.map((stat, idx) => (
+            <div key={idx} className={`bg-white/5 p-8 rounded-xl border border-white/10 hover:border-${idx === 0 ? 'primary' : idx === 1 ? 'accent-red' : 'white'}/30 transition-all`}>
+              <h4 className={`font-heading text-4xl text-${idx === 0 ? 'primary' : idx === 1 ? 'accent-red' : 'white'} mb-2`}>{stat.value}</h4>
+              <p className="text-slate-400 uppercase text-xs font-bold tracking-widest">{stat.label}</p>
+            </div>
+          ))}
         </div>
       </section>
 
@@ -905,28 +944,17 @@ export default function App() {
             </a>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <NewsCard 
-              date="12 Janvier 2026" 
-              title="LANCEMENT OFFICIEL DU TOGO 2026" 
-              desc="Découvrez les coulisses de la préparation de l'événement le plus attendu de l'année à Lomé." 
-              tag="OFFICIEL" 
-              onClick={navigateTo('news', undefined, '1')}
-            />
-            <NewsCard 
-              date="05 Février 2026" 
-              title="LINEUP DES ARTISTES DÉVOILÉ" 
-              desc="Les plus grands noms de la scène Hip-Hop internationale confirment leur présence pour le festival." 
-              tag="TALENTS" 
-              color="accent-red"
-              onClick={navigateTo('news', undefined, '2')}
-            />
-            <NewsCard 
-              date="20 Mars 2026" 
-              title="DISPONIBILITÉ DES TICKETS" 
-              desc="La billetterie en ligne est désormais ouverte. Réservez vos pass Early Bird avant épuisement." 
-              tag="BILLETTERIE" 
-              onClick={navigateTo('news', undefined, '3')}
-            />
+            {recentNews.map((article, idx) => (
+              <NewsCard 
+                key={article.id}
+                date={article.date} 
+                title={article.title} 
+                desc={article.content} 
+                tag={article.category} 
+                color={idx === 1 ? "accent-red" : "primary"}
+                onClick={navigateTo('news', undefined, article.id)}
+              />
+            ))}
           </div>
         </div>
       </section>
@@ -960,6 +988,11 @@ export default function App() {
     }} />
   ) : currentPage === 'partners' ? (
     <Partners onContactClick={navigateTo('contact')} />
+  ) : currentPage === 'admin' ? (
+    <AdminDashboard onLogout={() => {
+      setIsAdminLoggedIn(false);
+      setCurrentPage('home');
+    }} />
   ) : (
     <Media />
   )}
@@ -1038,6 +1071,7 @@ export default function App() {
               © 2026 ALL STARS BATTLE INTERNATIONAL. TOUS DROITS RÉSERVÉS.
             </p>
             <div className="flex space-x-12 text-[10px] uppercase font-black tracking-[0.3em] text-slate-500">
+              <a href="#" onClick={navigateTo('admin')} className="hover:text-primary transition-colors">Administration</a>
               <a href="#" className="hover:text-primary transition-colors">Mentions Légales</a>
               <a href="#" className="hover:text-primary transition-colors">Confidentialité</a>
               <a href="#" className="hover:text-primary transition-colors">Presse</a>

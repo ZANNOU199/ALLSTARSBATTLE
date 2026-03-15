@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'motion/react';
 import { jsPDF } from 'jspdf';
+import { cmsService } from './services/cmsService';
 import { 
   Theater, 
   Utensils, 
@@ -19,6 +20,24 @@ interface PartnersProps {
 
 const Partners = ({ onContactClick }: PartnersProps) => {
   const [isDownloading, setIsDownloading] = React.useState(false);
+  const [partners, setPartners] = React.useState<{
+    institutional: string[];
+    main: { src: string; tier: string }[];
+    media: string[];
+  }>({ institutional: [], main: [], media: [] });
+  const [sponsoringPdfUrl, setSponsoringPdfUrl] = React.useState("");
+
+  React.useEffect(() => {
+    const data = cmsService.getData();
+    const allPartners = data.partners.logos;
+    
+    setPartners({
+      institutional: allPartners.filter(p => p.category === 'Institutional').map(p => p.logo),
+      main: allPartners.filter(p => p.category === 'Main').map(p => ({ src: p.logo, tier: p.tier || "Partenaire Officiel" })),
+      media: allPartners.filter(p => p.category === 'Media').map(p => p.logo)
+    });
+    setSponsoringPdfUrl(data.partners.sponsoringPdfUrl);
+  }, []);
   
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,6 +45,11 @@ const Partners = ({ onContactClick }: PartnersProps) => {
   };
 
   const handleDownload = () => {
+    if (sponsoringPdfUrl) {
+      window.open(sponsoringPdfUrl, '_blank');
+      return;
+    }
+    
     setIsDownloading(true);
     
     setTimeout(() => {
@@ -162,12 +186,7 @@ const Partners = ({ onContactClick }: PartnersProps) => {
             <div className="h-px flex-1 bg-gradient-to-l from-transparent via-primary/30 to-primary/30"></div>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            {[
-              "https://lh3.googleusercontent.com/aida-public/AB6AXuBkFGR7RrXdRKdmyGnDZSotjl2ufZ_yG8-vJmU6Hux-xxV76Hk56LMpQ88oUVrq1AFD_gwLWxnoyWWU0dFT5mCJKO1qRMZvZFLQdMQqonlPS34l94A0dL3L-H78Co00M_uASekCNSF13c27iLgDL3hv8AZFCdBu0JMCEnv0rHU7wt9DSqSqk_pOJCyPsYvonfOAaY0YfWrO_sEmHGg-jQoRB0EuOHtrYLFY1YQ2T7N-TVG2PDqNDj7_4KkjAA7Nmv02f7motSH4nA6b",
-              "https://lh3.googleusercontent.com/aida-public/AB6AXuDb0ulrNIl0OT5xqsT6ekK_w1aYOpgXlynyfwXUK-IRcnqdFgFH4hQnzkC6qiLMx1IhuXmAqJX8OwJmjgk4yxsGbKBbZ8ir5GhmvBgCNuwHGXubedLvAyP6_i3MQKrDgJRj6fBZwc4jfEuoFNQ_QW3IlNe-IRN7_etgHct3oynhSklvei4WLiXvqt1-5lzD_Y6-7nyfJA189A0AStMCNpzYtYK4v7jM9uYFrGZWiKbeM5dbV4bxrQ4tE2vdQqIFoKD5t_OQXJpLcOLV",
-              "https://lh3.googleusercontent.com/aida-public/AB6AXuDOnGcdaFqdDpX2iGAOaJuQq-L4QeA7uhCydiZAhMD6GOd4hJM8sORFTXuUmzMLNTzg_nDVQz9xEIC0TC2ZLEPXgx2Wa09eRqNNjUWet1O3lU0GKa-V8yH86XKx3NyWYs87DBnCzI7XTfWOZYO7ZCBd6QQMy5GcEcGC63AGzgL56GPbzn2igbCGcCqcFAZKLeANgN7qvydv5oszsxoRN2w_bUJwX-GOMlyplCkpKq-zUgDQUppbpo81Z4c1l6BrweRNPDhAn3Jvdeu3",
-              "https://lh3.googleusercontent.com/aida-public/AB6AXuCY7vcvXlX2Nc2svNKxvhYSkUwLwO9oB9yv6zscy7u9DalWxGuSRJG7IVjSbKQSS1vLw0FpybsyhQKJgAlz8TgnuFqUQBcNxhToWmVAbbzK73bYUov41i7J0kVoFyl5RjHqZNur-HWhDIWzm71z-xRlPMeDTvuKv8zi8RNBsAd2KHA3KJQ2T7nujcbC8wJRcXurng2-O9m6D3EKD2vWKLCnWCS-FZrV_soVe5L3WJ5yj_8xNVxilmXMT_39bpV5jXWJpdMxreBWQx9V"
-            ].map((src, idx) => (
+            {partners.institutional.map((src, idx) => (
               <motion.div 
                 key={idx}
                 whileHover={{ y: -5 }}
@@ -186,11 +205,7 @@ const Partners = ({ onContactClick }: PartnersProps) => {
             <div className="h-1 w-24 bg-primary mx-auto mb-8"></div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-            {[
-              { src: "https://lh3.googleusercontent.com/aida-public/AB6AXuCf38dafeTorEwemYkL5_UjizZmv1fapi0WK7VDvP4PO-Ve-yGiakEOrtfWBhi8hbohDSoFbBDPaZfECBCyOTrA8fA-7kC2h9Q_G6ueMv-cbmGOAKQaUcl72cfjkdlfj7ccfvV3VlikbQdeY494e1UU1jJo34zmf3qHwjGss5G7y7o9Ay01Zk3VsKuwRKkGxM6a-kVXNUAZ2JtEXbE3TS2Ng8Vbkjwkq3tWyXBg01uuRGPUBKoJMsI36Dk2eGskdCPRqLfhqRn5MG9m", tier: "Partenaire Platine" },
-              { src: "https://lh3.googleusercontent.com/aida-public/AB6AXuCzkGTvFYT7Huft5G6CuCPwwqukP8NafTgP6nYx6n1GUQsDNn0TF2Pcr56ETYAahIHfoLbTd-3yJgZ6f_MEVsWeQzduRABKuf4skm-KKWvWOBWDccAw9J2G9mWPQ1jLFQXPI0SxUtYa6toW_JV00FYvF5khWwXtdlf345EFSrfLX2t5wT07g47e3zlBu5Tmx7ItnZ8SkMvFa9lxdO4Vuehme_08Wlnr8R_odUOLo3-zNRAjoJThcZVK84PvVlkeJSUMwd4LjWALPVOS", tier: "Partenaire Platine" },
-              { src: "https://lh3.googleusercontent.com/aida-public/AB6AXuCNUSdWoRxr7KfUDSGnOPC-w7uf9tIjAyuHjylwoS_feXWpiF5KnKjD2bwIIf3k8JBUoGyJWzjNzr5ANB9FNsvPyw9_XVOWAy8bYiXsLy7luF4dyDnAxbmd4GDPuybKRbCZ3GOxFDh3j2CsUTLl8DbXeO0vsEVkcwu9tCY7L-iWnUXyCEZmSj0U4YAdJbYyavesQTOWAN4RLE6lhgdlUcrSyaMrrGLrzckJKqyrLgZNGhY0aS8TI3I9r3r4sJMaEINGyCEKdWIaUn0b", tier: "Partenaire Platine" }
-            ].map((sponsor, idx) => (
+            {partners.main.map((sponsor, idx) => (
               <motion.div 
                 key={idx}
                 whileHover={{ y: -10, scale: 1.02 }}
@@ -212,13 +227,7 @@ const Partners = ({ onContactClick }: PartnersProps) => {
             <div className="h-px flex-1 ml-12 bg-gradient-to-r from-accent-red/40 to-transparent"></div>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-5 gap-6">
-            {[
-              "https://lh3.googleusercontent.com/aida-public/AB6AXuA_AqYLkSOlyDo4IT_In7cKHgY3msZD0uF5PWYG4ZwpRhZdqFjw78Z-o763Q_DYsXU0OIAZiAwARlSGeoVuvu8cQmkNB4VU5CwOJTOBS8HepZoXX8PNzMirK3sGmZ2847Y1Ya4Tp5L3ApdZ8pTn0RjApW8CQQSnN7CJqZh-MU-WQlA_e-JeRm7gbzEuZ8A4D1d5Qipc-MPe4EFdEBa91DdinN85xYWVrF51gEo_F2hYVo-IpHy-l2EOc7ZbgNSH6v5_U5wFTjEqwi_s",
-              "https://lh3.googleusercontent.com/aida-public/AB6AXuDLX9i7lSv8TWZl1YTqwqPHPHnMc3ESxeCrQ7lRKZl-0w3vdcI90UYTBqFEth7GvCsieeiGjrwV_f_Xph4j_tT0ilna58n_oSJLMMBhPjlC96iw3sEsVFFBsovvsvoC7WL2S1QCdTG7g13V9CGXorsk8DW7dtiRMOXkN7a1pu_uCzSLPGQckzan9hhBhP7IyBilf2pw4aOCh-3ltfDRtvhsChAd35HgEoXHFWf0MOe6D3b88VYHd2nVPrFGygxCJb7XS1gvCiSagZun",
-              "https://lh3.googleusercontent.com/aida-public/AB6AXuCKZ3Ywy3bjW9lb2t6-gxlVahUAr2ieWazrKN0SLzyJaw7xufuJ1Jau70v3ZGux3lnJc2LIvWw93NmPyp507EV_fKfUZG_5t9iNbaqPiaZV9rH7uuZgi35l_2bSBZrwi-42tvbEmx7GV5vpDquVHMbZIxB3OTQkI053p2TMvPZNz3TdIDYK_ubkzU2lQCGx7XgWrG2y9Y8Y5MBaCRcI0dH82upoqYVAxHTfmIM4_TxG16vbQNYMEmZx6NP6YCk9ZS5jmwWX6jPLX3W6",
-              "https://lh3.googleusercontent.com/aida-public/AB6AXuDpuYVW6yxB5Lxz8bq_X4N9bciqKzNejbWuiLqIjAymgFbwvRqWp9_SqxwE2NjtUY1bE8837h2Zsl44cM140Mdel0QuXJTuvqQNHc-COiVdWJfSRkinEviCqcFcfuL4y7NIE8hh7syz5yUsc-oKKoPZqTh3rN8GJ7C44MLxYOdYQBrXl22B382saAPnzkYobTOoizANUy5ywCSTpZVkRM_sheQJUtw1fNDTea34ZET5ZescjsazUgybVj6GQeIfqy98RCVqLbTa341B",
-              "https://lh3.googleusercontent.com/aida-public/AB6AXuDsxuYUIf7Fa4jhSxfK0PpYlMsy0u2CMFBMoiX9F_ewpBI8jdGoAEa_5StQ0qNy8zBnh7W7KhfHvs7mdi5AAbJMkQe9kT-IKrH_w2PisUYlfM11V2zM6IFT8UbJYEDeKI9iyNhXa_P3P4_w4vXRCelq0o5mAbjEosS08Gi2j_raqBqnVuEwPMb4yn7SOg3O_zkq5vEPBKW8S-NRg8XlmU1vt6F9R7GzwpEk3XP6kStyYCpCYPTA9l0y639uZt1Q3pX-s2XT_WE1TnXh"
-            ].map((src, idx) => (
+            {partners.media.map((src, idx) => (
               <motion.div 
                 key={idx}
                 whileHover={{ scale: 1.05 }}

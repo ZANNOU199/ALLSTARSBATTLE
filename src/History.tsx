@@ -1,122 +1,44 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import { cmsService } from './services/cmsService';
 import { 
   ArrowRight, 
   ChevronDown
 } from 'lucide-react';
 
+import { TimelineEvent, Legend } from './types';
+
 const History = () => {
   const [showAll, setShowAll] = useState(false);
+  const [timelineEvents, setTimelineEvents] = useState<any[]>([]);
+  const [olderEvents, setOlderEvents] = useState<any[]>([]);
+  const [legends, setLegends] = useState<Legend[]>([]);
 
-  const timelineEvents = [
-    {
-      year: "2024",
-      title: "PARIS GLOBAL FINALS",
-      champion: "B-BOY VICTOR (USA)",
-      desc: "A monumental shift in the urban landscape, merging high-fashion aesthetics with the raw energy of street dance at the base of the Eiffel Tower.",
-      image: "https://lh3.googleusercontent.com/aida-public/AB6AXuAOx4OzohzjsebHSpXNRLbJUXW6WVxoF-h5ZWWdYAPLRsqMHN0ISKYVTl8XtTOHBIyQZgSMsysZSSu3oXWzU4LwUm3j7lrGxSodGzapkgo0K_92_yEjlDGWjD6wQql1IfknOoFB_mYkTQnpYR-3TEi17A5eMhQ_dBtWTDJ-hTajKo4lyUqpx6LlL67pOv3wt4Ocih-sa-5aJUjhUXzBlOnEsCCSwhSZ9jB7Dst6Iy8Y0mIVF91ttwx0912nsUSANTC_-ACgEdibcYeb",
-      current: true,
-      side: "left"
-    },
-    {
-      year: "2023",
-      title: "TOKYO CHAMPIONSHIP",
-      champion: "B-GIRL AMI (JAPAN)",
-      desc: "Cyberpunk aesthetics met traditional discipline in a neon-soaked night that redefined technical precision in breaking.",
-      image: "https://lh3.googleusercontent.com/aida-public/AB6AXuC6CWcQa_uAGgsJxtzxl9-GzdnIk-BFIyr-fzuqbS5n8k7qtUoRDmr_R_E-rlUL7EWMpTVRL-9P3hBMqzRDutKuDiT6IjatWN2SWmQjDEw_QvHd5DzSHAJD2bBTW4GhU8pakFdMsB_8SS4TMX5O0U_-8VFf94tv6AH2EGG_XugLYqkzoLay2hUWvdK_MvaPLxLZSw965WUGjiEig_QDlAWqItpQTTMZ7JzxsjSnEWXX1EIoT9RwmbPO1jondjCb550E90E8HGe2e6fR",
-      side: "right"
-    },
-    {
-      year: "2022",
-      title: "NYC MASTERCLASS",
-      champion: "B-BOY PHIL WIZARD (CANADA)",
-      desc: "Returning to the roots. A gritty, raw underground aesthetic paired with luxury street culture in the heart of Brooklyn.",
-      image: "https://lh3.googleusercontent.com/aida-public/AB6AXuCyicg2jKpaBPx_2O7US73hOurQVb_IKmSeNfBa-VG8jAAcDxh9AZzkFMiS86Vzq8_gOOEHKg7iCe98_H9hUjzIRXI4eAnTuCPUS8xAfToDtXWfgdW00v9l__F_E1IwHHJeS14ausDvysdTD9JGNim-ihP2HTA4lz9PBNH2a7Qkcp-grF2pp4Ol-BvACNRxFy4-jPDpTR7uf6nA7p-IGWN3M8kJlWq2xqInV5UeEvtO0np9xNCNLpfoeRjrjfHCLsNWAoEnCcDyaxNo",
-      side: "left"
-    },
-    {
-      year: "2021",
-      title: "LONDON UNDERGROUND",
-      champion: "B-BOY SUNNI (UK)",
-      desc: "The return of live battles in an industrial warehouse setting, celebrating the resilience of the global breaking community.",
-      image: "https://picsum.photos/seed/london/800/450",
-      side: "right"
-    },
-    {
-      year: "2020",
-      title: "DIGITAL WORLD SERIES",
-      champion: "B-BOY SHIGEKIX (JAPAN)",
-      desc: "A revolutionary virtual edition that connected dancers from across the globe during the global lockdown.",
-      image: "https://picsum.photos/seed/digital/800/450",
-      side: "left"
-    }
-  ];
+  useEffect(() => {
+    const data = cmsService.getData();
+    
+    // Sort events by year descending
+    const sortedEvents = [...data.history.timeline].sort((a, b) => parseInt(b.year) - parseInt(a.year));
+    
+    const formattedEvents = sortedEvents.map((event: TimelineEvent, index) => ({
+      year: event.year,
+      title: event.title,
+      champion: event.champion,
+      desc: event.description,
+      image: event.image || `https://picsum.photos/seed/${event.year}/800/450`,
+      current: index === 0,
+      side: index % 2 === 0 ? 'left' : 'right'
+    }));
 
-  const olderEvents = [
-    {
-      year: "2019",
-      title: "SEOUL SOUL BATTLE",
-      champion: "B-BOY HONG10 (KOREA)",
-      desc: "High-octane energy in the heart of Seoul, where technical mastery reached new heights.",
-      image: "https://picsum.photos/seed/seoul/800/450",
-      side: "right"
-    },
-    {
-      year: "2018",
-      title: "GENESIS: LOMÉ ORIGINS",
-      champion: "B-BOY KODJO (TOGO)",
-      desc: "The first international expansion, bringing the battle to the vibrant streets of Lomé.",
-      image: "https://picsum.photos/seed/lome/800/450",
-      side: "left"
-    },
-    {
-      year: "2017",
-      title: "BERLIN WALL BATTLE",
-      champion: "B-BOY LILOU (FRANCE)",
-      desc: "A historic showdown in Berlin, blending street art and breaking in an iconic urban setting.",
-      image: "https://picsum.photos/seed/berlin/800/450",
-      side: "right"
-    },
-    {
-      year: "2016",
-      title: "RIO RHYTHM",
-      champion: "B-BOY NEGUIN (BRAZIL)",
-      desc: "Explosive energy and capoeira-influenced breaking in the colorful streets of Rio.",
-      image: "https://picsum.photos/seed/rio/800/450",
-      side: "left"
-    },
-    {
-      year: "2015",
-      title: "CASABLANCA CLASH",
-      champion: "B-BOY WOLF (MOROCCO)",
-      desc: "The North African debut, showcasing the incredible talent of the Maghreb scene.",
-      image: "https://picsum.photos/seed/casa/800/450",
-      side: "right"
-    },
-    {
-      year: "2014",
-      title: "AMSTERDAM FLOW",
-      champion: "B-BOY MENNO (NETHERLANDS)",
-      desc: "A masterclass in flow and creativity in the artistic hub of Amsterdam.",
-      image: "https://picsum.photos/seed/ams/800/450",
-      side: "left"
-    },
-    {
-      year: "2013",
-      title: "THE FOUNDATION: PARIS",
-      champion: "B-BOY LIL ZOU (FRANCE)",
-      desc: "Where it all began. A small underground battle in Paris that would grow into a global phenomenon.",
-      image: "https://picsum.photos/seed/paris13/800/450",
-      side: "right"
-    }
-  ];
+    setTimelineEvents(formattedEvents.slice(0, 5));
+    setOlderEvents(formattedEvents.slice(5));
 
-  const legends = [
-    { name: "VICTOR", origin: "USA | 2024 CHAMPION", image: "https://lh3.googleusercontent.com/aida-public/AB6AXuAeIRl1SEpeZjPquIcm7ees8kaqYCWr6MwFe_dRs-rOTA_pRwNi8hyArMxrQtRyiO6dJlTXu-Gz7Pivmja7wPmUyYt3gQmiN6XJmPpHHDlgnfa716reFMuXm1KwHNxWbFRvY_RC0JcQ16-TVkxKjl2RUKe1NEApbS8usjPkH_ORF2Dl-SlbUzb_RPchwwak0lO89YKeawgR3MahHH87oeBNnCJcPAWAhwlqYKgbokgcgoFw74E2qNMRGLm4YFD5qNwWlDN4sqyjoovo" },
-    { name: "AMI", origin: "JAPAN | 2023 CHAMPION", image: "https://lh3.googleusercontent.com/aida-public/AB6AXuB9vZtROxn4QYY_Kj3UpuJ36ZcOXShG8wXX05dsys5cO0wu8zPXzn0Wa2G_6BTeQRE4GuaGyy8v8d1wwTjkDXJvaEGofZgG_TQA3K237vKvCC0o8Uyn_-PBg4e2zF_6_9p_h-QABhgfb3wSiCV2u9QTnJNQvkPQE6UVofYKLKdULBB_VhQb_VMZNof_6H-epIFDi-cjOsyfLdE3_mFkCcS2VnRWXw6oDDYVQyorj-Wds9ThX9qDl3JD_2dhMY-E_LFZ2-HMtlXTeq8J" },
-    { name: "PHIL WIZARD", origin: "CANADA | 2022 CHAMPION", image: "https://lh3.googleusercontent.com/aida-public/AB6AXuBCwR9ZPJ3KMP8f0jkQpkK3bojhN1jxxjMj9dgSdEFmmaiU4aE9HeK9nSQmkdmXuYnPdEjHbLnV8KDU__gT67t8kRqD-F0x81967hK_svJh0BZRXsnNLVQ19dG1XZ8ofJAx8RNRz7ugMfJUNZD4t66QIP23KhyVbyMogj-FH5t5KOLMVvAafYso3k7lny_wm-9KrLwvOv3VDfeatHsZhHdJafVjuGQBaVT-ApNu7_jJxCbzh3yJYQpaelXg8aLoP1GG6gT5UI2YrjMj" },
-    { name: "HONG10", origin: "KOREA | 2019 FINALIST", image: "https://lh3.googleusercontent.com/aida-public/AB6AXuAnFNpVNy_C0Tl3Vv-uxRblts5oK_QdX0OBdDeTq8sWLEYEabwWAu-rhhFY6gSvENNf_13xM5IuV1HPUPEYT6_Yk3aQKk-hmVY8wFcr-pwbJ51TI3zws4rAJHfnIra4Bs3QnTlzKxBas3buOy-30pzPlfOOY2iTV1fTpgtY352x3RLZ6pFrhwhgrRQA8CSAQuij4vXaP6nZfqg0N8nRg2gzNz3GlUoeFA4WsljiMd0_pBqhgFdweDLLMupD7BMZJgvJyn0tEt0O12ep" }
-  ];
+    setLegends(data.history.legends.map(l => ({
+      name: l.name,
+      origin: l.bio,
+      image: l.photo
+    })));
+  }, []);
 
   return (
     <div className="bg-background-dark text-slate-100 font-display antialiased">

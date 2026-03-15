@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import { cmsService } from './services/cmsService';
 import { 
   Search, 
   ChevronDown,
@@ -10,140 +11,7 @@ import {
   X
 } from 'lucide-react';
 
-const dancersData = [
-  {
-    id: 1,
-    name: "B-Boy Alpha",
-    origin: "Togo",
-    countryCode: "tg",
-    style: "Power Moves",
-    status: "Champion",
-    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuCPtTjFiuFSihpmxPHHSgIfOvV9FYa16rTWDNocl90ICq2Pj4m8883_bGB7Rlq6LZydsHPFp8JJ0Pku-6O5-5KtmJSGcLS0C21O316tTSN2j8EegB2oCtAgJKvZJ4zxoZkPEqLkFpDcQfsmBlJrEbsROiFkq2rTBiiMYfv-QAmMglGbMxLqfJD_LhTP0uJh9jvHSvyiRQsBn7Up0Tmxa_cym0Xo-fOyd8AbUylS_ytS1qIgTHxTHUxQkkXwqHA29_MesHRBksJ8wONs",
-    category: "B-Boy",
-    bio: "Légende vivante du breakdance togolais, Alpha est connu pour ses power moves explosifs et sa musicalité hors pair. Il a remporté plusieurs titres nationaux avant de s'imposer sur la scène internationale."
-  },
-  {
-    id: 2,
-    name: "B-Girl Sora",
-    origin: "Bénin",
-    countryCode: "bj",
-    style: "Footwork",
-    status: "Qualifier",
-    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuCQKaRo8aE-yzylqJB_3b15EQWkd6H2-sv_2lxclbORyZqB_0HW4uwSt3NvYq9p3PmDZPfVlYgLw1tNghI3akGzTjS5NcJfJlqFCLdCdRVSD7yoKHzSTXeseTIG7TVKeTnEvjawHqFs95YjX1ONLnFWlTIrBBBnSWZNf44h9iSv-y3uNwd-LeWeaFzsZuZQjxiFCS5W-edu9PRpHby8Dv0J4U1423HOhBa_PYRFFg6lkREsnT0vgsCNQ20-9ZjJ0N-N5nAgyyA7kyTX",
-    category: "B-Girl",
-    bio: "Sora apporte une finesse et une technique de footwork inégalées. Originaire du Bénin, elle représente la nouvelle vague de B-Girls africaines qui bousculent les codes mondiaux."
-  },
-  {
-    id: 3,
-    name: "Crew Unity",
-    origin: "France",
-    countryCode: "fr",
-    style: "All Styles",
-    status: "Champion",
-    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuBYoBw1xgq95WiVuY8fLzMBoz6J6RFRaxHWVJfdJ8tunVU6SfJatGSorBeey5vyRy9Re8bFHI36-xJUBiK5Q3HdqHLe-WUpXE6GnBMOChjHHQtDDJP3w1j2yFg_q-K-2MRUiybV0ODFSKu32pi4CUKcYYpkBt6MTxDRHFwUtBvdnQM_efm04Mc1KDx8pYX2uj6J1Z2TjCtV0mD8Db4jO1_DD2axOIPsKtJmNxBRdEAlIOvLvmsL6kYI3gblAoDVbZh0t6v6LOIEwgr3",
-    category: "Crew",
-    bio: "Unity est plus qu'un groupe, c'est une famille. Leur force réside dans leur synchronisation parfaite et leur capacité à fusionner différents styles de danse urbaine en une performance cohérente."
-  },
-  {
-    id: 4,
-    name: "B-Boy Flex",
-    origin: "Sénégal",
-    countryCode: "sn",
-    style: "Tricks",
-    status: "Qualifier",
-    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuARISS-OwMF2J2Gj-u8HodfFNdtYI2tLTtvAdgYnSkn_TTLBJrdg6JM7r0oRBBXlhmfZzeFG7yZTKXlb-6-kppJ-Eb1vG_T3BaY49soT_IVrpo3rT-jLcYQu_GoCEtdf9sacz-TYWEaT6sA62jsgR_JHcGgKBVOeu0mmFbCxOkXsVvTrn0gc1EMTOceZLSPikUwEjDTAo_sCzysPYm84mE5RJsFtpJCcwAfbsJBppOgyjPaPBl9KhcHNLHYt1Ar2MdbQGMV0CXf9AKt",
-    category: "B-Boy",
-    bio: "Le roi des tricks au Sénégal. Flex défie la gravité avec des acrobaties qui semblent impossibles. Son style est un mélange d'audace et de précision technique."
-  },
-  {
-    id: 5,
-    name: "B-Girl Luna",
-    origin: "Ghana",
-    countryCode: "gh",
-    style: "Toprock",
-    status: "Champion",
-    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuCIq6_t_GqQ1EumelgllFAq4VzViM0KnjWTi_Lqv_dXauiJWH7nWMkjTF1BhQ75NeTguYzOhmfW09QvVnSh-eas0bNRDSkIt2sZgiW3pL_WfjZJPSL3fTUCYpmhfHCnopau4sXSMp4atNM8V1qOXe0ZbfrAMvB8R0gUX9-AN--nXwBdrr3l-ISYSmJxOmP31pPpPWOgueIZ7vKHiCYDFZU8sLiOI-rMKhOWDXwQ545_M_xyDeoVMma0qevxKpLA2XhSqBsFZu0i7LbH",
-    category: "B-Girl",
-    bio: "Luna possède un toprock d'une élégance rare. Elle danse avec une joie communicative tout en maintenant une intensité de compétition redoutable. Championne du Ghana en titre."
-  },
-  {
-    id: 6,
-    name: "Crew Elite",
-    origin: "USA",
-    countryCode: "us",
-    style: "Choreography",
-    status: "Qualifier",
-    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuCy-zj0KvAqe08OZxJddXkM6EM6_rfk_MCZPec39NuAiRRakzhPoctlBcYKJaRGJ7GceRZ_ZSnDrL3lk5pcN3l1zFLLDEFtkUkWdzX22kipqmIbePanx1EsEEsi6aQgz5e1_HKpKY1IDeNqFiyb-SQHvZX1FMg4JW8-tHWEKGZHyM0ikDkWzNVLeya3l3rppykSlpOhKZpSwkPznBsXxuyhIJ1R9-MMU-gY0loss7jm_0sm23XZu2WC1pgj5V4xNHJZHzH42mHX8Asj",
-    category: "Crew",
-    bio: "Venu tout droit des États-Unis, le groupe Elite apporte une vision moderne de la chorégraphie hip-hop. Leur précision millimétrée est leur signature sur scène."
-  },
-  {
-    id: 7,
-    name: "B-Boy Shadow",
-    origin: "Nigéria",
-    countryCode: "ng",
-    style: "Abstract",
-    status: "Qualifier",
-    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuBOCQaUlf94ROduzlo4XAH2txj7uIeXuqLSf7s7CEdrU5XYNu_fARNpwvvlawCl46_4sMXIedPGWAlFbRlVV6mhIA2A2QJjvs3yfSQdKp50nBJsuq1TxbkXZQqK-D0G9fjVxu0HGVEmh_CD2dgT8njTdOjN8M4Yzba1cRKVc71xIYpaDlQH9Ia-K-peJ0C_7Yx4iVDdAWRo2I8nCK0UU4BwdYIKFp9IKYjqizioVe_FEI_DOmMjmfrFX2xjlOvFOEVePfErlvXBeCTw",
-    category: "B-Boy",
-    bio: "Shadow est un innovateur. Son style 'Abstract' repousse les limites de ce que le corps peut exprimer. Il est l'un des danseurs les plus imprévisibles du tournoi."
-  },
-  {
-    id: 8,
-    name: "B-Girl Jade",
-    origin: "Japon",
-    countryCode: "jp",
-    style: "Flow",
-    status: "Qualifier",
-    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuAtLd3_h2KPF0jvN-d23si5w3Fp16z5bQFs_5BnZN1gJejl4-esU3N2GD5slZibXIpjNh7lV-5671nkVjONMLQY2rxE_I0ukd2auLcJ6b8tQWgtmxELQthOhe3Sy4OCYUpv4agMK8xc_QVdibfwfSzyMbfy54pflaZR86z9AnqeueLq_EGLM_y9hMy9XJpQqZv3HMjIUPzEaxTUIavemdUAjWZsnh6e6USdHy-_VsPQqY_39Q6GCCN20m6bxB4kWs0yaun8pOV44C71",
-    category: "B-Girl",
-    bio: "Venue du Japon, Jade incarne le 'Flow'. Ses mouvements s'enchaînent avec une fluidité liquide, masquant une force physique impressionnante."
-  },
-  {
-    id: 9,
-    name: "B-Boy Ghost",
-    origin: "Cameroun",
-    countryCode: "cm",
-    style: "Invisibility",
-    status: "Qualifier",
-    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuD_U-3-4-5-6-7-8-9-0-1-2-3-4-5-6-7-8-9-0-1-2-3-4-5-6-7-8-9-0-1-2-3-4-5-6-7-8-9-0",
-    category: "B-Boy",
-    bio: "Ghost est connu pour sa rapidité d'exécution. Il semble disparaître entre deux mouvements pour réapparaître là où on ne l'attend pas."
-  },
-  {
-    id: 10,
-    name: "B-Girl Spark",
-    origin: "Côte d'Ivoire",
-    countryCode: "ci",
-    style: "Electric",
-    status: "Qualifier",
-    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuE_U-3-4-5-6-7-8-9-0-1-2-3-4-5-6-7-8-9-0-1-2-3-4-5-6-7-8-9-0-1-2-3-4-5-6-7-8-9-0",
-    category: "B-Girl",
-    bio: "Spark apporte une énergie électrique sur scène. Ses mouvements sont saccadés et précis, rappelant les décharges d'un courant haute tension."
-  },
-  {
-    id: 11,
-    name: "Crew Legend",
-    origin: "Maroc",
-    countryCode: "ma",
-    style: "Traditional Fusion",
-    status: "Champion",
-    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuF_U-3-4-5-6-7-8-9-0-1-2-3-4-5-6-7-8-9-0-1-2-3-4-5-6-7-8-9-0-1-2-3-4-5-6-7-8-9-0",
-    category: "Crew",
-    bio: "Legend fusionne les danses traditionnelles marocaines avec le breakdance moderne. Une performance culturelle unique qui captive tous les publics."
-  },
-  {
-    id: 12,
-    name: "B-Boy Titan",
-    origin: "Brésil",
-    countryCode: "br",
-    style: "Power Moves",
-    status: "Qualifier",
-    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuG_U-3-4-5-6-7-8-9-0-1-2-3-4-5-6-7-8-9-0-1-2-3-4-5-6-7-8-9-0-1-2-3-4-5-6-7-8-9-0",
-    category: "B-Boy",
-    bio: "Titan est une force de la nature. Ses power moves sont d'une puissance brute qui fait trembler la scène à chaque passage."
-  }
-];
+const dancersData = []; // Removed hardcoded data
 
 interface DancersProps {
   onViewPerformances?: () => void;
@@ -153,6 +21,23 @@ const Dancers = ({ onViewPerformances }: DancersProps) => {
   const [filter, setFilter] = useState('All');
   const [showAll, setShowAll] = useState(false);
   const [selectedDancer, setSelectedDancer] = useState<any>(null);
+  const [dancersData, setDancersData] = useState<any[]>([]);
+
+  useEffect(() => {
+    const data = cmsService.getData();
+    const dancers = data.participants.filter(p => p.category === 'dancer').map(p => ({
+      id: p.id,
+      name: p.name,
+      origin: p.country,
+      countryCode: p.countryCode,
+      style: p.specialty,
+      status: 'Qualifier', // Default status
+      image: p.photo,
+      category: 'B-Boy', // Default category for display
+      bio: p.bio
+    }));
+    setDancersData(dancers);
+  }, []);
 
   React.useEffect(() => {
     window.scrollTo(0, 0);
