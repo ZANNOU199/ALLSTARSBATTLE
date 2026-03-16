@@ -88,9 +88,16 @@ export default function ProgramPlanning({ data, setData }: { data: CMSData, setD
   };
 
   const handleAddActivity = () => {
+    if (!activityFormData.startTime || !activityFormData.endTime) {
+      alert('Veuillez saisir les heures de début et de fin.');
+      return;
+    }
+
+    const timeString = `${activityFormData.startTime} - ${activityFormData.endTime}`;
+    
     const newActivity: Activity = {
       id: Date.now().toString(),
-      time: activityFormData.time || '',
+      time: timeString,
       title: activityFormData.title || '',
       location: activityFormData.location || '',
       description: activityFormData.description || '',
@@ -105,11 +112,18 @@ export default function ProgramPlanning({ data, setData }: { data: CMSData, setD
   };
 
   const handleUpdateActivity = () => {
+    if (!activityFormData.startTime || !activityFormData.endTime) {
+      alert('Veuillez saisir les heures de début et de fin.');
+      return;
+    }
+
+    const timeString = `${activityFormData.startTime} - ${activityFormData.endTime}`;
+    
     setData(prev => ({
       ...prev,
       program: prev.program.map(d => d.id === selectedDayId ? {
         ...d,
-        activities: d.activities.map(a => a.id === editingActivityId ? { ...a, ...activityFormData } : a)
+        activities: d.activities.map(a => a.id === editingActivityId ? { ...a, time: timeString, title: activityFormData.title || '', location: activityFormData.location || '', description: activityFormData.description || '', category: activityFormData.category || 'other' } : a)
       } : d)
     }));
     setEditingActivityId(null);
@@ -189,6 +203,34 @@ export default function ProgramPlanning({ data, setData }: { data: CMSData, setD
   };
 
   const selectedDay = data.program.find(d => d.id === selectedDayId);
+
+  // Calculate minimum start time based on previous activity
+  const getMinStartTime = () => {
+    if (!selectedDay || selectedDay.activities.length === 0) return '00:00';
+    
+    // Sort activities by start time
+    const sortedActivities = selectedDay.activities
+      .filter(a => a.time && a.time.includes(' - '))
+      .sort((a, b) => {
+        const timeA = a.time.split(' - ')[0];
+        const timeB = b.time.split(' - ')[0];
+        return timeA.localeCompare(timeB);
+      });
+    
+    if (sortedActivities.length === 0) return '00:00';
+    
+    // Get the end time of the last activity
+    const lastActivity = sortedActivities[sortedActivities.length - 1];
+    const endTime = lastActivity.time.split(' - ')[1];
+    return endTime || '00:00';
+  };
+
+  // Parse time string when editing
+  const parseTimeForEditing = (timeString: string) => {
+    if (!timeString || !timeString.includes(' - ')) return { startTime: '', endTime: '' };
+    const [start, end] = timeString.split(' - ');
+    return { startTime: start.trim(), endTime: end.trim() };
+  };
 
   return (
     <div className="space-y-8">
@@ -308,7 +350,10 @@ export default function ProgramPlanning({ data, setData }: { data: CMSData, setD
         <div className="flex justify-between items-center">
           <h3 className="text-xl font-heading">Activités du {selectedDay?.label}</h3>
           <button
-            onClick={() => setIsAddingActivity(true)}
+            onClick={() => {
+              setIsAddingActivity(true);
+              setActivityFormData({ startTime: getMinStartTime() });
+            }}
             className="flex items-center gap-2 px-4 py-2 bg-white/5 text-primary border border-primary/20 font-bold rounded-xl hover:bg-primary/10 transition-all"
           >
             <Plus size={18} /> Nouvelle Activité
@@ -319,11 +364,21 @@ export default function ProgramPlanning({ data, setData }: { data: CMSData, setD
           <div className="bg-[#111] border border-white/10 p-8 rounded-2xl space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Heure (ex: 10:00 - 12:00)</label>
+                <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Heure de début</label>
                 <input 
-                  type="text" 
-                  value={activityFormData.time || ''} 
-                  onChange={e => setActivityFormData({ ...activityFormData, time: e.target.value })}
+                  type="time" 
+                  value={activityFormData.startTime || ''} 
+                  onChange={e => setActivityFormData({ ...activityFormData, startTime: e.target.value })}
+                  min={editingActivityId ? undefined : getMinStartTime()}
+                  className="w-full bg-white/5 border border-white/10 rounded-xl p-3 focus:border-primary outline-none transition-all"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Heure de fin</label>
+                <input 
+                  type="time" 
+                  value={activityFormData.endTime || ''} 
+                  onChange={e => setActivityFormData({ ...activityFormData, endTime: e.target.value })}
                   className="w-full bg-white/5 border border-white/10 rounded-xl p-3 focus:border-primary outline-none transition-all"
                 />
               </div>
@@ -388,7 +443,11 @@ export default function ProgramPlanning({ data, setData }: { data: CMSData, setD
                 </div>
               </div>
               <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                <button onClick={() => { setEditingActivityId(activity.id); setActivityFormData(activity); }} className="p-2 hover:bg-white/5 rounded-lg text-slate-400 hover:text-white"><Edit size={18} /></button>
+                <button onClick={() => { 
+                  setEditingActivityId(activity.id); 
+                  const parsedTime = parseTimeForEditing(activity.time);
+                  setActivityFormData({ ...activity, ...parsedTime }); 
+                }} className="p-2 hover:bg-white/5 rounded-lg text-slate-400 hover:text-white"><Edit size={18} /></button>
                 <button onClick={() => handleDeleteActivity(activity.id)} className="p-2 hover:bg-white/5 rounded-lg text-slate-400 hover:text-accent-red"><Trash2 size={18} /></button>
               </div>
             </div>
