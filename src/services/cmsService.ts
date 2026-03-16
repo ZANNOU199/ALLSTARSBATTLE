@@ -218,7 +218,7 @@ export const cmsService = {
       try {
         const parsed = JSON.parse(data);
         // Merge with initialData to ensure all properties exist
-        return {
+        const merged = {
           ...initialData,
           ...parsed,
           globalConfig: {
@@ -226,6 +226,13 @@ export const cmsService = {
             ...parsed.globalConfig
           }
         };
+        
+        // Ensure program has at least one day with activities
+        if (!merged.program || merged.program.length === 0) {
+          merged.program = initialData.program;
+        }
+        
+        return merged;
       } catch (e) {
         console.error('Failed to parse CMS data', e);
         return initialData;

@@ -88,24 +88,44 @@ const Program: React.FC<ProgramProps> = ({ onReserveTickets }) => {
   // This constant is kept for backward compatibility but will be overridden by CMS categories.
   const defaultCategories = ["Tous", "Competition", "Workshop", "Show", "Talk", "Social"];
 
-  if (schedule.length === 0) {
-    return (
-      <div className="min-h-screen bg-background-dark flex items-center justify-center">
-        <Loader2 className="w-12 h-12 text-primary animate-spin" />
-      </div>
-    );
-  }
+  // Temporarily disable loader to debug
+  // if (schedule.length === 0) {
+  //   console.log('Schedule is empty, showing loader');
+  //   return (
+  //     <div className="min-h-screen bg-background-dark flex items-center justify-center">
+  //       <Loader2 className="w-12 h-12 text-primary animate-spin" />
+  //     </div>
+  //   );
+  // }
 
-  const filteredSchedule = schedule.filter(day =>
+  // Fallback data if schedule is empty
+  const fallbackSchedule = schedule.length > 0 ? schedule : [
+    {
+      date: 'JOUR 01',
+      theme: '2026-08-14',
+      events: [
+        {
+          time: '10:00 - 16:00',
+          title: 'Masterclasses Internationales',
+          location: 'Studio A',
+          category: 'Workshop',
+          desc: 'Apprentissage technique avec les légendes.',
+          icon: <Users className="w-5 h-5" />
+        }
+      ]
+    }
+  ];
+
+  const filteredSchedule = fallbackSchedule.filter(day =>
     selectedCategory === 'Tous' || day.events.some(event => event.category === selectedCategory)
   );
 
-  const displaySchedule = filteredSchedule.length > 0 ? filteredSchedule : schedule;
+  const displaySchedule = filteredSchedule.length > 0 ? filteredSchedule : fallbackSchedule;
 
   useEffect(() => {
     setSelectedDay(0);
     setStartIndex(0);
-  }, [selectedCategory, schedule.length]);
+  }, [selectedCategory, fallbackSchedule.length]);
 
   const generatePDF = async () => {
     setIsGeneratingPDF(true);
@@ -126,7 +146,7 @@ const Program: React.FC<ProgramProps> = ({ onReserveTickets }) => {
 
       let currentY = 50;
 
-      schedule.forEach((day, index) => {
+      fallbackSchedule.forEach((day, index) => {
         // Check for new page
         if (currentY > 240) {
           doc.addPage();
@@ -226,7 +246,7 @@ const Program: React.FC<ProgramProps> = ({ onReserveTickets }) => {
             </div>
 
             <div className="flex flex-1 justify-center overflow-hidden">
-              {schedule.slice(startIndex, startIndex + daysPerPage).map((day, idx) => {
+              {fallbackSchedule.slice(startIndex, startIndex + daysPerPage).map((day, idx) => {
                 const actualIdx = startIndex + idx;
                 return (
                   <button
@@ -250,12 +270,12 @@ const Program: React.FC<ProgramProps> = ({ onReserveTickets }) => {
               <button 
                 onClick={() => {
                   const nextIndex = startIndex + daysPerPage;
-                  if (nextIndex < schedule.length) {
+                  if (nextIndex < fallbackSchedule.length) {
                     setStartIndex(nextIndex);
                     setSelectedDay(nextIndex);
                   }
                 }}
-                className={`p-2 md:p-4 text-slate-500 hover:text-primary transition-all duration-300 flex flex-col items-center gap-1 ${startIndex + daysPerPage >= schedule.length ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
+                className={`p-2 md:p-4 text-slate-500 hover:text-primary transition-all duration-300 flex flex-col items-center gap-1 ${startIndex + daysPerPage >= fallbackSchedule.length ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
                 title="Jours suivants"
               >
                 <ChevronRight className="w-6 h-6 md:w-8 md:h-8" />
