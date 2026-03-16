@@ -11,10 +11,37 @@ export default function ProgramPlanning({ data, setData }: { data: CMSData, setD
   const [activityFormData, setActivityFormData] = useState<Partial<Activity>>({});
 
   const handleAddDay = () => {
+    let newLabel = dayFormData.label || '';
+    let newDate = dayFormData.date || '';
+
+    if (data.program.length > 0) {
+      // Auto-increment for days after the first
+      const lastDay = data.program[data.program.length - 1];
+      const lastLabelMatch = lastDay.label.match(/JOUR (\d+)/);
+      if (lastLabelMatch) {
+        const lastNum = parseInt(lastLabelMatch[1]);
+        const nextNum = lastNum + 1;
+        newLabel = `JOUR ${nextNum.toString().padStart(2, '0')}`;
+      }
+
+      // Auto-increment date
+      if (lastDay.date) {
+        try {
+          const lastDate = new Date(lastDay.date);
+          if (!isNaN(lastDate.getTime())) {
+            lastDate.setDate(lastDate.getDate() + 1);
+            newDate = lastDate.toISOString().split('T')[0]; // YYYY-MM-DD format
+          }
+        } catch (e) {
+          // If date parsing fails, keep manual date
+        }
+      }
+    }
+
     const newDay: ProgramDay = {
       id: Date.now().toString(),
-      date: dayFormData.date || '',
-      label: dayFormData.label || '',
+      date: newDate,
+      label: newLabel,
       activities: []
     };
     setData(prev => ({ ...prev, program: [...prev.program, newDay] }));
