@@ -8,6 +8,32 @@ export default function ProgramPlanning({ data, setData }: { data: CMSData, setD
   const [editingActivityId, setEditingActivityId] = useState<string | null>(null);
   const [editingDateId, setEditingDateId] = useState<string | null>(null);
   const [activityFormData, setActivityFormData] = useState<Partial<Activity>>({});
+  const [newCategory, setNewCategory] = useState('');
+
+  const categories = data.categories || [];
+
+  const handleAddCategory = () => {
+    const trimmed = newCategory.trim();
+    if (!trimmed) return;
+    if (categories.includes(trimmed)) {
+      setNewCategory('');
+      return;
+    }
+    setData(prev => ({
+      ...prev,
+      categories: [...(prev.categories || []), trimmed]
+    }));
+    setNewCategory('');
+  };
+
+  const handleDeleteCategory = (category: string) => {
+    if (confirm(`Supprimer la catégorie "${category}" ?`)) {
+      setData(prev => ({
+        ...prev,
+        categories: (prev.categories || []).filter(c => c !== category)
+      }));
+    }
+  };
   const activitiesSectionRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -166,6 +192,46 @@ export default function ProgramPlanning({ data, setData }: { data: CMSData, setD
 
   return (
     <div className="space-y-8">
+      {/* Categories */}
+      <div className="space-y-4">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <h2 className="text-2xl font-heading">Catégories</h2>
+            <p className="text-sm text-slate-400">Les catégories apparaissent sur le site et dans la création d'activité.</p>
+          </div>
+          <div className="flex items-center gap-2">
+            <input
+              type="text"
+              value={newCategory}
+              onChange={e => setNewCategory(e.target.value)}
+              placeholder="Nouvelle catégorie"
+              className="bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm w-40"
+            />
+            <button
+              onClick={handleAddCategory}
+              className="px-4 py-2 bg-primary text-background-dark rounded-xl font-bold hover:bg-primary/90 transition-all"
+            >
+              Ajouter catégorie
+            </button>
+          </div>
+        </div>
+
+        <div className="flex flex-wrap gap-2">
+          {categories.map(cat => (
+            <span key={cat} className="inline-flex items-center gap-2 bg-white/5 px-3 py-1 rounded-full text-sm">
+              {cat}
+              <button
+                onClick={() => handleDeleteCategory(cat)}
+                className="text-red-400 hover:text-red-300"
+                title="Supprimer cette catégorie"
+              >
+                <X size={14} />
+              </button>
+            </span>
+          ))}
+        </div>
+      </div>
+
       {/* Days List */}
       <div className="space-y-4">
         <div className="flex justify-between items-center">
@@ -282,14 +348,13 @@ export default function ProgramPlanning({ data, setData }: { data: CMSData, setD
               <div className="space-y-2">
                 <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Catégorie</label>
                 <select 
-                  value={activityFormData.category || 'other'} 
+                  value={activityFormData.category || (categories[0] || '')} 
                   onChange={e => setActivityFormData({ ...activityFormData, category: e.target.value as any })}
                   className="w-full bg-white/5 border border-white/10 rounded-xl p-3 focus:border-primary outline-none transition-all appearance-none"
                 >
-                  <option value="workshop">Workshop</option>
-                  <option value="battle">Battle</option>
-                  <option value="after-party">After-party</option>
-                  <option value="other">Autre</option>
+                  {categories.filter(c => c !== 'Tous').map(cat => (
+                    <option key={cat} value={cat}>{cat}</option>
+                  ))}
                 </select>
               </div>
               <div className="space-y-2 md:col-span-2">

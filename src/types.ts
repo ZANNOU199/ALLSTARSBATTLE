@@ -35,7 +35,7 @@ export interface Activity {
   title: string;
   location: string;
   description: string;
-  category: 'workshop' | 'battle' | 'after-party' | 'other';
+  category: string;
 }
 
 export interface ProgramDay {
@@ -193,6 +193,7 @@ export interface CMSData {
   companies: Company[];
   participants: Participant[];
   program: ProgramDay[];
+  categories: string[];
   blog: {
     articles: Article[];
   };

@@ -42,11 +42,12 @@ const initialData: CMSData = {
           title: 'Masterclasses Internationales',
           location: 'Studio A',
           description: 'Apprentissage technique avec les légendes.',
-          category: 'workshop'
+          category: 'Workshop'
         }
       ]
     }
   ],
+  categories: ['Competition', 'Workshop', 'Show', 'Talk', 'Social'],
   blog: {
     articles: [
       {

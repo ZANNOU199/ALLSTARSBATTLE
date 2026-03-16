@@ -30,12 +30,14 @@ const Program: React.FC<ProgramProps> = ({ onReserveTickets }) => {
   const [startIndex, setStartIndex] = useState(0);
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const [schedule, setSchedule] = useState<any[]>([]);
+  const [categories, setCategories] = useState<string[]>(["Tous"]);
   
   // Responsive days per page
   const [daysPerPage, setDaysPerPage] = useState(5);
 
   useEffect(() => {
     const data = cmsService.getData();
+
     const getIcon = (category: string) => {
       switch (category) {
         case 'Competition': return <Trophy className="w-5 h-5" />;
@@ -59,7 +61,11 @@ const Program: React.FC<ProgramProps> = ({ onReserveTickets }) => {
         icon: getIcon(act.category)
       }))
     }));
+
+    const availableCategories = ['Tous', ...(data.categories || [])];
+
     setSchedule(formattedSchedule);
+    setCategories(availableCategories);
   }, []);
 
   useEffect(() => {
@@ -78,7 +84,9 @@ const Program: React.FC<ProgramProps> = ({ onReserveTickets }) => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const categories = ["Tous", "Competition", "Workshop", "Show", "Talk", "Social"];
+  // categories are loaded from CMS data (see cmsService)
+  // This constant is kept for backward compatibility but will be overridden by CMS categories.
+  const defaultCategories = ["Tous", "Competition", "Workshop", "Show", "Talk", "Social"];
 
   if (schedule.length === 0) {
     return (
@@ -87,6 +95,17 @@ const Program: React.FC<ProgramProps> = ({ onReserveTickets }) => {
       </div>
     );
   }
+
+  const filteredSchedule = schedule.filter(day =>
+    selectedCategory === 'Tous' || day.events.some(event => event.category === selectedCategory)
+  );
+
+  const displaySchedule = filteredSchedule.length > 0 ? filteredSchedule : schedule;
+
+  useEffect(() => {
+    setSelectedDay(0);
+    setStartIndex(0);
+  }, [selectedCategory, schedule.length]);
 
   const generatePDF = async () => {
     setIsGeneratingPDF(true);
@@ -251,7 +270,7 @@ const Program: React.FC<ProgramProps> = ({ onReserveTickets }) => {
       <section className="bg-background-dark py-12">
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex flex-wrap justify-center gap-4">
-            {categories.map((cat) => (
+            {(categories.length ? categories : defaultCategories).map((cat) => (
               <button
                 key={cat}
                 onClick={() => setSelectedCategory(cat)}
