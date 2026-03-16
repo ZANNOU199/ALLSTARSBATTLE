@@ -88,15 +88,33 @@ const initialData: CMSData = {
     brackets: {
       pouleA: {
         huitiemes: [
-          { id: 'm1', player1: 'VICTOR', player2: 'TBD', score1: '--', score2: '--', country1: 'USA', country2: '--', countryCode1: 'us', countryCode2: 'un' }
+          { id: 'm1', player1: 'VICTOR', player2: 'TBD', score1: '--', score2: '--', country1: 'USA', country2: '--', countryCode1: 'us', countryCode2: 'un' },
+          { id: 'm2', player1: 'PHIL WIZARD', player2: 'TBD', score1: '--', score2: '--', country1: 'CAN', country2: '--', countryCode1: 'ca', countryCode2: 'un' },
+          { id: 'm3', player1: 'DANY DANN', player2: 'TBD', score1: '--', score2: '--', country1: 'FRA', country2: '--', countryCode1: 'fr', countryCode2: 'un' },
+          { id: 'm4', player1: 'SHIGEKIX', player2: 'TBD', score1: '--', score2: '--', country1: 'JPN', country2: '--', countryCode1: 'jp', countryCode2: 'un' }
         ],
-        quarts: [],
-        semis: []
+        quarts: [
+          { id: 'qa1', player1: 'TBD', player2: 'TBD', score1: '--', score2: '--', country1: '--', country2: '--', countryCode1: 'un', countryCode2: 'un' },
+          { id: 'qa2', player1: 'TBD', player2: 'TBD', score1: '--', score2: '--', country1: '--', country2: '--', countryCode1: 'un', countryCode2: 'un' }
+        ],
+        semis: [
+          { id: 'sa1', player1: 'TBD', player2: 'TBD', score1: '--', score2: '--', country1: '--', country2: '--', countryCode1: 'un', countryCode2: 'un' }
+        ]
       },
       pouleB: {
-        huitiemes: [],
-        quarts: [],
-        semis: []
+        huitiemes: [
+          { id: 'm5', player1: 'LIGEE', player2: 'TBD', score1: '--', score2: '--', country1: 'CHN', country2: '--', countryCode1: 'cn', countryCode2: 'un' },
+          { id: 'm6', player1: 'KUZYA', player2: 'TBD', score1: '--', score2: '--', country1: 'UKR', country2: '--', countryCode1: 'ua', countryCode2: 'un' },
+          { id: 'm7', player1: 'LEE', player2: 'TBD', score1: '--', score2: '--', country1: 'NLD', country2: '--', countryCode1: 'nl', countryCode2: 'un' },
+          { id: 'm8', player1: 'QUAKE', player2: 'TBD', score1: '--', score2: '--', country1: 'TPE', country2: '--', countryCode1: 'tw', countryCode2: 'un' }
+        ],
+        quarts: [
+          { id: 'qb1', player1: 'TBD', player2: 'TBD', score1: '--', score2: '--', country1: '--', country2: '--', countryCode1: 'un', countryCode2: 'un' },
+          { id: 'qb2', player1: 'TBD', player2: 'TBD', score1: '--', score2: '--', country1: '--', country2: '--', countryCode1: 'un', countryCode2: 'un' }
+        ],
+        semis: [
+          { id: 'sb1', player1: 'TBD', player2: 'TBD', score1: '--', score2: '--', country1: '--', country2: '--', countryCode1: 'un', countryCode2: 'un' }
+        ]
       },
       final: { id: 'final', player1: 'TBD', player2: 'TBD', score1: '--', score2: '--', country1: '--', country2: '--', countryCode1: 'un', countryCode2: 'un' }
     }
