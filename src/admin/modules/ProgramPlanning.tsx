@@ -103,13 +103,15 @@ export default function ProgramPlanning({ data, setData }: { data: CMSData, setD
         newNum = parseInt(afterLabelMatch[1]) + 1;
       }
 
-      // Shift all subsequent days
-      for (let i = insertIndex + 1; i < program.length; i++) {
+      // Shift all days with number >= newNum
+      for (let i = 0; i < program.length; i++) {
         const day = program[i];
         const labelMatch = day.label.match(/JOUR (\d+)/);
         if (labelMatch) {
           const currentNum = parseInt(labelMatch[1]);
-          day.label = `JOUR ${(currentNum + 1).toString().padStart(2, '0')}`;
+          if (currentNum >= newNum) {
+            day.label = `JOUR ${(currentNum + 1).toString().padStart(2, '0')}`;
+          }
         }
       }
 
@@ -131,11 +133,22 @@ export default function ProgramPlanning({ data, setData }: { data: CMSData, setD
         activities: []
       };
 
-      // Insert at the correct position
+      // Insert at the correct position (after the day we clicked)
       program.splice(insertIndex + 1, 0, newDay);
 
       return { ...prev, program };
     });
+  };
+
+  const handleDeleteDay = (dayId: string) => {
+    if (confirm('Supprimer ce jour et toutes ses activités ?')) {
+      setData(prev => {
+        const newProgram = prev.program.filter(d => d.id !== dayId);
+        return { ...prev, program: newProgram };
+      });
+      // Update selected day if we're deleting the current one
+      setSelectedDayId(current => current === dayId ? data.program.find(d => d.id !== dayId)?.id || '' : current);
+    }
   };
 
   const selectedDay = data.program.find(d => d.id === selectedDayId);
