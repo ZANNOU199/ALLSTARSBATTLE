@@ -88,6 +88,17 @@ export default function ProgramPlanning({ data, setData }: { data: CMSData, setD
     setEditingDateId(null);
   };
 
+  const handleDeleteDay = (dayId: string) => {
+    if (confirm('Supprimer ce jour et toutes ses activités ?')) {
+      setData(prev => {
+        const newProgram = prev.program.filter(d => d.id !== dayId);
+        return { ...prev, program: newProgram };
+      });
+      // Update selected day if we're deleting the current one
+      setSelectedDayId(current => current === dayId ? data.program.find(d => d.id !== dayId)?.id || '' : current);
+    }
+  };
+
   const selectedDay = data.program.find(d => d.id === selectedDayId);
 
   return (
