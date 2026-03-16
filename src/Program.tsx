@@ -315,7 +315,7 @@ const Program: React.FC<ProgramProps> = ({ onReserveTickets }) => {
             animate={{ opacity: 1, y: 0 }}
             className="font-heading text-5xl text-white uppercase tracking-widest mb-4"
           >
-            {schedule[selectedDay].theme}
+            {displaySchedule[selectedDay]?.theme || 'PROGRAMME'}
           </motion.h2>
           <div className="w-24 h-1 bg-primary mx-auto"></div>
         </div>
@@ -329,7 +329,7 @@ const Program: React.FC<ProgramProps> = ({ onReserveTickets }) => {
               exit={{ opacity: 0, x: -20 }}
               className="space-y-6"
             >
-              {schedule[selectedDay].events
+              {(displaySchedule[selectedDay]?.events || [])
                 .filter(event => selectedCategory === "Tous" || event.category === selectedCategory)
                 .map((event, idx) => {
                   const isRedLine = idx % 2 === 0;
@@ -373,7 +373,7 @@ const Program: React.FC<ProgramProps> = ({ onReserveTickets }) => {
                     </div>
                   );
                 })}
-              {schedule[selectedDay].events.filter(event => selectedCategory === "Tous" || event.category === selectedCategory).length === 0 && (
+              {(displaySchedule[selectedDay]?.events || []).filter(event => selectedCategory === "Tous" || event.category === selectedCategory).length === 0 && (
                 <div className="text-center py-20 border border-dashed border-white/10 rounded-xl">
                   <p className="text-slate-500 font-bold tracking-widest uppercase text-xs">Aucun événement trouvé dans cette catégorie pour ce jour.</p>
                 </div>
