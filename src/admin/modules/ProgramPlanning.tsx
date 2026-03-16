@@ -4,18 +4,21 @@ import { Plus, Trash2, Edit, Save, X, Clock, MapPin, Tag } from 'lucide-react';
 
 export default function ProgramPlanning({ data, setData }: { data: CMSData, setData: React.Dispatch<React.SetStateAction<CMSData>> }) {
   const [selectedDayId, setSelectedDayId] = useState<string>(data.program[0]?.id || '');
-  const [isAddingDay, setIsAddingDay] = useState(false);
   const [isAddingActivity, setIsAddingActivity] = useState(false);
   const [editingActivityId, setEditingActivityId] = useState<string | null>(null);
-  const [dayFormData, setDayFormData] = useState<Partial<ProgramDay>>({});
+  const [editingDateId, setEditingDateId] = useState<string | null>(null);
   const [activityFormData, setActivityFormData] = useState<Partial<Activity>>({});
 
   const handleAddDay = () => {
-    let newLabel = dayFormData.label || '';
-    let newDate = dayFormData.date || '';
+    let newLabel = '';
+    let newDate = '';
 
-    if (data.program.length > 0) {
-      // Auto-increment for days after the first
+    if (data.program.length === 0) {
+      // First day - set default values
+      newLabel = 'JOUR 01';
+      newDate = new Date().toISOString().split('T')[0]; // Today's date
+    } else {
+      // Auto-increment for subsequent days
       const lastDay = data.program[data.program.length - 1];
       const lastLabelMatch = lastDay.label.match(/JOUR (\d+)/);
       if (lastLabelMatch) {
@@ -33,7 +36,7 @@ export default function ProgramPlanning({ data, setData }: { data: CMSData, setD
             newDate = lastDate.toISOString().split('T')[0]; // YYYY-MM-DD format
           }
         } catch (e) {
-          // If date parsing fails, keep manual date
+          newDate = new Date().toISOString().split('T')[0];
         }
       }
     }
@@ -45,8 +48,7 @@ export default function ProgramPlanning({ data, setData }: { data: CMSData, setD
       activities: []
     };
     setData(prev => ({ ...prev, program: [...prev.program, newDay] }));
-    setIsAddingDay(false);
-    setDayFormData({});
+    setSelectedDayId(newDay.id); // Select the new day
   };
 
   const handleAddActivity = () => {
@@ -78,16 +80,12 @@ export default function ProgramPlanning({ data, setData }: { data: CMSData, setD
     setActivityFormData({});
   };
 
-  const handleDeleteActivity = (activityId: string) => {
-    if (confirm('Supprimer cette activité ?')) {
-      setData(prev => ({
-        ...prev,
-        program: prev.program.map(d => d.id === selectedDayId ? {
-          ...d,
-          activities: d.activities.filter(a => a.id !== activityId)
-        } : d)
-      }));
-    }
+  const handleUpdateDate = (dayId: string, newDate: string) => {
+    setData(prev => ({
+      ...prev,
+      program: prev.program.map(d => d.id === dayId ? { ...d, date: newDate } : d)
+    }));
+    setEditingDateId(null);
   };
 
   const selectedDay = data.program.find(d => d.id === selectedDayId);
@@ -98,55 +96,58 @@ export default function ProgramPlanning({ data, setData }: { data: CMSData, setD
       <div className="flex justify-between items-center">
         <div className="flex gap-4 overflow-x-auto pb-2 custom-scrollbar">
           {data.program.map(day => (
-            <button
-              key={day.id}
-              onClick={() => setSelectedDayId(day.id)}
-              className={`px-6 py-3 rounded-xl text-xs font-bold uppercase tracking-widest transition-all whitespace-nowrap ${
-                selectedDayId === day.id ? 'bg-primary text-background-dark' : 'bg-white/5 text-slate-400 hover:text-white'
-              }`}
-            >
-              {day.label} <span className="opacity-50 ml-2">({day.date})</span>
-            </button>
+            <div key={day.id} className="flex items-center gap-2">
+              <button
+                onClick={() => setSelectedDayId(day.id)}
+                className={`px-6 py-3 rounded-xl text-xs font-bold uppercase tracking-widest transition-all whitespace-nowrap ${
+                  selectedDayId === day.id ? 'bg-primary text-background-dark' : 'bg-white/5 text-slate-400 hover:text-white'
+                }`}
+              >
+                {day.label} <span className="opacity-50 ml-2">({day.date})</span>
+              </button>
+              <button
+                onClick={() => handleDeleteDay(day.id)}
+                className="p-1 text-red-400 hover:text-red-300 transition-all"
+                title="Supprimer ce jour"
+              >
+                <X size={16} />
+              </button>
+            </div>
           ))}
-          <button 
-            onClick={() => setIsAddingDay(true)}
+          <button
+            onClick={handleAddDay}
             className="px-4 py-3 rounded-xl bg-white/5 text-primary hover:bg-primary/10 transition-all"
+            title="Ajouter un jour"
           >
             <Plus size={18} />
           </button>
         </div>
       </div>
 
-      {isAddingDay && (
-        <div className="bg-[#111] border border-white/10 p-6 rounded-2xl flex gap-4 items-end">
-          <div className="flex-1 space-y-2">
-            <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Label (ex: JOUR 01)</label>
-            <input 
-              type="text" 
-              value={dayFormData.label || ''} 
-              onChange={e => setDayFormData({ ...dayFormData, label: e.target.value })}
-              className="w-full bg-white/5 border border-white/10 rounded-xl p-3 focus:border-primary outline-none transition-all"
-            />
-          </div>
-          <div className="flex-1 space-y-2">
-            <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Date</label>
-            <input 
-              type="text" 
-              placeholder="14 AOÛT"
-              value={dayFormData.date || ''} 
-              onChange={e => setDayFormData({ ...dayFormData, date: e.target.value })}
-              className="w-full bg-white/5 border border-white/10 rounded-xl p-3 focus:border-primary outline-none transition-all"
-            />
-          </div>
-          <button onClick={handleAddDay} className="px-6 py-3 bg-primary text-background-dark rounded-xl font-bold uppercase text-[10px] tracking-widest">Ajouter</button>
-          <button onClick={() => setIsAddingDay(false)} className="px-6 py-3 bg-white/5 text-slate-400 rounded-xl font-bold uppercase text-[10px] tracking-widest">Annuler</button>
-        </div>
-      )}
-
       {/* Activities List */}
       <div className="space-y-6">
         <div className="flex justify-between items-center">
+        <div className="flex items-center gap-4">
           <h3 className="text-xl font-heading">Activités du {selectedDay?.label}</h3>
+          {editingDateId === selectedDayId ? (
+            <input
+              type="date"
+              value={selectedDay?.date || ''}
+              onChange={(e) => handleUpdateDate(selectedDayId, e.target.value)}
+              onBlur={() => setEditingDateId(null)}
+              onKeyDown={(e) => e.key === 'Enter' && setEditingDateId(null)}
+              className="bg-white/5 border border-primary rounded px-2 py-1 text-sm"
+              autoFocus
+            />
+          ) : (
+            <span
+              className="text-sm text-slate-400 cursor-pointer hover:text-white"
+              onClick={() => setEditingDateId(selectedDayId)}
+            >
+              ({selectedDay?.date})
+            </span>
+          )}
+        </div>
           <button 
             onClick={() => setIsAddingActivity(true)}
             className="flex items-center gap-2 px-4 py-2 bg-white/5 text-primary border border-primary/20 font-bold rounded-xl hover:bg-primary/10 transition-all"
