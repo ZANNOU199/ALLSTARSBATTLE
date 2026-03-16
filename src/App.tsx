@@ -156,27 +156,27 @@ const NewsCard: React.FC<NewsCardProps> = ({ date, title, desc, tag, color = "pr
 );
 
 const BracketMatch = ({ player1, player2, score1 = "--", score2 = "--", country1, country2, countryCode1, countryCode2, side = "left", color = "primary" }: any) => (
-  <div className={`flex flex-col gap-1 bg-white/5 p-4 md:p-3 rounded border-${side === "left" ? "l" : "r"}-4 ${color === "primary" ? "border-primary" : "border-accent-red"} relative transition-all hover:bg-white/10`}>
+  <div className={`flex flex-col gap-1 bg-white/5 p-2 md:p-4 rounded border-${side === "left" ? "l" : "r"}-4 ${color === "primary" ? "border-primary" : "border-accent-red"} relative transition-all hover:bg-white/10`}>
     <div className={`flex justify-between items-center ${side === "right" ? "flex-row-reverse" : ""}`}>
-      <span className="font-bold text-4xl md:text-sm uppercase leading-tight flex items-center gap-2">
+      <span className="font-bold text-sm sm:text-lg md:text-sm uppercase leading-tight flex items-center gap-1 md:gap-2">
         {player1} 
-        <span className="text-lg md:text-[10px] text-slate-500 flex items-center gap-1">
-          <img src={`https://flagcdn.com/w20/${countryCode1}.png`} alt={country1} className="w-4 h-auto rounded-sm" />
+        <span className="text-xs sm:text-sm md:text-[10px] text-slate-500 flex items-center gap-1">
+          <img src={`https://flagcdn.com/w20/${countryCode1}.png`} alt={country1} className="w-3 h-auto rounded-sm" />
           {country1}
         </span>
       </span>
-      <span className="text-primary font-mono text-4xl md:text-sm">{score1}</span>
+      <span className="text-primary font-mono text-sm sm:text-lg md:text-sm">{score1}</span>
     </div>
-    <div className="h-[1px] bg-white/10 my-2 md:my-1"></div>
+    <div className="h-[1px] bg-white/10 my-1 md:my-2"></div>
     <div className={`flex justify-between items-center ${side === "right" ? "flex-row-reverse" : ""}`}>
-      <span className="font-bold text-4xl md:text-sm uppercase leading-tight flex items-center gap-2">
+      <span className="font-bold text-sm sm:text-lg md:text-sm uppercase leading-tight flex items-center gap-1 md:gap-2">
         {player2} 
-        <span className="text-lg md:text-[10px] text-slate-500 flex items-center gap-1">
+        <span className="text-sm sm:text-base md:text-[10px] text-slate-500 flex items-center gap-1">
           <img src={`https://flagcdn.com/w20/${countryCode2}.png`} alt={country2} className="w-4 h-auto rounded-sm" />
           {country2}
         </span>
       </span>
-      <span className="text-primary font-mono text-4xl md:text-sm">{score2}</span>
+      <span className="text-primary font-mono text-sm sm:text-lg md:text-sm">{score2}</span>
     </div>
   </div>
 );
@@ -185,7 +185,7 @@ const BracketContent = () => (
   <div className="grid grid-cols-7 gap-0 items-stretch py-12 min-h-[1600px] md:min-h-[800px]">
     {/* Poule A: Top 16 (Left) */}
     <div className="flex flex-col h-full">
-      <h3 className="font-heading text-2xl md:text-xl text-primary mb-8 text-center shrink-0">HUITIÈMES (A)</h3>
+      <h3 className="font-heading text-lg md:text-xl text-primary mb-8 text-center shrink-0">HUITIÈMES (A)</h3>
       <div className="flex-1 flex flex-col justify-around py-4">
         <BracketMatch player1="VICTOR" country1="USA" countryCode1="us" player2="TBD" country2="--" countryCode2="un" color="accent-red" />
         <BracketMatch player1="PHIL WIZARD" country1="CAN" countryCode1="ca" player2="TBD" country2="--" countryCode2="un" />
@@ -196,7 +196,7 @@ const BracketContent = () => (
 
     {/* Poule A: Quarts (Left) */}
     <div className="flex flex-col h-full pl-8">
-      <h3 className="font-heading text-2xl md:text-xl text-slate-400 mb-8 text-center shrink-0">QUARTS</h3>
+      <h3 className="font-heading text-lg md:text-xl text-slate-400 mb-8 text-center shrink-0">QUARTS</h3>
       <div className="flex-1 flex flex-col justify-around py-4">
         <div className="flex flex-col gap-1 bg-white/5 p-4 rounded border-l-4 border-white/20">
           <div className="text-xs md:text-[10px] uppercase text-slate-500 mb-2">Match A1/A2</div>
@@ -215,7 +215,7 @@ const BracketContent = () => (
 
     {/* Poule A: Semis (Left) */}
     <div className="flex flex-col h-full pr-8 pl-8">
-      <h3 className="font-heading text-2xl md:text-xl text-accent-red mb-8 text-center uppercase shrink-0">DEMI-FINALE</h3>
+      <h3 className="font-heading text-lg md:text-xl text-accent-red mb-8 text-center uppercase shrink-0">DEMI-FINALE</h3>
       <div className="flex-1 flex flex-col justify-around py-4">
         <div className="flex flex-col gap-1 bg-accent-red/10 p-6 rounded border border-accent-red/30">
           <div className="flex justify-between items-center opacity-30"><span className="text-2xl md:text-sm font-bold uppercase">WINNER A1/2</span></div>
@@ -249,7 +249,7 @@ const BracketContent = () => (
 
     {/* Poule B: Semis (Right) */}
     <div className="flex flex-col h-full pl-8 pr-8">
-      <h3 className="font-heading text-2xl md:text-xl text-accent-red mb-8 text-center uppercase shrink-0">DEMI-FINALE</h3>
+      <h3 className="font-heading text-lg md:text-xl text-accent-red mb-8 text-center uppercase shrink-0">DEMI-FINALE</h3>
       <div className="flex-1 flex flex-col justify-around py-4">
         <div className="flex flex-col gap-1 bg-accent-red/10 p-6 rounded border border-accent-red/30">
           <div className="flex justify-between items-center opacity-30"><span className="text-2xl md:text-sm font-bold uppercase">WINNER B1/2</span></div>
@@ -261,7 +261,7 @@ const BracketContent = () => (
 
     {/* Poule B: Quarts (Right) */}
     <div className="flex flex-col h-full pr-8">
-      <h3 className="font-heading text-2xl md:text-xl text-slate-400 mb-8 text-center shrink-0">QUARTS</h3>
+      <h3 className="font-heading text-lg md:text-xl text-slate-400 mb-8 text-center shrink-0">QUARTS</h3>
       <div className="flex-1 flex flex-col justify-around py-4">
         <div className="flex flex-col gap-1 bg-white/5 p-4 rounded border-r-4 border-white/20">
           <div className="text-xs md:text-[10px] uppercase text-slate-500 mb-2 text-right">Match B1/B2</div>
@@ -280,7 +280,7 @@ const BracketContent = () => (
 
     {/* Poule B: Top 16 (Right) */}
     <div className="flex flex-col h-full">
-      <h3 className="font-heading text-2xl md:text-xl text-primary mb-8 text-center shrink-0">HUITIÈMES (B)</h3>
+      <h3 className="font-heading text-lg md:text-xl text-primary mb-8 text-center shrink-0">HUITIÈMES (B)</h3>
       <div className="flex-1 flex flex-col justify-around py-4">
         <BracketMatch player1="LIGEE" country1="CHN" countryCode1="cn" player2="TBD" country2="--" countryCode2="un" side="right" color="accent-red" />
         <BracketMatch player1="KUZYA" country1="UKR" countryCode1="ua" player2="TBD" country2="--" countryCode2="un" side="right" />
@@ -369,19 +369,37 @@ export default function App() {
   };
   const [scrolled, setScrolled] = useState(false);
   const [bracketScale, setBracketScale] = useState(1);
-  const [bracketHeight, setBracketHeight] = useState(1000);
+  const [bracketHeight, setBracketHeight] = useState(1600);
+  const bracketHeightRef = useRef(bracketHeight);
   const bracketContainerRef = useRef<HTMLDivElement>(null);
   const measureRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    bracketHeightRef.current = bracketHeight;
+  }, [bracketHeight]);
+
+  useEffect(() => {
     const updateScale = () => {
-      if (bracketContainerRef.current) {
-        const containerWidth = window.innerWidth;
-        const targetWidth = 1200; 
-        // Revert to full fitting scale (no horizontal scroll)
-        const scale = Math.min(1, (containerWidth - 24) / targetWidth);
-        setBracketScale(scale);
-      }
+      if (!bracketContainerRef.current) return;
+
+      const containerWidth = window.innerWidth;
+      const containerHeight = window.innerHeight;
+      const targetWidth = 1200;
+      const targetHeight = Math.max(800, bracketHeightRef.current);
+
+      // Sur PC/tablette on doit voir le bracket à taille réelle (scale = 1).
+      // On réduit uniquement quand la taille de l'écran est plus petite que le visuel.
+      const scaleWidth = (containerWidth - 24) / targetWidth;
+      const scaleHeight = (containerHeight - 200) / targetHeight; // Espace pour header/footer
+
+      // Sur PC / tablette, on affiche le bracket à taille réelle (scale=1) pour prendre toute la largeur.
+      // Sur mobile, on le scale pour tenir dans l'écran.
+      let scale = containerWidth >= targetWidth ? 1 : scaleWidth;
+
+      // Ne jamais descendre sous 0.25 pour garder lisible
+      scale = Math.max(0.25, scale);
+
+      setBracketScale(scale);
     };
 
     updateScale();
@@ -423,7 +441,7 @@ export default function App() {
   }, []);
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen overflow-x-hidden">
       {/* NAVBAR */}
       {currentPage !== 'admin' && (
         <>
@@ -570,7 +588,7 @@ export default function App() {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.2 }}
-            className="font-heading text-6xl md:text-8xl lg:text-[10rem] leading-none mb-4 tracking-tighter text-white text-luxury-glow"
+            className="font-heading text-4xl sm:text-5xl md:text-7xl lg:text-8xl leading-none mb-4 tracking-tighter text-white text-luxury-glow"
           >
             {config?.hero.title.split(' ').slice(0, -1).join(' ') || "ALL STARS BATTLE"} <br/>
             <span className="text-primary">{config?.hero.title.split(' ').slice(-1) || "INTERNATIONAL"}</span>
@@ -580,7 +598,7 @@ export default function App() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.4 }}
-            className="text-lg md:text-xl font-light tracking-[0.5em] uppercase mb-12 text-slate-400"
+            className="text-base sm:text-lg md:text-xl font-light tracking-[0.5em] uppercase mb-12 text-slate-400"
           >
             {config?.hero.subtitle || "Le Trône. Le Respect. La Légende."}
           </motion.p>
@@ -589,7 +607,7 @@ export default function App() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.6 }}
-            className="grid grid-cols-4 gap-4 max-w-2xl mx-auto mb-16 border-y border-white/10 py-8"
+            className="grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-2xl mx-auto mb-16 border-y border-white/10 py-8"
           >
             <CountdownItem value={timeLeft.days} label="Jours" />
             <CountdownItem value={timeLeft.hours} label="Heures" />
@@ -603,7 +621,7 @@ export default function App() {
             transition={{ delay: 0.8 }}
             className="flex flex-col sm:flex-row gap-6 justify-center mb-12"
           >
-            <button onClick={navigateTo('tickets')} className="btn-luxury-primary shimmer-effect">
+            <button onClick={navigateTo('tickets')} className="btn-luxury-primary shimmer-effect w-full sm:w-auto">
               BILLETERIE
             </button>
           </motion.div>
@@ -613,7 +631,7 @@ export default function App() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 1.0 }}
-            className="flex flex-col items-center gap-4"
+            className="flex flex-col items-center gap-4 max-w-md mx-auto"
           >
             <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-slate-500">Suivez-nous :</span>
             <div className="flex gap-8">
@@ -774,10 +792,10 @@ export default function App() {
           <div className="inline-block px-4 py-1 border border-primary/30 bg-primary/10 rounded-full mb-6">
             <span className="text-primary text-xs font-bold tracking-[0.2em] uppercase">Phase Finale - Lomé, Togo</span>
           </div>
-          <h1 className="font-heading text-6xl md:text-8xl text-white mb-4 tracking-tight uppercase">
+          <h1 className="font-heading text-4xl md:text-6xl text-white mb-4 tracking-tight uppercase">
             TABLEAU DES BATTLES <span className="text-primary">-</span> TOP 16
           </h1>
-          <p className="text-slate-400 max-w-2xl mx-auto font-light text-lg">
+          <p className="text-slate-400 max-w-2xl mx-auto font-light text-sm md:text-lg">
             Suivez en temps réel l'ascension des meilleurs B-Boys et B-Girls du monde vers le titre suprême de l'All Star Battle International 2026.
           </p>
         </div>

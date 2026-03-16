@@ -68,7 +68,7 @@ const Media = () => {
           <motion.h1 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="font-heading text-5xl sm:text-7xl md:text-9xl lg:text-[10rem] leading-none tracking-tighter text-white drop-shadow-2xl uppercase"
+            className="font-heading text-4xl sm:text-5xl md:text-7xl leading-none tracking-tighter text-white drop-shadow-2xl uppercase"
           >
             MÉDIAS & <span className="text-primary">HIGHLIGHTS</span>
           </motion.h1>

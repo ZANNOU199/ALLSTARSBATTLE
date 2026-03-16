@@ -63,7 +63,7 @@ const ArtisticScene = ({ onNavigateToProgram, onNavigateToTickets }: ArtisticSce
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.2 }}
-                  className="text-white text-5xl sm:text-7xl md:text-9xl font-heading leading-[0.9] mb-6 tracking-tighter uppercase"
+                  className="text-white text-4xl sm:text-5xl md:text-7xl font-heading leading-[0.9] mb-6 tracking-tighter uppercase"
                 >
                   LA SCÈNE <span className="text-primary italic">ARTISTIQUE</span>
                 </motion.h1>

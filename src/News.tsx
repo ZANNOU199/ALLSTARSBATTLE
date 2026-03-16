@@ -126,7 +126,7 @@ export default function News({ onBack, initialArticleId }: NewsProps) {
       <div className="max-w-7xl mx-auto px-6">
         <div className="mb-20 text-center">
           <span className="text-accent-red font-bold tracking-[0.5em] uppercase text-xs block mb-4">Le Blog Officiel</span>
-          <h1 className="text-7xl md:text-9xl font-heading text-white leading-none uppercase tracking-tighter">
+          <h1 className="text-4xl sm:text-5xl md:text-7xl font-heading text-white leading-none uppercase tracking-tighter">
             ACTUALITÉS <br/> <span className="text-primary italic">& NEWS</span>
           </h1>
         </div>

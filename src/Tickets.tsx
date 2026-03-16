@@ -57,7 +57,7 @@ const Tickets = () => {
           className="relative z-20 space-y-6 max-w-5xl"
         >
           <span className="text-accent-red font-heading text-2xl tracking-[0.3em] block uppercase">LOMÉ • TOGO • 2026</span>
-          <h1 className="text-7xl md:text-9xl font-heading leading-[0.85] uppercase tracking-tighter">
+          <h1 className="text-4xl sm:text-5xl md:text-7xl font-heading leading-[0.85] uppercase tracking-tighter">
             BILLETTERIE <br/> <span className="text-primary italic">& ACCÈS</span>
           </h1>
           <p className="text-xl md:text-2xl font-light text-slate-400 max-w-2xl mx-auto leading-relaxed italic">

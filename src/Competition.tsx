@@ -32,7 +32,7 @@ const Competition = () => {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
-            className="font-heading text-6xl sm:text-7xl md:text-9xl text-white tracking-tighter leading-none mb-6 drop-shadow-2xl uppercase"
+            className="font-heading text-4xl sm:text-5xl md:text-7xl text-white tracking-tighter leading-none mb-6 drop-shadow-2xl uppercase"
           >
             LA <span className="text-primary">COMPÉTITION</span>
           </motion.h1>

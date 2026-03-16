@@ -63,7 +63,7 @@ const History = () => {
           <motion.h1 
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="font-heading text-5xl sm:text-7xl md:text-9xl text-white tracking-tighter leading-none mb-6 uppercase"
+            className="font-heading text-4xl sm:text-5xl md:text-7xl text-white tracking-tighter leading-none mb-6 uppercase"
           >
             L'HÉRITAGE <span className="text-primary italic">DU BREAK</span>
           </motion.h1>

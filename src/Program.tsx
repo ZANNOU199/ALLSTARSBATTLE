@@ -173,7 +173,7 @@ const Program: React.FC<ProgramProps> = ({ onReserveTickets }) => {
           <motion.h1 
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="text-7xl md:text-9xl font-heading leading-[0.85] uppercase tracking-tighter"
+            className="text-4xl sm:text-5xl md:text-7xl font-heading leading-[0.85] uppercase tracking-tighter"
           >
             PROGRAMME <br/> <span className="text-primary italic">COMPLET</span>
           </motion.h1>
