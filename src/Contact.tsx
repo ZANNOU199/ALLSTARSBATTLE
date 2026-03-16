@@ -24,8 +24,14 @@ const Contact = ({ onNavigateToFAQ }: ContactProps) => {
 
   useEffect(() => {
     const data = cmsService.getData();
-    setConfig(data.globalConfig);
-    setFaqs(data.ticketing.faqs.slice(0, 3));
+    if (data) {
+      if (data.globalConfig) {
+        setConfig(data.globalConfig);
+      }
+      if (data.ticketing && data.ticketing.faqs) {
+        setFaqs(data.ticketing.faqs.slice(0, 3));
+      }
+    }
   }, []);
 
   const handleSubmit = (e: React.FormEvent) => {

@@ -140,7 +140,26 @@ export interface GlobalConfig {
     backgroundImage: string;
     videoUrl: string;
   };
-  homepageStats: {
+  competition: {
+    sectionTitle: string;
+    sectionSubtitle: string;
+    dateStart: string;
+    location: string;
+    description: string;
+  };
+  dancers: {
+    sectionTitle: string;
+    sectionSubtitle: string;
+  };
+  programmation: {
+    sectionTitle: string;
+    sectionSubtitle: string;
+  };
+  vip: {
+    sectionTitle: string;
+    sectionSubtitle: string;
+  };
+  stats: {
     label: string;
     value: string;
   }[];
@@ -160,6 +179,7 @@ export interface MediaItem {
 }
 
 export interface CMSData {
+  version?: string;
   companies: Company[];
   participants: Participant[];
   program: ProgramDay[];

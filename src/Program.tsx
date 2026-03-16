@@ -30,12 +30,21 @@ const Program: React.FC<ProgramProps> = ({ onReserveTickets }) => {
   const [startIndex, setStartIndex] = useState(0);
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const [schedule, setSchedule] = useState<any[]>([]);
+  const [sectionConfig, setSectionConfig] = useState({ title: 'PLANNING DE L\'ÉVÉNEMENT', subtitle: "Suivez le rythme du All Stars Battle International Togo 2026." });
   
   // Responsive days per page
   const [daysPerPage, setDaysPerPage] = useState(5);
 
   useEffect(() => {
     const data = cmsService.getData();
+    
+    if (data && data.globalConfig && data.globalConfig.programmation) {
+      setSectionConfig({
+        title: data.globalConfig.programmation.sectionTitle || 'PLANNING DE L\'ÉVÉNEMENT',
+        subtitle: data.globalConfig.programmation.sectionSubtitle || "Suivez le rythme du All Stars Battle International Togo 2026."
+      });
+    }
+
     const getIcon = (category: string) => {
       switch (category) {
         case 'Competition': return <Trophy className="w-5 h-5" />;
@@ -47,19 +56,21 @@ const Program: React.FC<ProgramProps> = ({ onReserveTickets }) => {
       }
     };
 
-    const formattedSchedule = data.program.map(day => ({
-      date: day.label,
-      theme: day.date, // Using date string as theme for now or we could add theme to CMS
-      events: day.activities.map(act => ({
-        time: act.time,
-        title: act.title,
-        location: act.location,
-        category: act.category,
-        desc: act.description,
-        icon: getIcon(act.category)
-      }))
-    }));
-    setSchedule(formattedSchedule);
+    if (data && data.program) {
+      const formattedSchedule = data.program.map(day => ({
+        date: day.label,
+        theme: day.date, // Using date string as theme for now or we could add theme to CMS
+        events: day.activities.map(act => ({
+          time: act.time,
+          title: act.title,
+          location: act.location,
+          category: act.category,
+          desc: act.description,
+          icon: getIcon(act.category)
+        }))
+      }));
+      setSchedule(formattedSchedule);
+    }
   }, []);
 
   useEffect(() => {
@@ -175,14 +186,20 @@ const Program: React.FC<ProgramProps> = ({ onReserveTickets }) => {
             animate={{ opacity: 1, scale: 1 }}
             className="text-7xl md:text-9xl font-heading leading-[0.85] uppercase tracking-tighter"
           >
-            PROGRAMME <br/> <span className="text-primary italic">COMPLET</span>
+            {sectionConfig.title.split(' ').map((word, i) => (
+              <React.Fragment key={i}>
+                {i === 1 ? <span className="text-primary italic">{word}</span> : word}
+                {i === 0 && <br/>}
+                {' '}
+              </React.Fragment>
+            ))}
           </motion.h1>
           <motion.p 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             className="text-xl md:text-2xl font-light text-slate-400 max-w-2xl mx-auto leading-relaxed italic"
           >
-            10 jours d'immersion totale dans la culture urbaine.
+            {sectionConfig.subtitle}
           </motion.p>
         </div>
       </section>
@@ -276,7 +293,7 @@ const Program: React.FC<ProgramProps> = ({ onReserveTickets }) => {
             animate={{ opacity: 1, y: 0 }}
             className="font-heading text-5xl text-white uppercase tracking-widest mb-4"
           >
-            {schedule[selectedDay].theme}
+            {schedule[selectedDay]?.theme}
           </motion.h2>
           <div className="w-24 h-1 bg-primary mx-auto"></div>
         </div>
@@ -290,9 +307,9 @@ const Program: React.FC<ProgramProps> = ({ onReserveTickets }) => {
               exit={{ opacity: 0, x: -20 }}
               className="space-y-6"
             >
-              {schedule[selectedDay].events
-                .filter(event => selectedCategory === "Tous" || event.category === selectedCategory)
-                .map((event, idx) => (
+              {schedule[selectedDay]?.events
+                ?.filter(event => selectedCategory === "Tous" || event.category === selectedCategory)
+                ?.map((event, idx) => (
                   <div 
                     key={idx}
                     className="group bg-surface-dark border border-white/5 p-8 rounded-xl hover:border-primary/30 transition-all duration-500 flex flex-col md:flex-row gap-8 items-center"
@@ -327,7 +344,7 @@ const Program: React.FC<ProgramProps> = ({ onReserveTickets }) => {
                     </div>
                   </div>
                 ))}
-              {schedule[selectedDay].events.filter(event => selectedCategory === "Tous" || event.category === selectedCategory).length === 0 && (
+              {(schedule[selectedDay]?.events?.filter(event => selectedCategory === "Tous" || event.category === selectedCategory).length === 0 || !schedule[selectedDay]) && (
                 <div className="text-center py-20 border border-dashed border-white/10 rounded-xl">
                   <p className="text-slate-500 font-bold tracking-widest uppercase text-xs">Aucun événement trouvé dans cette catégorie pour ce jour.</p>
                 </div>

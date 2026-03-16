@@ -36,9 +36,11 @@ import TicketingFAQ from './modules/TicketingFAQ';
 import HistoryLegends from './modules/HistoryLegends';
 import PartnersMedia from './modules/PartnersMedia';
 import GlobalConfigSEO from './modules/GlobalConfigSEO';
+import HomepageContent from './modules/HomepageContent';
 
 type ModuleId = 
   | 'dashboard' 
+  | 'homepage'
   | 'scene' 
   | 'participants' 
   | 'program' 
@@ -60,6 +62,7 @@ export default function AdminDashboard({ onLogout }: { onLogout: () => void }) {
 
   const menuItems = [
     { id: 'dashboard', label: 'Tableau de Bord', icon: LayoutDashboard },
+    { id: 'homepage', label: 'Contenu Accueil (Page)', icon: Palette },
     { id: 'scene', label: 'Scène Artistique', icon: Palette },
     { id: 'participants', label: 'Participants & Jury', icon: Users },
     { id: 'program', label: 'Programme & Planning', icon: Calendar },
@@ -68,12 +71,13 @@ export default function AdminDashboard({ onLogout }: { onLogout: () => void }) {
     { id: 'ticketing', label: 'Billetterie & FAQ', icon: Ticket },
     { id: 'history', label: 'Histoire & Légendes', icon: History },
     { id: 'partners', label: 'Partenaires & Médias', icon: Handshake },
-    { id: 'config', label: 'Configuration & SEO', icon: Settings },
+    { id: 'config', label: 'Configura tion & SEO', icon: Settings },
   ];
 
   const renderModule = () => {
     switch (activeModule) {
       case 'dashboard': return <DashboardOverview data={data} />;
+      case 'homepage': return <HomepageContent data={data} setData={setData} />;
       case 'scene': return <SceneArtistique data={data} setData={setData} />;
       case 'participants': return <ParticipantsJury data={data} setData={setData} />;
       case 'program': return <ProgramPlanning data={data} setData={setData} />;
@@ -146,6 +150,17 @@ export default function AdminDashboard({ onLogout }: { onLogout: () => void }) {
             {menuItems.find(m => m.id === activeModule)?.label}
           </h2>
           <div className="flex items-center gap-4">
+            <button 
+              onClick={() => {
+                if (window.confirm("Êtes-vous sûr de vouloir réinitialiser toutes les données aux valeurs par défaut du code ? Vos modifications dans ce tableau de bord seront perdues.")) {
+                  cmsService.resetData();
+                }
+              }}
+              className="flex items-center gap-2 px-3 py-1 bg-accent-red/10 hover:bg-accent-red/20 rounded-full border border-accent-red/30 transition-all text-accent-red"
+            >
+              <Trash2 size={14} />
+              <span className="text-[10px] font-bold uppercase tracking-widest">Réinitialiser</span>
+            </button>
             <div className="flex items-center gap-2 px-3 py-1 bg-white/5 rounded-full border border-white/10">
               <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
               <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Live Sync</span>

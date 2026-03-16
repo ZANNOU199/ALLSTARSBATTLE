@@ -28,22 +28,24 @@ export default function News({ onBack, initialArticleId }: NewsProps) {
 
   React.useEffect(() => {
     const data = cmsService.getData();
-    const formattedArticles = data.blog.articles.map(a => ({
-      id: a.id,
-      date: a.date,
-      title: a.title,
-      desc: a.content.substring(0, 150) + "...",
-      tag: a.category,
-      content: a.content,
-      image: a.coverImage,
-      author: "Admin All Stars", // Default author
-      category: a.category
-    }));
-    setArticles(formattedArticles);
-    
-    if (initialArticleId) {
-      const found = formattedArticles.find(a => a.id === initialArticleId);
-      if (found) setSelectedArticle(found);
+    if (data && data.blog && data.blog.articles) {
+      const formattedArticles = data.blog.articles.map(a => ({
+        id: a.id,
+        date: a.date,
+        title: a.title,
+        desc: a.content.substring(0, 150) + "...",
+        tag: a.category,
+        content: a.content,
+        image: a.coverImage,
+        author: "Admin All Stars", // Default author
+        category: a.category
+      }));
+      setArticles(formattedArticles);
+      
+      if (initialArticleId) {
+        const found = formattedArticles.find(a => a.id === initialArticleId);
+        if (found) setSelectedArticle(found);
+      }
     }
   }, [initialArticleId]);
 

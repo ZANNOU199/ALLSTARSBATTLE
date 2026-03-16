@@ -1,6 +1,6 @@
 import React from 'react';
 import { CMSData } from '../../types';
-import { Globe, Mail, Phone, MapPin, TrendingUp, Layout } from 'lucide-react';
+import { Globe, Mail, Phone, MapPin, TrendingUp, Layout, Calendar, Trophy, Instagram, Facebook, Twitter, Youtube } from 'lucide-react';
 
 export default function GlobalConfigSEO({ data, setData }: { data: CMSData, setData: React.Dispatch<React.SetStateAction<CMSData>> }) {
   const updateContact = (field: string, value: string) => {
@@ -9,6 +9,16 @@ export default function GlobalConfigSEO({ data, setData }: { data: CMSData, setD
       globalConfig: {
         ...prev.globalConfig,
         contact: { ...prev.globalConfig.contact, [field]: value }
+      }
+    }));
+  };
+
+  const updateSocials = (field: string, value: string) => {
+    setData(prev => ({
+      ...prev,
+      globalConfig: {
+        ...prev.globalConfig,
+        socials: { ...prev.globalConfig.socials, [field]: value }
       }
     }));
   };
@@ -33,14 +43,24 @@ export default function GlobalConfigSEO({ data, setData }: { data: CMSData, setD
     }));
   };
 
+  const updateEventDate = (value: string) => {
+    setData(prev => ({
+      ...prev,
+      globalConfig: {
+        ...prev.globalConfig,
+        eventDate: value
+      }
+    }));
+  };
+
   const updateStat = (index: number, field: 'label' | 'value', value: string) => {
-    const newStats = [...data.globalConfig.homepageStats];
+    const newStats = [...data.globalConfig.stats];
     newStats[index] = { ...newStats[index], [field]: value };
     setData(prev => ({
       ...prev,
       globalConfig: {
         ...prev.globalConfig,
-        homepageStats: newStats
+        stats: newStats
       }
     }));
   };
@@ -94,7 +114,7 @@ export default function GlobalConfigSEO({ data, setData }: { data: CMSData, setD
       <div className="bg-[#111] border border-white/10 p-8 rounded-2xl space-y-6">
         <h4 className="font-heading text-lg flex items-center gap-2"><TrendingUp size={20} className="text-primary" /> Statistiques Clés</h4>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {data.globalConfig.homepageStats.map((stat, idx) => (
+          {data.globalConfig.stats.map((stat, idx) => (
             <div key={idx} className="space-y-4 p-4 bg-white/5 rounded-xl border border-white/5">
               <div className="space-y-2">
                 <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Libellé</label>
@@ -151,8 +171,61 @@ export default function GlobalConfigSEO({ data, setData }: { data: CMSData, setD
                 className="w-full bg-white/5 border border-white/10 rounded-xl p-3 focus:border-primary outline-none transition-all"
               />
             </div>
+            <div className="space-y-2">
+              <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Date de l'événement (ISO)</label>
+              <input 
+                type="text" 
+                value={data.globalConfig.eventDate} 
+                onChange={e => updateEventDate(e.target.value)}
+                className="w-full bg-white/5 border border-white/10 rounded-xl p-3 focus:border-primary outline-none transition-all"
+              />
+            </div>
           </div>
         </div>
+
+        {/* Socials */}
+        <div className="bg-[#111] border border-white/10 p-8 rounded-2xl space-y-6">
+          <h4 className="font-heading text-lg flex items-center gap-2"><Globe size={20} className="text-primary" /> Réseaux Sociaux</h4>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Instagram</label>
+              <input 
+                type="text" 
+                value={data.globalConfig.socials.instagram} 
+                onChange={e => updateSocials('instagram', e.target.value)}
+                className="w-full bg-white/5 border border-white/10 rounded-xl p-3 focus:border-primary outline-none transition-all"
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Facebook</label>
+              <input 
+                type="text" 
+                value={data.globalConfig.socials.facebook} 
+                onChange={e => updateSocials('facebook', e.target.value)}
+                className="w-full bg-white/5 border border-white/10 rounded-xl p-3 focus:border-primary outline-none transition-all"
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Twitter</label>
+              <input 
+                type="text" 
+                value={data.globalConfig.socials.twitter} 
+                onChange={e => updateSocials('twitter', e.target.value)}
+                className="w-full bg-white/5 border border-white/10 rounded-xl p-3 focus:border-primary outline-none transition-all"
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Youtube</label>
+              <input 
+                type="text" 
+                value={data.globalConfig.socials.youtube} 
+                onChange={e => updateSocials('youtube', e.target.value)}
+                className="w-full bg-white/5 border border-white/10 rounded-xl p-3 focus:border-primary outline-none transition-all"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
 
         {/* SEO Config */}
         <div className="bg-[#111] border border-white/10 p-8 rounded-2xl space-y-6">
@@ -188,6 +261,5 @@ export default function GlobalConfigSEO({ data, setData }: { data: CMSData, setD
           </div>
         </div>
       </div>
-    </div>
   );
 }

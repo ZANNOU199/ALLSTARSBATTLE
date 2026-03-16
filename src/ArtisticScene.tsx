@@ -23,7 +23,9 @@ const ArtisticScene = ({ onNavigateToProgram, onNavigateToTickets }: ArtisticSce
 
   useEffect(() => {
     const data = cmsService.getData();
-    setCompanies(data.companies);
+    if (data && data.companies) {
+      setCompanies(data.companies);
+    }
   }, []);
 
   return (
