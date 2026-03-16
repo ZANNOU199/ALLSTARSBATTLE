@@ -103,16 +103,15 @@ export default function ProgramPlanning({ data, setData }: { data: CMSData, setD
         newNum = parseInt(afterLabelMatch[1]) + 1;
       }
 
-      // Shift all days with number >= newNum
-      for (let i = 0; i < program.length; i++) {
-        const day = program[i];
-        const labelMatch = day.label.match(/JOUR (\d+)/);
-        if (labelMatch) {
-          const currentNum = parseInt(labelMatch[1]);
-          if (currentNum >= newNum) {
-            day.label = `JOUR ${(currentNum + 1).toString().padStart(2, '0')}`;
-          }
-        }
+      // Check if this number already exists
+      const existingDayWithNum = program.find(d => {
+        const match = d.label.match(/JOUR (\d+)/);
+        return match && parseInt(match[1]) === newNum;
+      });
+
+      if (existingDayWithNum) {
+        // If the number already exists, don't create
+        return prev;
       }
 
       // Create new day
