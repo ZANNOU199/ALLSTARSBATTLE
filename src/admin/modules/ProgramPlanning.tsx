@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { CMSData, ProgramDay, Activity } from '../../types';
 import { Plus, Trash2, Edit, Save, X, Clock, MapPin, Tag } from 'lucide-react';
 
@@ -8,6 +8,16 @@ export default function ProgramPlanning({ data, setData }: { data: CMSData, setD
   const [editingActivityId, setEditingActivityId] = useState<string | null>(null);
   const [editingDateId, setEditingDateId] = useState<string | null>(null);
   const [activityFormData, setActivityFormData] = useState<Partial<Activity>>({});
+  const activitiesSectionRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (selectedDayId && activitiesSectionRef.current) {
+      activitiesSectionRef.current.scrollIntoView({ 
+        behavior: 'smooth', 
+        block: 'start' 
+      });
+    }
+  }, [selectedDayId]);
 
   const handleAddDay = () => {
     let newLabel = '';
@@ -228,7 +238,7 @@ export default function ProgramPlanning({ data, setData }: { data: CMSData, setD
       </div>
 
       {/* Activities List */}
-      <div className="space-y-6">
+      <div ref={activitiesSectionRef} className="space-y-6">
         <div className="flex justify-between items-center">
           <h3 className="text-xl font-heading">Activités du {selectedDay?.label}</h3>
           <button
