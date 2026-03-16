@@ -158,25 +158,25 @@ const NewsCard: React.FC<NewsCardProps> = ({ date, title, desc, tag, color = "pr
 const BracketMatch = ({ player1, player2, score1 = "--", score2 = "--", country1, country2, countryCode1, countryCode2, side = "left", color = "primary" }: any) => (
   <div className={`flex flex-col gap-1 bg-white/5 p-2 md:p-4 rounded border-${side === "left" ? "l" : "r"}-4 ${color === "primary" ? "border-primary" : "border-accent-red"} relative transition-all hover:bg-white/10`}>
     <div className={`flex justify-between items-center ${side === "right" ? "flex-row-reverse" : ""}`}>
-      <span className="font-bold text-sm sm:text-lg md:text-sm uppercase leading-tight flex items-center gap-1 md:gap-2">
+      <span className="font-bold text-lg sm:text-xl md:text-sm uppercase leading-tight flex items-center gap-1 md:gap-2">
         {player1} 
-        <span className="text-xs sm:text-sm md:text-[10px] text-slate-500 flex items-center gap-1">
-          <img src={`https://flagcdn.com/w20/${countryCode1}.png`} alt={country1} className="w-3 h-auto rounded-sm" />
+        <span className="text-sm sm:text-base md:text-[10px] text-slate-500 flex items-center gap-1">
+          <img src={`https://flagcdn.com/w20/${countryCode1}.png`} alt={country1} className="w-4 sm:w-5 h-auto rounded-sm" />
           {country1}
         </span>
       </span>
-      <span className="text-primary font-mono text-sm sm:text-lg md:text-sm">{score1}</span>
+      <span className="text-primary font-mono text-lg sm:text-xl md:text-sm">{score1}</span>
     </div>
     <div className="h-[1px] bg-white/10 my-1 md:my-2"></div>
     <div className={`flex justify-between items-center ${side === "right" ? "flex-row-reverse" : ""}`}>
-      <span className="font-bold text-sm sm:text-lg md:text-sm uppercase leading-tight flex items-center gap-1 md:gap-2">
+      <span className="font-bold text-lg sm:text-xl md:text-sm uppercase leading-tight flex items-center gap-1 md:gap-2">
         {player2} 
         <span className="text-sm sm:text-base md:text-[10px] text-slate-500 flex items-center gap-1">
-          <img src={`https://flagcdn.com/w20/${countryCode2}.png`} alt={country2} className="w-4 h-auto rounded-sm" />
+          <img src={`https://flagcdn.com/w20/${countryCode2}.png`} alt={country2} className="w-4 sm:w-5 h-auto rounded-sm" />
           {country2}
         </span>
       </span>
-      <span className="text-primary font-mono text-sm sm:text-lg md:text-sm">{score2}</span>
+      <span className="text-primary font-mono text-lg sm:text-xl md:text-sm">{score2}</span>
     </div>
   </div>
 );
