@@ -140,6 +140,36 @@ export interface GlobalConfig {
     backgroundImage: string;
     videoUrl: string;
   };
+  competition: {
+    dateStart: string;
+    location: string;
+    description: string;
+  };
+  dancers: {
+    sectionTitle: string;
+    sectionSubtitle: string;
+  };
+  programmation: {
+    sectionTitle: string;
+  };
+  vip: {
+    sectionTitle: string;
+    sectionDescription: string;
+  };
+  stats: {
+    label: string;
+    value: string;
+  }[];
+  partners: {
+    sectionTitle: string;
+  };
+  blog: {
+    sectionTitle: string;
+  };
+  footer: {
+    description: string;
+    copyright: string;
+  };
   homepageStats: {
     label: string;
     value: string;

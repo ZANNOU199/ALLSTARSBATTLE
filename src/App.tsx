@@ -306,13 +306,25 @@ export default function App() {
   const [config, setConfig] = useState<GlobalConfig | null>(null);
   const [stats, setStats] = useState<any[]>([]);
   const [recentNews, setRecentNews] = useState<any[]>([]);
+  const [participants, setParticipants] = useState<any[]>([]);
+  const [programData, setProgramData] = useState<any[]>([]);
 
   useEffect(() => {
     const data = cmsService.getData();
     setConfig(data.globalConfig);
     setStats(data.globalConfig.homepageStats);
     setRecentNews(data.blog.articles.slice(0, 3));
+    setParticipants(data.participants);
+    setProgramData(data.program);
   }, []);
+
+  // Recharge la config quand on revient de l'admin avec les nouvelles données
+  useEffect(() => {
+    if (currentPage !== 'admin') {
+      const data = cmsService.getData();
+      setConfig(data.globalConfig);
+    }
+  }, [currentPage]);
 
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
 
@@ -413,7 +425,9 @@ export default function App() {
   return (
     <div className="min-h-screen">
       {/* NAVBAR */}
-      <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${scrolled ? 'bg-background-dark/95 backdrop-blur-md border-b border-primary/10 h-16' : 'bg-transparent h-20'}`}>
+      {currentPage !== 'admin' && (
+        <>
+          <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${scrolled ? 'bg-background-dark/95 backdrop-blur-md border-b border-primary/10 h-16' : 'bg-transparent h-20'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full">
           <div className="flex justify-between items-center h-full">
             <div className="flex items-center gap-2">
@@ -450,6 +464,7 @@ export default function App() {
               <NavLink href="#news" active={currentPage === 'news'} onClick={navigateTo('news')}>Blog</NavLink>
               <NavLink href="#vip" red onClick={navigateTo('home', '#vip')}>VIP</NavLink>
               <NavLink href="#contact" active={currentPage === 'contact'} onClick={navigateTo('contact')}>Contact</NavLink>
+              <NavLink href="#admin" active={currentPage === 'admin'} red onClick={navigateTo('admin')}>Admin</NavLink>
             </div>
 
             <div className="flex items-center gap-4">
@@ -504,10 +519,14 @@ export default function App() {
               </div>
 
               <a href="#contact" onClick={navigateTo('contact')} className={`text-3xl font-heading uppercase ${currentPage === 'contact' ? 'text-primary' : 'text-white'}`}>Contact</a>
+              
+              <a href="#admin" onClick={navigateTo('admin')} className={`text-3xl font-heading uppercase ${currentPage === 'admin' ? 'text-primary' : 'text-accent-red'}`}>Admin</a>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
+        </>
+      )}
 
       {currentPage === 'home' ? (
         <>
@@ -584,11 +603,8 @@ export default function App() {
             transition={{ delay: 0.8 }}
             className="flex flex-col sm:flex-row gap-6 justify-center mb-12"
           >
-            <button className="btn-luxury-primary shimmer-effect">
+            <button onClick={navigateTo('tickets')} className="btn-luxury-primary shimmer-effect">
               BILLETERIE
-            </button>
-            <button className="btn-luxury-secondary">
-              S'INSCRIRE
             </button>
           </motion.div>
 
@@ -601,10 +617,10 @@ export default function App() {
           >
             <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-slate-500">Suivez-nous :</span>
             <div className="flex gap-8">
-              <a href="#" className="text-white hover:text-primary transition-all hover:scale-125"><Instagram className="w-5 h-5" /></a>
-              <a href="#" className="text-white hover:text-primary transition-all hover:scale-125"><Facebook className="w-5 h-5" /></a>
-              <a href="#" className="text-white hover:text-primary transition-all hover:scale-125"><Twitter className="w-5 h-5" /></a>
-              <a href="#" className="text-white hover:text-primary transition-all hover:scale-125"><Youtube className="w-5 h-5" /></a>
+              <a href={config?.socials.instagram || '#'} target="_blank" rel="noopener noreferrer" className="text-white hover:text-primary transition-all hover:scale-125"><Instagram className="w-5 h-5" /></a>
+              <a href={config?.socials.facebook || '#'} target="_blank" rel="noopener noreferrer" className="text-white hover:text-primary transition-all hover:scale-125"><Facebook className="w-5 h-5" /></a>
+              <a href={config?.socials.twitter || '#'} target="_blank" rel="noopener noreferrer" className="text-white hover:text-primary transition-all hover:scale-125"><Twitter className="w-5 h-5" /></a>
+              <a href={config?.socials.youtube || '#'} target="_blank" rel="noopener noreferrer" className="text-white hover:text-primary transition-all hover:scale-125"><Youtube className="w-5 h-5" /></a>
             </div>
           </motion.div>
         </div>
@@ -634,15 +650,15 @@ export default function App() {
             <div className="flex flex-col gap-4 mb-8">
               <div className="flex items-center gap-4 text-slate-300">
                 <Calendar className="text-primary w-5 h-5" />
-                <span className="text-lg font-bold">14 - 16 AOÛT 2026</span>
+                <span className="text-lg font-bold">{config?.competition.dateStart || '14 - 16 AOÛT 2026'}</span>
               </div>
               <div className="flex items-center gap-4 text-slate-300">
                 <MapPin className="text-primary w-5 h-5" />
-                <span className="text-lg font-bold">PALAIS DES CONGRÈS DE LOMÉ, TOGO</span>
+                <span className="text-lg font-bold">{config?.competition.location || 'PALAIS DES CONGRÈS DE LOMÉ, TOGO'}</span>
               </div>
             </div>
             <p className="text-slate-400 leading-relaxed mb-8 text-lg">
-              L'élite mondiale du breaking et du hip-hop se réunit sur les terres du Togo pour la plus grande battle d'Afrique. 3 jours de compétition intense, de workshops et de culture urbaine. Le vainqueur n'emporte pas seulement le titre, il entre dans l'histoire.
+              {config?.competition.description || 'L\'élite mondiale du breaking et du hip-hop se réunit sur les terres du Togo pour la plus grande battle d\'Afrique. 3 jours de compétition intense, de workshops et de culture urbaine. Le vainqueur n\'emporte pas seulement le titre, il entre dans l\'histoire.'}
             </p>
             <a href="#" className="inline-flex items-center gap-2 text-primary font-bold tracking-widest uppercase hover:underline">
               Détails du tournoi <ArrowRight className="w-4 h-4" />
@@ -656,16 +672,23 @@ export default function App() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-end mb-12">
             <div>
-              <span className="text-accent-red font-bold tracking-[0.3em] uppercase text-xs">Featured</span>
-              <h2 className="font-heading text-5xl md:text-7xl text-white uppercase leading-none">LES DANSEURS</h2>
+              <span className="text-accent-red font-bold tracking-[0.3em] uppercase text-xs">{config?.dancers.sectionSubtitle || 'Featured'}</span>
+              <h2 className="font-heading text-5xl md:text-7xl text-white uppercase leading-none">{config?.dancers.sectionTitle || 'LES DANSEURS'}</h2>
             </div>
             <a href="#" className="text-slate-500 hover:text-white transition-colors uppercase font-bold text-xs tracking-widest pb-2">Voir tous les profils</a>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <DancerCard name="B-BOY RYU" origin="Japon | 2024 Champion" image="https://picsum.photos/seed/ryu/400/600" />
-            <DancerCard name="B-GIRL STORM" origin="France | Power Move specialist" image="https://picsum.photos/seed/storm/400/600" />
-            <DancerCard name="B-BOY KODJO" origin="Togo | Host Nation Hero" image="https://picsum.photos/seed/kodjo/400/600" />
-            <DancerCard name="B-BOY ZIP" origin="USA | Footwork King" image="https://picsum.photos/seed/zip/400/600" />
+            {participants
+              .filter(p => p.category === 'dancer')
+              .slice(0, 4)
+              .map((dancer) => (
+                <DancerCard 
+                  key={dancer.id}
+                  name={dancer.name} 
+                  origin={`${dancer.country} | ${dancer.specialty}`} 
+                  image={dancer.photo} 
+                />
+              ))}
           </div>
         </div>
       </section>
@@ -673,66 +696,62 @@ export default function App() {
       {/* PROGRAMME */}
       <section id="program" className="py-24 bg-surface-dark border-y border-white/5">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="font-heading text-5xl md:text-7xl text-white uppercase text-center mb-16 tracking-tight">PROGRAMMATION</h2>
+          <h2 className="font-heading text-5xl md:text-7xl text-white uppercase text-center mb-16 tracking-tight">{config?.programmation.sectionTitle || 'PROGRAMMATION'}</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* Day 1 */}
-            <div className="border border-white/10 p-8 hover:border-primary transition-all bg-background-dark/40 group relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-24 h-24 bg-accent-red/5 blur-2xl group-hover:bg-accent-red/10 transition-colors"></div>
-              <div className="flex justify-between items-start mb-8 relative z-10">
-                <div className="flex flex-col">
-                  <span className="text-4xl font-heading text-primary">JOUR 01</span>
-                  <span className="text-xs font-bold tracking-[0.2em] text-accent-red mt-1 uppercase">Workshops & Culture</span>
+            {programData.slice(0, 3).map((day, dayIdx) => (
+              <div 
+                key={day.id} 
+                className={`border p-8 group relative overflow-hidden transition-all ${
+                  dayIdx === 1 
+                    ? 'border-2 border-primary bg-primary/5 shadow-[0_0_30px_rgba(211,95,23,0.1)]' 
+                    : 'border-white/10 hover:border-primary bg-background-dark/40'
+                }`}
+              >
+                <div className={`absolute top-0 right-0 w-24 h-24 blur-2xl ${
+                  dayIdx === 1 
+                    ? 'bg-primary/10' 
+                    : 'bg-accent-red/5 group-hover:bg-accent-red/10'
+                } transition-colors`}></div>
+                
+                <div className="flex justify-between items-start mb-8 relative z-10">
+                  <div className="flex flex-col">
+                    <span className="text-4xl font-heading text-primary">{day.label}</span>
+                    {day.activities.length > 0 && (
+                      <span className="text-xs font-bold tracking-[0.2em] text-accent-red mt-1 uppercase">
+                        {day.activities[0]?.title.split(' ')[0] || 'Événement'}
+                      </span>
+                    )}
+                  </div>
+                  <span className={`text-xs font-bold px-3 py-1 ${
+                    dayIdx === 1 
+                      ? 'bg-primary text-background-dark' 
+                      : 'bg-white/10 text-slate-300'
+                  }`}>
+                    {new Date(day.date).toLocaleDateString('fr-FR', { day: '2-digit', month: 'long' }).toUpperCase()}
+                  </span>
                 </div>
-                <span className="text-xs font-bold bg-white/10 px-3 py-1 text-slate-300">14 AOÛT</span>
-              </div>
-              <div className="space-y-6 relative z-10">
-                <ProgramItem time="10:00 - 16:00" title="Masterclasses Internationales" desc="Apprentissage technique avec les légendes du breaking mondial." />
-                <ProgramItem time="18:00 - 20:00" title="Pièces Chorégraphiques" desc="Spectacles d'ouverture par des compagnies africaines renommées." color="accent-red" />
-                <ProgramItem time="21:00" title="Conférence de Presse & Kick-off" desc="Soirée de lancement officielle au Palais des Congrès." />
-              </div>
-            </div>
 
-            {/* Day 2 */}
-            <div className="border-2 border-primary p-8 bg-primary/5 group relative overflow-hidden shadow-[0_0_30px_rgba(211,95,23,0.1)]">
-              <div className="absolute top-0 right-0 w-24 h-24 bg-primary/10 blur-2xl"></div>
-              <div className="flex justify-between items-start mb-8 relative z-10">
-                <div className="flex flex-col">
-                  <span className="text-4xl font-heading text-primary">JOUR 02</span>
-                  <span className="text-xs font-bold tracking-[0.2em] text-accent-red mt-1 uppercase">The Competition</span>
+                <div className="space-y-6 relative z-10">
+                  {day.activities.slice(0, 3).map((activity, actIdx) => {
+                    const isRedLine = actIdx % 2 === 0;
+                    return (
+                      <div 
+                        key={activity.id} 
+                        className={`${
+                          isRedLine 
+                            ? 'border-l-2 border-accent-red/30 hover:border-accent-red hover:shadow-[inset_12px_0_12px_rgba(220,38,38,0.6)]' 
+                            : 'border-l-2 border-primary/30 hover:border-primary hover:shadow-[inset_12px_0_12px_rgba(211,95,23,0.6)]'
+                        } pl-4 py-2 transition-all duration-300 cursor-pointer`}
+                      >
+                        <span className="text-[10px] font-bold text-primary uppercase tracking-widest">{activity.time}</span>
+                        <h4 className="text-white font-bold text-sm uppercase">{activity.title}</h4>
+                        <p className="text-slate-400 text-xs mt-1">{activity.description}</p>
+                      </div>
+                    );
+                  })}
                 </div>
-                <span className="text-xs font-bold bg-primary text-background-dark px-3 py-1">15 AOÛT</span>
               </div>
-              <div className="space-y-6 relative z-10">
-                <div className="border-l-2 border-primary pl-4 py-1 bg-white/5">
-                  <span className="text-[10px] font-bold text-primary uppercase tracking-widest">11:00 - 15:00</span>
-                  <h4 className="text-white font-bold text-sm uppercase">Preliminary Rounds</h4>
-                  <p className="text-slate-400 text-xs mt-1">Sélection drastique des meilleurs breakers du continent.</p>
-                </div>
-                <ProgramItem time="16:00 - 19:00" title="2vs2 Open Category" desc="Batailles intenses en duo pour une place en finale." color="accent-red" />
-                <ProgramItem time="20:00" title="Top 16 Seeding" desc="Annonce des têtes de série pour les phases finales." />
-              </div>
-            </div>
-
-            {/* Day 3 */}
-            <div className="border border-white/10 p-8 hover:border-primary transition-all bg-background-dark/40 group relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-24 h-24 bg-accent-red/5 blur-2xl group-hover:bg-accent-red/10 transition-colors"></div>
-              <div className="flex justify-between items-start mb-8 relative z-10">
-                <div className="flex flex-col">
-                  <span className="text-4xl font-heading text-primary">JOUR 03</span>
-                  <span className="text-xs font-bold tracking-[0.2em] text-accent-red mt-1 uppercase">The Grand Finale</span>
-                </div>
-                <span className="text-xs font-bold bg-white/10 px-3 py-1 text-slate-300">16 AOÛT</span>
-              </div>
-              <div className="space-y-6 relative z-10">
-                <ProgramItem time="14:00 - 16:00" title="Workshop All Stars" desc="Session exclusive avec les juges internationaux." color="accent-red" />
-                <div className="border-l-2 border-primary pl-4 py-1 bg-primary/10">
-                  <span className="text-[10px] font-bold text-primary uppercase tracking-widest">18:00 - 22:00</span>
-                  <h4 className="text-white font-bold text-sm uppercase">World Finals - Main Stage</h4>
-                  <p className="text-slate-400 text-xs mt-1">Le couronnement du champion All Stars Battle 2026.</p>
-                </div>
-                <ProgramItem time="23:00 - Late" title="Official After-party" desc="Célébration finale avec DJs internationaux et performers." color="accent-red" />
-              </div>
-            </div>
+            ))}
           </div>
           <div className="mt-12 text-center">
             <a 
@@ -809,9 +828,9 @@ export default function App() {
             <div className="grid lg:grid-cols-2 gap-16 items-center">
               <div>
                 <span className="text-primary font-bold tracking-[0.5em] uppercase text-xs">Exclusif</span>
-                <h2 className="font-heading text-6xl md:text-8xl text-white mb-6 uppercase leading-none">EXPÉRIENCE <span className="text-accent-red">VIP</span></h2>
+                <h2 className="font-heading text-6xl md:text-8xl text-white mb-6 uppercase leading-none">{config?.vip.sectionTitle?.split(' ').slice(0, -1).join(' ') || 'EXPÉRIENCE'} <span className="text-accent-red">{config?.vip.sectionTitle?.split(' ').slice(-1) || 'VIP'}</span></h2>
                 <p className="text-slate-300 text-lg mb-10 font-light leading-relaxed">
-                  Plongez au cœur de l'action avec un accès privilégié. Vivez le All Stars Battle International dans les meilleures conditions possibles.
+                  {config?.vip.sectionDescription || 'Plongez au cœur de l\'action avec un accès privilégié. Vivez le All Stars Battle International dans les meilleures conditions possibles.'}
                 </p>
                 <div className="space-y-6 mb-12">
                   <div className="flex items-start gap-4">
@@ -886,7 +905,7 @@ export default function App() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center mb-20">
             <span className="text-accent-red font-bold tracking-[0.4em] uppercase text-xs mb-4 block">Réseau Officiel</span>
-            <h2 className="font-heading text-6xl md:text-8xl text-white uppercase leading-none">PARTENAIRES & <span className="text-primary">SPONSORS</span></h2>
+            <h2 className="font-heading text-6xl md:text-8xl text-white uppercase leading-none">{config?.partners.sectionTitle?.split(' & ')[0] || 'PARTENAIRES'} & <span className="text-primary">{config?.partners.sectionTitle?.split(' & ')[1] || 'SPONSORS'}</span></h2>
             <div className="w-24 h-1 bg-gradient-to-r from-accent-red to-primary mx-auto mt-6"></div>
           </div>
           
@@ -933,7 +952,7 @@ export default function App() {
           <div className="flex justify-between items-end mb-12">
             <div>
               <span className="text-accent-red font-bold tracking-[0.3em] uppercase text-xs">Blog Officiel</span>
-              <h2 className="font-heading text-5xl md:text-7xl text-white uppercase leading-none">ACTUALITÉS & NEWS</h2>
+              <h2 className="font-heading text-5xl md:text-7xl text-white uppercase leading-none">{config?.blog.sectionTitle || 'ACTUALITÉS & NEWS'}</h2>
             </div>
             <a 
               href="#news" 
@@ -998,13 +1017,14 @@ export default function App() {
   )}
 
   {/* FOOTER */}
+  {currentPage !== 'admin' && (
       <footer id="footer" className="bg-background-dark pt-24 pb-12 border-t border-primary/20 grainy-bg">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-16 mb-20">
             <div className="col-span-1 md:col-span-1">
               <div className="h-16 w-16 bg-primary flex items-center justify-center font-heading text-4xl text-background-dark font-bold mb-8">AS</div>
               <p className="text-slate-400 text-sm leading-relaxed mb-8">
-                L'événement de breakdance ultime qui définit le trône de la culture urbaine en Afrique. Vivez l'excellence du mouvement, du rythme et de la compétition internationale au cœur du Togo.
+                {config?.footer.description || 'L\'événement de breakdance ultime qui définit le trône de la culture urbaine en Afrique. Vivez l\'excellence du mouvement, du rythme et de la compétition internationale au cœur du Togo.'}
               </p>
               <div className="flex space-x-4">
                 <a href="#" className="w-10 h-10 border border-white/10 flex items-center justify-center rounded-sm hover:bg-primary hover:text-background-dark transition-all duration-300">
@@ -1068,7 +1088,7 @@ export default function App() {
           
           <div className="pt-12 border-t border-white/10 flex flex-col lg:flex-row justify-between items-center gap-8">
             <p className="text-slate-500 text-[10px] uppercase font-black tracking-[0.3em]">
-              © 2026 ALL STARS BATTLE INTERNATIONAL. TOUS DROITS RÉSERVÉS.
+              {config?.footer.copyright || '© 2026 ALL STARS BATTLE INTERNATIONAL. TOUS DROITS RÉSERVÉS.'}
             </p>
             <div className="flex space-x-12 text-[10px] uppercase font-black tracking-[0.3em] text-slate-500">
               <a href="#" onClick={navigateTo('admin')} className="hover:text-primary transition-colors">Administration</a>
@@ -1079,6 +1099,7 @@ export default function App() {
           </div>
         </div>
       </footer>
+      )}
     </div>
   );
 }

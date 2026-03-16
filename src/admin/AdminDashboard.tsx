@@ -36,6 +36,7 @@ import TicketingFAQ from './modules/TicketingFAQ';
 import HistoryLegends from './modules/HistoryLegends';
 import PartnersMedia from './modules/PartnersMedia';
 import GlobalConfigSEO from './modules/GlobalConfigSEO';
+import HomepageContent from './modules/HomepageContent';
 
 type ModuleId = 
   | 'dashboard' 
@@ -47,7 +48,8 @@ type ModuleId =
   | 'ticketing' 
   | 'history' 
   | 'partners' 
-  | 'config';
+  | 'config'
+  | 'homepage';
 
 export default function AdminDashboard({ onLogout }: { onLogout: () => void }) {
   const [activeModule, setActiveModule] = useState<ModuleId>('dashboard');
@@ -60,6 +62,7 @@ export default function AdminDashboard({ onLogout }: { onLogout: () => void }) {
 
   const menuItems = [
     { id: 'dashboard', label: 'Tableau de Bord', icon: LayoutDashboard },
+    { id: 'homepage', label: 'Contenu Accueil (Page)', icon: Palette },
     { id: 'scene', label: 'Scène Artistique', icon: Palette },
     { id: 'participants', label: 'Participants & Jury', icon: Users },
     { id: 'program', label: 'Programme & Planning', icon: Calendar },
@@ -74,6 +77,7 @@ export default function AdminDashboard({ onLogout }: { onLogout: () => void }) {
   const renderModule = () => {
     switch (activeModule) {
       case 'dashboard': return <DashboardOverview data={data} />;
+      case 'homepage': return <HomepageContent data={data} setData={setData} />;
       case 'scene': return <SceneArtistique data={data} setData={setData} />;
       case 'participants': return <ParticipantsJury data={data} setData={setData} />;
       case 'program': return <ProgramPlanning data={data} setData={setData} />;

@@ -170,6 +170,37 @@ const initialData: CMSData = {
       backgroundImage: 'https://images.unsplash.com/photo-1547153760-18fc86324498?auto=format&fit=crop&q=80&w=1920',
       videoUrl: 'https://vjs.zencdn.net/v/oceans.mp4'
     },
+    competition: {
+      dateStart: '14 - 16 AOÛT 2026',
+      location: 'PALAIS DES CONGRÈS DE LOMÉ, TOGO',
+      description: 'L\'élite mondiale du breaking et du hip-hop se réunit sur les terres du Togo pour la plus grande battle d\'Afrique. 3 jours de compétition intense, de workshops et de culture urbaine. Le vainqueur n\'emporte pas seulement le titre, il entre dans l\'histoire.'
+    },
+    dancers: {
+      sectionTitle: 'LES DANSEURS',
+      sectionSubtitle: 'Featured'
+    },
+    programmation: {
+      sectionTitle: 'PROGRAMMATION'
+    },
+    vip: {
+      sectionTitle: 'EXPÉRIENCE VIP',
+      sectionDescription: 'Plongez au cœur de l\'action avec un accès privilégié. Vivez le All Stars Battle International dans les meilleures conditions possibles.'
+    },
+    stats: [
+      { label: 'Danseurs Qualifiés', value: '16' },
+      { label: 'Nations Représentées', value: '12' },
+      { label: 'Juges Internationaux', value: '8' }
+    ],
+    partners: {
+      sectionTitle: 'PARTENAIRES & SPONSORS'
+    },
+    blog: {
+      sectionTitle: 'ACTUALITÉS & NEWS'
+    },
+    footer: {
+      description: 'L\'événement de breakdance ultime qui définit le trône de la culture urbaine en Afrique. Vivez l\'excellence du mouvement, du rythme et de la compétition internationale au cœur du Togo.',
+      copyright: '© 2026 ALL STARS BATTLE INTERNATIONAL. TOUS DROITS RÉSERVÉS.'
+    },
     homepageStats: [
       { label: 'Danseurs Qualifiés', value: '16' },
       { label: 'Nations Représentées', value: '12' },
@@ -184,7 +215,16 @@ export const cmsService = {
     const data = localStorage.getItem(STORAGE_KEY);
     if (data) {
       try {
-        return JSON.parse(data);
+        const parsed = JSON.parse(data);
+        // Merge with initialData to ensure all properties exist
+        return {
+          ...initialData,
+          ...parsed,
+          globalConfig: {
+            ...initialData.globalConfig,
+            ...parsed.globalConfig
+          }
+        };
       } catch (e) {
         console.error('Failed to parse CMS data', e);
         return initialData;

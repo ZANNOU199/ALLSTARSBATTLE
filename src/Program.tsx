@@ -292,41 +292,48 @@ const Program: React.FC<ProgramProps> = ({ onReserveTickets }) => {
             >
               {schedule[selectedDay].events
                 .filter(event => selectedCategory === "Tous" || event.category === selectedCategory)
-                .map((event, idx) => (
-                  <div 
-                    key={idx}
-                    className="group bg-surface-dark border border-white/5 p-8 rounded-xl hover:border-primary/30 transition-all duration-500 flex flex-col md:flex-row gap-8 items-center"
-                  >
-                    <div className="flex flex-col items-center justify-center min-w-[120px] border-r border-white/10 pr-8">
-                      <Clock className="text-primary w-6 h-6 mb-2" />
-                      <span className="font-heading text-4xl text-white">{event.time}</span>
-                    </div>
-                    
-                    <div className="flex-grow space-y-3">
-                      <div className="flex items-center gap-3">
-                        <span className="bg-white/10 px-3 py-1 rounded text-[10px] font-bold uppercase tracking-tighter text-primary border border-primary/20">
-                          {event.category}
-                        </span>
-                        <div className="flex items-center gap-2 text-slate-500 text-[10px] font-bold uppercase tracking-widest">
-                          <MapPin className="w-3 h-3" />
-                          {event.location}
+                .map((event, idx) => {
+                  const isRedLine = idx % 2 === 0;
+                  return (
+                    <div 
+                      key={idx}
+                      className={`group ${
+                        isRedLine 
+                          ? 'border-l-2 border-accent-red/30 group-hover:border-accent-red group-hover:shadow-[inset_12px_0_20px_rgba(220,38,38,0.6)]' 
+                          : 'border-l-2 border-primary/30 group-hover:border-primary group-hover:shadow-[inset_12px_0_20px_rgba(211,95,23,0.6)]'
+                      } bg-surface-dark border-t border-r border-b border-white/5 rounded-r-xl transition-all duration-300 overflow-hidden p-8 flex flex-col md:flex-row gap-8 items-center`}
+                    >
+                      <div className="flex flex-col items-center justify-center min-w-[120px] border-r border-white/10 pr-8">
+                        <Clock className="text-primary w-6 h-6 mb-2" />
+                        <span className="font-heading text-4xl text-white">{event.time}</span>
+                      </div>
+                      
+                      <div className="flex-grow space-y-3">
+                        <div className="flex items-center gap-3">
+                          <span className="bg-white/10 px-3 py-1 rounded text-[10px] font-bold uppercase tracking-tighter text-primary border border-primary/20">
+                            {event.category}
+                          </span>
+                          <div className="flex items-center gap-2 text-slate-500 text-[10px] font-bold uppercase tracking-widest">
+                            <MapPin className="w-3 h-3" />
+                            {event.location}
+                          </div>
+                        </div>
+                        <h3 className="font-heading text-3xl text-white transition-colors uppercase tracking-wide">
+                          {event.title}
+                        </h3>
+                        <p className="text-slate-400 font-light leading-relaxed">
+                          {event.desc}
+                        </p>
+                      </div>
+
+                      <div className="shrink-0">
+                        <div className="size-12 rounded-full bg-white/5 flex items-center justify-center text-primary transition-all duration-300">
+                          {event.icon}
                         </div>
                       </div>
-                      <h3 className="font-heading text-3xl text-white group-hover:text-primary transition-colors uppercase tracking-wide">
-                        {event.title}
-                      </h3>
-                      <p className="text-slate-400 font-light leading-relaxed">
-                        {event.desc}
-                      </p>
                     </div>
-
-                    <div className="shrink-0">
-                      <div className="size-12 rounded-full bg-white/5 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-background-dark transition-all duration-300">
-                        {event.icon}
-                      </div>
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               {schedule[selectedDay].events.filter(event => selectedCategory === "Tous" || event.category === selectedCategory).length === 0 && (
                 <div className="text-center py-20 border border-dashed border-white/10 rounded-xl">
                   <p className="text-slate-500 font-bold tracking-widest uppercase text-xs">Aucun événement trouvé dans cette catégorie pour ce jour.</p>

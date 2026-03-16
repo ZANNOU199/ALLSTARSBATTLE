@@ -1,6 +1,6 @@
 import React from 'react';
 import { CMSData } from '../../types';
-import { Globe, Mail, Phone, MapPin, TrendingUp, Layout } from 'lucide-react';
+import { Globe, Mail, Phone, MapPin, TrendingUp, Layout, Calendar, Trophy } from 'lucide-react';
 
 export default function GlobalConfigSEO({ data, setData }: { data: CMSData, setData: React.Dispatch<React.SetStateAction<CMSData>> }) {
   const updateContact = (field: string, value: string) => {
@@ -33,6 +33,36 @@ export default function GlobalConfigSEO({ data, setData }: { data: CMSData, setD
     }));
   };
 
+  const updateEventDate = (value: string) => {
+    setData(prev => ({
+      ...prev,
+      globalConfig: {
+        ...prev.globalConfig,
+        eventDate: value
+      }
+    }));
+  };
+
+  const updateSocials = (field: string, value: string) => {
+    setData(prev => ({
+      ...prev,
+      globalConfig: {
+        ...prev.globalConfig,
+        socials: { ...prev.globalConfig.socials, [field]: value }
+      }
+    }));
+  };
+
+  const updateCompetition = (field: string, value: string) => {
+    setData(prev => ({
+      ...prev,
+      globalConfig: {
+        ...prev.globalConfig,
+        competition: { ...prev.globalConfig.competition, [field]: value }
+      }
+    }));
+  };
+
   const updateStat = (index: number, field: 'label' | 'value', value: string) => {
     const newStats = [...data.globalConfig.homepageStats];
     newStats[index] = { ...newStats[index], [field]: value };
@@ -47,10 +77,75 @@ export default function GlobalConfigSEO({ data, setData }: { data: CMSData, setD
 
   return (
     <div className="space-y-12">
+      {/* Competition Event Date */}
+      <div className="bg-[#111] border border-white/10 p-8 rounded-2xl space-y-6">
+        <h4 className="font-heading text-lg flex items-center gap-2"><Calendar size={20} className="text-primary" /> Date de la Compétition</h4>
+        <div className="space-y-4 max-w-md">
+          <p className="text-sm text-slate-400">
+            Modifiez la date de débuts de la compétition pour que le décompte en premier page se met à jour en temps réel.
+          </p>
+          <div className="space-y-2">
+            <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Date et Heure de Début</label>
+            <input 
+              type="datetime-local" 
+              value={data.globalConfig.eventDate.slice(0, 16)} 
+              onChange={e => updateEventDate(e.target.value + ':00')}
+              className="w-full bg-white/5 border border-white/10 rounded-xl p-3 focus:border-primary outline-none transition-all focus:ring-1 focus:ring-primary/30"
+            />
+          </div>
+          <div className="bg-white/5 border border-primary/30 rounded-lg p-3">
+            <p className="text-xs text-slate-400">Valeur actuelle: <span className="text-primary font-mono">{data.globalConfig.eventDate}</span></p>
+          </div>
+        </div>
+      </div>
+
+      {/* Competition Details */}
+      <div className="bg-[#111] border border-white/10 p-8 rounded-2xl space-y-6">
+        <h4 className="font-heading text-lg flex items-center gap-2"><Trophy size={20} className="text-primary" /> Détails de la Compétition (Section Hero)</h4>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-2">
+            <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Dates (ex: 14 - 16 AOÛT 2026)</label>
+            <input 
+              type="text" 
+              value={data.globalConfig.competition.dateStart} 
+              onChange={e => updateCompetition('dateStart', e.target.value)}
+              className="w-full bg-white/5 border border-white/10 rounded-xl p-3 focus:border-primary outline-none transition-all"
+            />
+          </div>
+          <div className="space-y-2">
+            <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Lieu (ex: PALAIS DES CONGRÈS DE LOMÉ, TOGO)</label>
+            <input 
+              type="text" 
+              value={data.globalConfig.competition.location} 
+              onChange={e => updateCompetition('location', e.target.value)}
+              className="w-full bg-white/5 border border-white/10 rounded-xl p-3 focus:border-primary outline-none transition-all"
+            />
+          </div>
+        </div>
+        <div className="space-y-2">
+          <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Description de la Compétition</label>
+          <textarea 
+            rows={5}
+            value={data.globalConfig.competition.description} 
+            onChange={e => updateCompetition('description', e.target.value)}
+            className="w-full bg-white/5 border border-white/10 rounded-xl p-3 focus:border-primary outline-none transition-all resize-none"
+          />
+        </div>
+      </div>
+
       {/* Hero Section */}
       <div className="bg-[#111] border border-white/10 p-8 rounded-2xl space-y-6">
         <h4 className="font-heading text-lg flex items-center gap-2"><Layout size={20} className="text-primary" /> Hero Section (Accueil)</h4>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-2">
+            <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Localisation (Texte au-dessus du titre)</label>
+            <input 
+              type="text" 
+              value={data.globalConfig.hero.location} 
+              onChange={e => updateHero('location', e.target.value)}
+              className="w-full bg-white/5 border border-white/10 rounded-xl p-3 focus:border-primary outline-none transition-all"
+            />
+          </div>
           <div className="space-y-2">
             <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Titre Principal</label>
             <input 
@@ -84,6 +179,53 @@ export default function GlobalConfigSEO({ data, setData }: { data: CMSData, setD
               type="text" 
               value={data.globalConfig.hero.videoUrl} 
               onChange={e => updateHero('videoUrl', e.target.value)}
+              className="w-full bg-white/5 border border-white/10 rounded-xl p-3 focus:border-primary outline-none transition-all"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Social Networks Links */}
+      <div className="bg-[#111] border border-white/10 p-8 rounded-2xl space-y-6">
+        <h4 className="font-heading text-lg flex items-center gap-2"><Globe size={20} className="text-primary" /> Réseaux Sociaux</h4>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-2">
+            <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Instagram</label>
+            <input 
+              type="url" 
+              value={data.globalConfig.socials.instagram} 
+              onChange={e => updateSocials('instagram', e.target.value)}
+              placeholder="https://instagram.com/..."
+              className="w-full bg-white/5 border border-white/10 rounded-xl p-3 focus:border-primary outline-none transition-all"
+            />
+          </div>
+          <div className="space-y-2">
+            <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Facebook</label>
+            <input 
+              type="url" 
+              value={data.globalConfig.socials.facebook} 
+              onChange={e => updateSocials('facebook', e.target.value)}
+              placeholder="https://facebook.com/..."
+              className="w-full bg-white/5 border border-white/10 rounded-xl p-3 focus:border-primary outline-none transition-all"
+            />
+          </div>
+          <div className="space-y-2">
+            <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Twitter / X</label>
+            <input 
+              type="url" 
+              value={data.globalConfig.socials.twitter} 
+              onChange={e => updateSocials('twitter', e.target.value)}
+              placeholder="https://twitter.com/..."
+              className="w-full bg-white/5 border border-white/10 rounded-xl p-3 focus:border-primary outline-none transition-all"
+            />
+          </div>
+          <div className="space-y-2">
+            <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">YouTube</label>
+            <input 
+              type="url" 
+              value={data.globalConfig.socials.youtube} 
+              onChange={e => updateSocials('youtube', e.target.value)}
+              placeholder="https://youtube.com/..."
               className="w-full bg-white/5 border border-white/10 rounded-xl p-3 focus:border-primary outline-none transition-all"
             />
           </div>
