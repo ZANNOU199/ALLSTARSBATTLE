@@ -22,28 +22,22 @@ const Tickets = () => {
   useEffect(() => {
     const data = cmsService.getData();
     
-    if (data && data.ticketing) {
-      if (data.ticketing.tickets) {
-        setTicketTypes(data.ticketing.tickets.map((t, idx) => ({
-          name: t.name,
-          tag: t.tag,
-          price: t.price,
-          period: t.period,
-          features: (t.features || []).map(f => ({ text: f, included: true })),
-          buttonText: t.buttonText,
-          color: t.color,
-          recommended: t.recommended,
-          paymentLink: t.paymentLink
-        })));
-      }
+    setTicketTypes(data.ticketing.tickets.map((t, idx) => ({
+      name: t.name,
+      tag: t.tag,
+      price: t.price,
+      period: t.period,
+      features: t.features.map(f => ({ text: f, included: true })),
+      buttonText: t.buttonText,
+      color: t.color,
+      recommended: t.recommended,
+      paymentLink: t.paymentLink
+    })));
 
-      if (data.ticketing.faqs) {
-        setFaqs(data.ticketing.faqs.map(f => ({
-          q: f.question,
-          a: f.answer
-        })));
-      }
-    }
+    setFaqs(data.ticketing.faqs.map(f => ({
+      q: f.question,
+      a: f.answer
+    })));
   }, []);
 
   const handleTicketClick = (link: string) => {

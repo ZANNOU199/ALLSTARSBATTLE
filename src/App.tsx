@@ -306,40 +306,13 @@ export default function App() {
   const [config, setConfig] = useState<GlobalConfig | null>(null);
   const [stats, setStats] = useState<any[]>([]);
   const [recentNews, setRecentNews] = useState<any[]>([]);
-  const [participants, setParticipants] = useState<any[]>([]);
-  const [programData, setProgramData] = useState<any[]>([]);
-  const [vipConfig, setVipConfig] = useState({ sectionTitle: 'EXPÉRIENCE VIP', sectionSubtitle: "Plongez au cœur de l'action avec un accès privilégié. Vivez le All Stars Battle International dans les meilleures conditions possibles." });
 
   useEffect(() => {
     const data = cmsService.getData();
-    if (data && data.globalConfig) {
-      setConfig(data.globalConfig);
-      setStats(data.globalConfig.stats || []);
-      if (data.globalConfig.vip) {
-        setVipConfig({
-          sectionTitle: data.globalConfig.vip.sectionTitle || 'EXPÉRIENCE VIP',
-          sectionSubtitle: data.globalConfig.vip.sectionSubtitle || "Plongez au cœur de l'action avec un accès privilégié. Vivez le All Stars Battle International dans les meilleures conditions possibles."
-        });
-      }
-    }
-    
-    if (data && data.blog && data.blog.articles) {
-      setRecentNews(data.blog.articles.slice(0, 3) || []);
-    }
-    
-    if (data) {
-      setParticipants(data.participants || []);
-      setProgramData(data.program || []);
-    }
+    setConfig(data.globalConfig);
+    setStats(data.globalConfig.homepageStats);
+    setRecentNews(data.blog.articles.slice(0, 3));
   }, []);
-
-  // Recharge la config quand on revient de l'admin avec les nouvelles données
-  useEffect(() => {
-    if (currentPage !== 'admin') {
-      const data = cmsService.getData();
-      setConfig(data.globalConfig);
-    }
-  }, [currentPage]);
 
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
 
@@ -836,13 +809,9 @@ export default function App() {
             <div className="grid lg:grid-cols-2 gap-16 items-center">
               <div>
                 <span className="text-primary font-bold tracking-[0.5em] uppercase text-xs">Exclusif</span>
-                <h2 className="font-heading text-6xl md:text-8xl text-white mb-6 uppercase leading-none">
-                  {vipConfig.sectionTitle.includes('VIP') ? (
-                    <>{vipConfig.sectionTitle.replace('VIP', '')} <span className="text-accent-red">VIP</span></>
-                  ) : vipConfig.sectionTitle}
-                </h2>
+                <h2 className="font-heading text-6xl md:text-8xl text-white mb-6 uppercase leading-none">EXPÉRIENCE <span className="text-accent-red">VIP</span></h2>
                 <p className="text-slate-300 text-lg mb-10 font-light leading-relaxed">
-                  {vipConfig.sectionSubtitle}
+                  Plongez au cœur de l'action avec un accès privilégié. Vivez le All Stars Battle International dans les meilleures conditions possibles.
                 </p>
                 <div className="space-y-6 mb-12">
                   <div className="flex items-start gap-4">

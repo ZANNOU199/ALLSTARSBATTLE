@@ -29,16 +29,14 @@ const Partners = ({ onContactClick }: PartnersProps) => {
 
   React.useEffect(() => {
     const data = cmsService.getData();
-    if (data && data.partners) {
-      const allPartners = data.partners.logos || [];
-      
-      setPartners({
-        institutional: allPartners.filter(p => p.category === 'Institutional').map(p => p.logo),
-        main: allPartners.filter(p => p.category === 'Main').map(p => ({ src: p.logo, tier: p.tier || "Partenaire Officiel" })),
-        media: allPartners.filter(p => p.category === 'Media').map(p => p.logo)
-      });
-      setSponsoringPdfUrl(data.partners.sponsoringPdfUrl || "");
-    }
+    const allPartners = data.partners.logos;
+    
+    setPartners({
+      institutional: allPartners.filter(p => p.category === 'Institutional').map(p => p.logo),
+      main: allPartners.filter(p => p.category === 'Main').map(p => ({ src: p.logo, tier: p.tier || "Partenaire Officiel" })),
+      media: allPartners.filter(p => p.category === 'Media').map(p => p.logo)
+    });
+    setSponsoringPdfUrl(data.partners.sponsoringPdfUrl);
   }, []);
   
   const handleSubmit = (e: React.FormEvent) => {

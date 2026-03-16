@@ -22,31 +22,21 @@ const Dancers = ({ onViewPerformances }: DancersProps) => {
   const [showAll, setShowAll] = useState(false);
   const [selectedDancer, setSelectedDancer] = useState<any>(null);
   const [dancersData, setDancersData] = useState<any[]>([]);
-  const [sectionConfig, setSectionConfig] = useState({ title: 'LES DANSEURS STARS', subtitle: "L'élite de la danse urbaine réunie pour la bataille ultime en Afrique de l'Ouest." });
 
   useEffect(() => {
     const data = cmsService.getData();
-    if (data && data.participants) {
-      const dancers = data.participants.filter(p => p.category === 'dancer').map(p => ({
-        id: p.id,
-        name: p.name,
-        origin: p.country,
-        countryCode: p.countryCode,
-        style: p.specialty,
-        status: 'Qualifier', // Default status
-        image: p.photo,
-        category: 'B-Boy', // Default category for display
-        bio: p.bio
-      }));
-      setDancersData(dancers);
-    }
-    
-    if (data && data.globalConfig && data.globalConfig.dancers) {
-      setSectionConfig({
-        title: data.globalConfig.dancers.sectionTitle || 'LES DANSEURS STARS',
-        subtitle: data.globalConfig.dancers.sectionSubtitle || "L'élite de la danse urbaine réunie pour la bataille ultime en Afrique de l'Ouest."
-      });
-    }
+    const dancers = data.participants.filter(p => p.category === 'dancer').map(p => ({
+      id: p.id,
+      name: p.name,
+      origin: p.country,
+      countryCode: p.countryCode,
+      style: p.specialty,
+      status: 'Qualifier', // Default status
+      image: p.photo,
+      category: 'B-Boy', // Default category for display
+      bio: p.bio
+    }));
+    setDancersData(dancers);
   }, []);
 
   React.useEffect(() => {
@@ -169,7 +159,7 @@ const Dancers = ({ onViewPerformances }: DancersProps) => {
             transition={{ duration: 0.8, ease: "easeOut" }}
             className="font-heading text-6xl sm:text-7xl md:text-9xl gold-gradient-text tracking-tighter leading-none mb-6 drop-shadow-2xl uppercase"
           >
-            {sectionConfig.title}
+            LES DANSEURS STARS
           </motion.h1>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -179,7 +169,7 @@ const Dancers = ({ onViewPerformances }: DancersProps) => {
           >
             <div className="relative py-6 px-4 md:px-12 border-y border-white/30 backdrop-blur-md bg-black/20">
               <p className="text-sm sm:text-lg md:text-2xl text-white font-medium uppercase tracking-[0.15em] md:tracking-[0.25em] leading-relaxed">
-                {sectionConfig.subtitle}
+                L'élite de la danse urbaine réunie pour la bataille ultime en Afrique de l'Ouest.
               </p>
             </div>
           </motion.div>

@@ -18,23 +18,21 @@ const Judges = () => {
   useEffect(() => {
     const data = cmsService.getData();
     
-    if (data && data.participants) {
-      setJudgesData(data.participants.filter(p => p.category === 'judge').map(p => ({
-        name: p.name,
-        country: p.country,
-        countryCode: p.countryCode,
-        role: p.specialty,
-        desc: p.bio,
-        image: p.photo
-      })));
+    setJudgesData(data.participants.filter(p => p.category === 'judge').map(p => ({
+      name: p.name,
+      country: p.country,
+      countryCode: p.countryCode,
+      role: p.specialty,
+      desc: p.bio,
+      image: p.photo
+    })));
 
-      setDjsMcsData(data.participants.filter(p => p.category === 'dj' || p.category === 'mc').map(p => ({
-        name: p.name,
-        origin: p.country,
-        countryCode: p.countryCode,
-        img: p.photo
-      })));
-    }
+    setDjsMcsData(data.participants.filter(p => p.category === 'dj' || p.category === 'mc').map(p => ({
+      name: p.name,
+      origin: p.country,
+      countryCode: p.countryCode,
+      img: p.photo
+    })));
 
     // For staff, we'll use a default or maybe add a category to CMS later
     setStaffData([

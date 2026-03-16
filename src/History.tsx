@@ -17,29 +17,27 @@ const History = () => {
   useEffect(() => {
     const data = cmsService.getData();
     
-    if (data && data.history) {
-      // Sort events by year descending
-      const sortedEvents = [...(data.history.timeline || [])].sort((a, b) => parseInt(b.year) - parseInt(a.year));
-      
-      const formattedEvents = sortedEvents.map((event: TimelineEvent, index) => ({
-        year: event.year,
-        title: event.title,
-        champion: event.champion,
-        desc: event.description,
-        image: event.image || `https://picsum.photos/seed/${event.year}/800/450`,
-        current: index === 0,
-        side: index % 2 === 0 ? 'left' : 'right'
-      }));
+    // Sort events by year descending
+    const sortedEvents = [...data.history.timeline].sort((a, b) => parseInt(b.year) - parseInt(a.year));
+    
+    const formattedEvents = sortedEvents.map((event: TimelineEvent, index) => ({
+      year: event.year,
+      title: event.title,
+      champion: event.champion,
+      desc: event.description,
+      image: event.image || `https://picsum.photos/seed/${event.year}/800/450`,
+      current: index === 0,
+      side: index % 2 === 0 ? 'left' : 'right'
+    }));
 
-      setTimelineEvents(formattedEvents.slice(0, 5));
-      setOlderEvents(formattedEvents.slice(5));
+    setTimelineEvents(formattedEvents.slice(0, 5));
+    setOlderEvents(formattedEvents.slice(5));
 
-      setLegends((data.history.legends || []).map(l => ({
-        name: l.name,
-        origin: l.bio,
-        image: l.photo
-      })));
-    }
+    setLegends(data.history.legends.map(l => ({
+      name: l.name,
+      origin: l.bio,
+      image: l.photo
+    })));
   }, []);
 
   return (

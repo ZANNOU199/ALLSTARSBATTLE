@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { motion } from 'motion/react';
-import { cmsService } from './services/cmsService';
 import { 
   Calendar, 
   MapPin, 
@@ -17,18 +16,6 @@ import {
 } from 'lucide-react';
 
 const Competition = () => {
-  const [sectionConfig, setSectionConfig] = useState({ title: 'LA COMPÉTITION', subtitle: "Le format, les règles et l'élite du Breakdance." });
-
-  useEffect(() => {
-    const data = cmsService.getData();
-    if (data && data.globalConfig && data.globalConfig.competition) {
-      setSectionConfig({
-        title: data.globalConfig.competition.sectionTitle || 'LA COMPÉTITION',
-        subtitle: data.globalConfig.competition.sectionSubtitle || "Le format, les règles et l'élite du Breakdance."
-      });
-    }
-  }, []);
-
   return (
     <div className="bg-background-dark text-slate-100 font-display antialiased">
       {/* Hero Section */}
@@ -47,9 +34,7 @@ const Competition = () => {
             transition={{ duration: 0.8, ease: "easeOut" }}
             className="font-heading text-6xl sm:text-7xl md:text-9xl text-white tracking-tighter leading-none mb-6 drop-shadow-2xl uppercase"
           >
-            {sectionConfig.title.includes('COMPÉTITION') ? (
-              <>LA <span className="text-primary">COMPÉTITION</span></>
-            ) : sectionConfig.title}
+            LA <span className="text-primary">COMPÉTITION</span>
           </motion.h1>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -59,7 +44,7 @@ const Competition = () => {
           >
             <div className="relative py-6 px-4 md:px-12 border-y border-white/30 backdrop-blur-md bg-black/20">
               <p className="text-sm sm:text-lg md:text-2xl text-white font-medium uppercase tracking-[0.15em] md:tracking-[0.25em] leading-relaxed">
-                {sectionConfig.subtitle}
+                Le format, les règles et l'élite du Breakdance.
               </p>
             </div>
           </motion.div>

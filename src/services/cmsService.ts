@@ -1,7 +1,6 @@
 import { CMSData } from '../types';
 
 const STORAGE_KEY = 'asbi_cms_data';
-const DATA_VERSION = '1.1'; // Increment this when initialData structure or defaults change
 
 const initialData: CMSData = {
   companies: [
@@ -171,26 +170,7 @@ const initialData: CMSData = {
       backgroundImage: 'https://images.unsplash.com/photo-1547153760-18fc86324498?auto=format&fit=crop&q=80&w=1920',
       videoUrl: 'https://vjs.zencdn.net/v/oceans.mp4'
     },
-    competition: {
-      sectionTitle: 'LA COMPÉTITION',
-      sectionSubtitle: 'Le format, les règles et l\'élite du Breakdance.',
-      dateStart: '14 - 16 AOÛT 2026',
-      location: 'PALAIS DES CONGRÈS DE LOMÉ, TOGO',
-      description: 'L\'élite mondiale du breaking et du hip-hop se réunit sur les terres du Togo pour la plus grande battle d\'Afrique. 3 jours de compétition intense, de workshops et de culture urbaine. Le vainqueur n\'emporte pas seulement le titre, il entre dans l\'histoire.'
-    },
-    dancers: {
-      sectionTitle: 'LES DANSEURS STARS',
-      sectionSubtitle: 'L\'élite de la danse urbaine réunie pour la bataille ultime en Afrique de l\'Ouest.'
-    },
-    programmation: {
-      sectionTitle: 'PLANNING DE L\'ÉVÉNEMENT',
-      sectionSubtitle: 'Suivez le rythme du All Stars Battle International Togo 2026.'
-    },
-    vip: {
-      sectionTitle: 'EXPÉRIENCE VIP',
-      sectionSubtitle: 'Plongez au cœur de l\'action avec un accès privilégié. Vivez le All Stars Battle International dans les meilleures conditions possibles.'
-    },
-    stats: [
+    homepageStats: [
       { label: 'Danseurs Qualifiés', value: '16' },
       { label: 'Nations Représentées', value: '12' },
       { label: 'Juges Internationaux', value: '8' }
@@ -204,42 +184,17 @@ export const cmsService = {
     const data = localStorage.getItem(STORAGE_KEY);
     if (data) {
       try {
-        const parsed = JSON.parse(data) as CMSData;
-        
-        // If version is missing or older, we might want to force some updates
-        // For now, if version is different, we merge carefully or reset if it's a major change
-        if (!parsed.version || parsed.version !== DATA_VERSION) {
-          console.log(`CMS Data version mismatch: ${parsed.version} vs ${DATA_VERSION}. Merging...`);
-          // We can either reset or merge. Merging is safer for user content.
-          // But if the user wants to see THEIR code changes, we should prioritize initialData for some parts.
-          return {
-            ...initialData,
-            ...parsed,
-            version: DATA_VERSION, // Update to latest version
-            globalConfig: {
-              ...initialData.globalConfig,
-              ...(parsed.globalConfig || {}),
-              // Deep merge sub-configs
-              competition: { ...initialData.globalConfig.competition, ...(parsed.globalConfig?.competition || {}) },
-              dancers: { ...initialData.globalConfig.dancers, ...(parsed.globalConfig?.dancers || {}) },
-              programmation: { ...initialData.globalConfig.programmation, ...(parsed.globalConfig?.programmation || {}) },
-              vip: { ...initialData.globalConfig.vip, ...(parsed.globalConfig?.vip || {}) }
-            }
-          };
-        }
-
-        return parsed;
+        return JSON.parse(data);
       } catch (e) {
         console.error('Failed to parse CMS data', e);
-        return { ...initialData, version: DATA_VERSION };
+        return initialData;
       }
     }
-    return { ...initialData, version: DATA_VERSION };
+    return initialData;
   },
 
   saveData: (data: CMSData) => {
-    const dataWithVersion = { ...data, version: DATA_VERSION };
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(dataWithVersion));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
   },
 
   resetData: () => {
