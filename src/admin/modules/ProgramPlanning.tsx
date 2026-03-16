@@ -88,78 +88,136 @@ export default function ProgramPlanning({ data, setData }: { data: CMSData, setD
     setEditingDateId(null);
   };
 
-  const handleDeleteDay = (dayId: string) => {
-    if (confirm('Supprimer ce jour et toutes ses activités ?')) {
-      setData(prev => {
-        const newProgram = prev.program.filter(d => d.id !== dayId);
-        return { ...prev, program: newProgram };
-      });
-      // Update selected day if we're deleting the current one
-      setSelectedDayId(current => current === dayId ? data.program.find(d => d.id !== dayId)?.id || '' : current);
-    }
+  const handleInsertDay = (afterDayId: string) => {
+    setData(prev => {
+      const program = [...prev.program];
+      const insertIndex = program.findIndex(d => d.id === afterDayId);
+      
+      if (insertIndex === -1) return prev;
+
+      // Get the number for the new day
+      const afterDay = program[insertIndex];
+      const afterLabelMatch = afterDay.label.match(/JOUR (\d+)/);
+      let newNum = 1;
+      if (afterLabelMatch) {
+        newNum = parseInt(afterLabelMatch[1]) + 1;
+      }
+
+      // Shift all subsequent days
+      for (let i = insertIndex + 1; i < program.length; i++) {
+        const day = program[i];
+        const labelMatch = day.label.match(/JOUR (\d+)/);
+        if (labelMatch) {
+          const currentNum = parseInt(labelMatch[1]);
+          day.label = `JOUR ${(currentNum + 1).toString().padStart(2, '0')}`;
+        }
+      }
+
+      // Create new day
+      const newDate = afterDay.date ? (() => {
+        try {
+          const date = new Date(afterDay.date);
+          date.setDate(date.getDate() + 1);
+          return date.toISOString().split('T')[0];
+        } catch {
+          return new Date().toISOString().split('T')[0];
+        }
+      })() : new Date().toISOString().split('T')[0];
+
+      const newDay: ProgramDay = {
+        id: Date.now().toString(),
+        date: newDate,
+        label: `JOUR ${newNum.toString().padStart(2, '0')}`,
+        activities: []
+      };
+
+      // Insert at the correct position
+      program.splice(insertIndex + 1, 0, newDay);
+
+      return { ...prev, program };
+    });
   };
 
   const selectedDay = data.program.find(d => d.id === selectedDayId);
 
   return (
     <div className="space-y-8">
-      {/* Days Tabs */}
-      <div className="flex justify-between items-center">
-        <div className="flex gap-4 overflow-x-auto pb-2 custom-scrollbar">
-          {data.program.map(day => (
-            <div key={day.id} className="flex items-center gap-2">
-              <button
-                onClick={() => setSelectedDayId(day.id)}
-                className={`px-6 py-3 rounded-xl text-xs font-bold uppercase tracking-widest transition-all whitespace-nowrap ${
-                  selectedDayId === day.id ? 'bg-primary text-background-dark' : 'bg-white/5 text-slate-400 hover:text-white'
-                }`}
-              >
-                {day.label} <span className="opacity-50 ml-2">({day.date})</span>
-              </button>
-              <button
-                onClick={() => handleDeleteDay(day.id)}
-                className="p-1 text-red-400 hover:text-red-300 transition-all"
-                title="Supprimer ce jour"
-              >
-                <X size={16} />
-              </button>
-            </div>
-          ))}
+      {/* Days List */}
+      <div className="space-y-4">
+        <div className="flex justify-between items-center">
+          <h2 className="text-2xl font-heading">Jours du Programme</h2>
           <button
             onClick={handleAddDay}
-            className="px-4 py-3 rounded-xl bg-white/5 text-primary hover:bg-primary/10 transition-all"
-            title="Ajouter un jour"
+            className="flex items-center gap-2 px-4 py-2 bg-primary text-background-dark rounded-xl font-bold hover:bg-primary/90 transition-all"
           >
-            <Plus size={18} />
+            <Plus size={18} /> Ajouter Jour
           </button>
+        </div>
+
+        <div className="space-y-3">
+          {data.program.map((day, index) => (
+            <div key={day.id} className="bg-[#111] border border-white/10 rounded-xl p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <button
+                    onClick={() => setSelectedDayId(day.id)}
+                    className={`px-4 py-2 rounded-lg text-sm font-bold uppercase tracking-widest transition-all ${
+                      selectedDayId === day.id
+                        ? 'bg-primary text-background-dark'
+                        : 'bg-white/5 text-slate-400 hover:text-white hover:bg-white/10'
+                    }`}
+                  >
+                    {day.label}
+                  </button>
+
+                  {editingDateId === day.id ? (
+                    <input
+                      type="date"
+                      value={day.date || ''}
+                      onChange={(e) => handleUpdateDate(day.id, e.target.value)}
+                      onBlur={() => setEditingDateId(null)}
+                      onKeyDown={(e) => e.key === 'Enter' && setEditingDateId(null)}
+                      className="bg-white/5 border border-primary rounded px-2 py-1 text-sm"
+                      autoFocus
+                    />
+                  ) : (
+                    <span
+                      className="text-sm text-slate-400 cursor-pointer hover:text-white"
+                      onClick={() => setEditingDateId(day.id)}
+                    >
+                      {day.date}
+                    </span>
+                  )}
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => handleInsertDay(day.id)}
+                    className="flex items-center gap-1 px-3 py-1 bg-green-600/20 text-green-400 border border-green-600/30 rounded-lg hover:bg-green-600/30 transition-all text-xs"
+                    title="Insérer un jour après"
+                  >
+                    <Plus size={14} /> Créer
+                  </button>
+
+                  <button
+                    onClick={() => handleDeleteDay(day.id)}
+                    className="p-2 text-red-400 hover:text-red-300 hover:bg-red-600/10 rounded-lg transition-all"
+                    title="Supprimer ce jour"
+                  >
+                    <X size={16} />
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
 
       {/* Activities List */}
       <div className="space-y-6">
         <div className="flex justify-between items-center">
-        <div className="flex items-center gap-4">
           <h3 className="text-xl font-heading">Activités du {selectedDay?.label}</h3>
-          {editingDateId === selectedDayId ? (
-            <input
-              type="date"
-              value={selectedDay?.date || ''}
-              onChange={(e) => handleUpdateDate(selectedDayId, e.target.value)}
-              onBlur={() => setEditingDateId(null)}
-              onKeyDown={(e) => e.key === 'Enter' && setEditingDateId(null)}
-              className="bg-white/5 border border-primary rounded px-2 py-1 text-sm"
-              autoFocus
-            />
-          ) : (
-            <span
-              className="text-sm text-slate-400 cursor-pointer hover:text-white"
-              onClick={() => setEditingDateId(selectedDayId)}
-            >
-              ({selectedDay?.date})
-            </span>
-          )}
-        </div>
-          <button 
+          <button
             onClick={() => setIsAddingActivity(true)}
             className="flex items-center gap-2 px-4 py-2 bg-white/5 text-primary border border-primary/20 font-bold rounded-xl hover:bg-primary/10 transition-all"
           >
