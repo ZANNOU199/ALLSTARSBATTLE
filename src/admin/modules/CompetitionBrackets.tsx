@@ -546,7 +546,7 @@ export default function CompetitionBrackets({ data, setData }: { data: CMSData, 
             {/* HUITIÈMES A */}
             <div className="space-y-3 md:space-y-4">
               <h4 className="font-heading text-sm md:text-base lg:text-lg text-accent-red border-l-4 border-accent-red pl-2 md:pl-4">HUITIÈMES (A)</h4>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4 lg:gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-3 md:gap-4 lg:gap-6">
                 {data.competition.brackets.pouleA.huitiemes.map((match, idx) => (
                   <div key={match.id} className="bg-white/5 border border-white/10 p-3 md:p-4 lg:p-6 rounded-lg md:rounded-xl space-y-2 md:space-y-3">
                     <div className="text-[8px] md:text-[10px] font-bold uppercase tracking-widest text-slate-500 text-center">Match A{idx + 1}</div>
@@ -575,7 +575,7 @@ export default function CompetitionBrackets({ data, setData }: { data: CMSData, 
             {/* HUITIÈMES B */}
             <div className="space-y-3 md:space-y-4">
               <h4 className="font-heading text-sm md:text-base lg:text-lg text-primary border-l-4 border-primary pl-2 md:pl-4">HUITIÈMES (B)</h4>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4 lg:gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-3 md:gap-4 lg:gap-6">
                 {data.competition.brackets.pouleB.huitiemes.map((match, idx) => (
                   <div key={match.id} className="bg-white/5 border border-white/10 p-3 md:p-4 lg:p-6 rounded-lg md:rounded-xl space-y-2 md:space-y-3">
                     <div className="text-[8px] md:text-[10px] font-bold uppercase tracking-widest text-slate-500 text-center">Match B{idx + 1}</div>
@@ -604,7 +604,7 @@ export default function CompetitionBrackets({ data, setData }: { data: CMSData, 
             {/* QUARTS A & B */}
             <div className="space-y-3 md:space-y-4">
               <h4 className="font-heading text-sm md:text-base lg:text-lg text-slate-400 border-l-4 border-slate-400 pl-2 md:pl-4">QUARTS DE FINALE</h4>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4 lg:gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-3 md:gap-4 lg:gap-6">
                 {data.competition.brackets.pouleA.quarts.map((match, idx) => (
                   <div key={match.id} className="bg-white/5 border border-white/10 p-3 md:p-4 lg:p-6 rounded-lg md:rounded-xl space-y-2 md:space-y-3">
                     <div className="text-[8px] md:text-[10px] font-bold uppercase tracking-widest text-slate-500">Quart A{idx + 1}</div>
@@ -631,7 +631,7 @@ export default function CompetitionBrackets({ data, setData }: { data: CMSData, 
             {/* DEMI-FINALES */}
             <div className="space-y-3 md:space-y-4">
               <h4 className="font-heading text-sm md:text-base lg:text-lg text-accent-red border-l-4 border-accent-red pl-2 md:pl-4">DEMI-FINALES</h4>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4 lg:gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-3 md:gap-4 lg:gap-6">
                 {data.competition.brackets.pouleA.semis.map((match, idx) => (
                   <div key={match.id} className="bg-white/5 border border-white/10 p-3 md:p-4 lg:p-6 rounded-lg md:rounded-xl space-y-2 md:space-y-3">
                     <div className="text-[8px] md:text-[10px] font-bold uppercase tracking-widest text-slate-500">Demi A{idx + 1}</div>
