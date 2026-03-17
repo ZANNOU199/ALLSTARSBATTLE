@@ -160,10 +160,11 @@ const BracketMatch = ({ player1, player2, score1 = "--", score2 = "--", country1
     <div className={`flex justify-between items-center ${side === "right" ? "flex-row-reverse" : ""}`}>
       <span className="font-bold text-xl sm:text-2xl md:text-sm uppercase leading-tight flex items-center gap-1 md:gap-2">
         {player1} 
-        <span className="text-base sm:text-lg md:text-[10px] text-slate-500 flex items-center gap-1">
+        {countryCode1 !== 'un' ? (
           <img src={`https://flagcdn.com/w20/${countryCode1}.png`} alt={country1} className="w-5 sm:w-6 h-auto rounded-sm" />
-          {country1}
-        </span>
+        ) : (
+          <span className="text-slate-500">--</span>
+        )}
       </span>
       <span className="text-primary font-mono text-xl sm:text-2xl md:text-sm">{score1}</span>
     </div>
@@ -171,26 +172,48 @@ const BracketMatch = ({ player1, player2, score1 = "--", score2 = "--", country1
     <div className={`flex justify-between items-center ${side === "right" ? "flex-row-reverse" : ""}`}>
       <span className="font-bold text-xl sm:text-2xl md:text-sm uppercase leading-tight flex items-center gap-1 md:gap-2">
         {player2} 
-        <span className="text-base sm:text-lg md:text-[10px] text-slate-500 flex items-center gap-1">
+        {countryCode2 !== 'un' ? (
           <img src={`https://flagcdn.com/w20/${countryCode2}.png`} alt={country2} className="w-5 sm:w-6 h-auto rounded-sm" />
-          {country2}
-        </span>
+        ) : (
+          <span className="text-slate-500">--</span>
+        )}
       </span>
       <span className="text-primary font-mono text-xl sm:text-2xl md:text-sm">{score2}</span>
     </div>
   </div>
 );
 
-const BracketContent = () => (
+const BracketContent = ({ brackets }: { brackets?: any }) => {
+  // Use bracket data if provided, otherwise use fallback
+  const data = brackets || { pouleA: { huitiemes: [], quarts: [], semis: [] }, pouleB: { huitiemes: [], quarts: [], semis: [] }, final: {} };
+  
+  return (
   <div className="grid grid-cols-7 gap-0 items-stretch py-12 min-h-[1600px] md:min-h-[800px]">
     {/* Poule A: Top 16 (Left) */}
     <div className="flex flex-col h-full">
       <h3 className="font-heading text-lg md:text-xl text-primary mb-8 text-center shrink-0">HUITIÈMES (A)</h3>
       <div className="flex-1 flex flex-col justify-around py-4">
-        <BracketMatch player1="VICTOR" country1="USA" countryCode1="us" player2="TBD" country2="--" countryCode2="un" color="accent-red" />
-        <BracketMatch player1="PHIL WIZARD" country1="CAN" countryCode1="ca" player2="TBD" country2="--" countryCode2="un" />
-        <BracketMatch player1="DANY DANN" country1="FRA" countryCode1="fr" player2="TBD" country2="--" countryCode2="un" color="accent-red" />
-        <BracketMatch player1="SHIGEKIX" country1="JPN" countryCode1="jp" player2="TBD" country2="--" countryCode2="un" />
+        {data.pouleA?.huitiemes?.map((match: any, idx: number) => (
+          <BracketMatch
+            key={match.id}
+            player1={match.player1}
+            country1={match.country1}
+            countryCode1={match.countryCode1}
+            player2={match.player2}
+            country2={match.country2}
+            countryCode2={match.countryCode2}
+            score1={match.score1}
+            score2={match.score2}
+            color={idx % 2 === 0 ? "accent-red" : "primary"}
+          />
+        )) || (
+          <>
+            <BracketMatch player1="VICTOR" country1="USA" countryCode1="us" player2="TBD" country2="--" countryCode2="un" color="accent-red" />
+            <BracketMatch player1="PHIL WIZARD" country1="CAN" countryCode1="ca" player2="TBD" country2="--" countryCode2="un" />
+            <BracketMatch player1="DANY DANN" country1="FRA" countryCode1="fr" player2="TBD" country2="--" countryCode2="un" color="accent-red" />
+            <BracketMatch player1="SHIGEKIX" country1="JPN" countryCode1="jp" player2="TBD" country2="--" countryCode2="un" />
+          </>
+        )}
       </div>
     </div>
 
@@ -282,14 +305,33 @@ const BracketContent = () => (
     <div className="flex flex-col h-full">
       <h3 className="font-heading text-lg md:text-xl text-primary mb-8 text-center shrink-0">HUITIÈMES (B)</h3>
       <div className="flex-1 flex flex-col justify-around py-4">
-        <BracketMatch player1="LIGEE" country1="CHN" countryCode1="cn" player2="TBD" country2="--" countryCode2="un" side="right" color="accent-red" />
-        <BracketMatch player1="KUZYA" country1="UKR" countryCode1="ua" player2="TBD" country2="--" countryCode2="un" side="right" />
-        <BracketMatch player1="LEE" country1="NLD" countryCode1="nl" player2="TBD" country2="--" countryCode2="un" side="right" color="accent-red" />
-        <BracketMatch player1="QUAKE" country1="TPE" countryCode1="tw" player2="TBD" country2="--" countryCode2="un" side="right" />
+        {data.pouleB?.huitiemes?.map((match: any, idx: number) => (
+          <BracketMatch
+            key={match.id}
+            player1={match.player1}
+            country1={match.country1}
+            countryCode1={match.countryCode1}
+            player2={match.player2}
+            country2={match.country2}
+            countryCode2={match.countryCode2}
+            score1={match.score1}
+            score2={match.score2}
+            side="right"
+            color={idx % 2 === 0 ? "accent-red" : "primary"}
+          />
+        )) || (
+          <>
+            <BracketMatch player1="LIGEE" country1="CHN" countryCode1="cn" player2="TBD" country2="--" countryCode2="un" side="right" color="accent-red" />
+            <BracketMatch player1="KUZYA" country1="UKR" countryCode1="ua" player2="TBD" country2="--" countryCode2="un" side="right" />
+            <BracketMatch player1="LEE" country1="NLD" countryCode1="nl" player2="TBD" country2="--" countryCode2="un" side="right" color="accent-red" />
+            <BracketMatch player1="QUAKE" country1="TPE" countryCode1="tw" player2="TBD" country2="--" countryCode2="un" side="right" />
+          </>
+        )}
       </div>
     </div>
   </div>
 );
+};
 
 import ArtisticScene from './ArtisticScene';
 import Contact from './Contact';
@@ -308,6 +350,7 @@ export default function App() {
   const [recentNews, setRecentNews] = useState<any[]>([]);
   const [participants, setParticipants] = useState<any[]>([]);
   const [programData, setProgramData] = useState<any[]>([]);
+  const [bracketData, setBracketData] = useState<any>(null);
 
   useEffect(() => {
     const data = cmsService.getData();
@@ -316,6 +359,7 @@ export default function App() {
     setRecentNews(data.blog.articles.slice(0, 3));
     setParticipants(data.participants);
     setProgramData(data.program);
+    setBracketData(data.competition.brackets);
   }, []);
 
   // Recharge la config quand on revient de l'admin avec les nouvelles données
@@ -323,6 +367,7 @@ export default function App() {
     if (currentPage !== 'admin') {
       const data = cmsService.getData();
       setConfig(data.globalConfig);
+      setBracketData(data.competition.brackets);
     }
   }, [currentPage]);
 
@@ -807,7 +852,7 @@ export default function App() {
             className="absolute top-0 left-0 invisible pointer-events-none" 
             style={{ width: '1200px' }}
           >
-            <BracketContent />
+            <BracketContent brackets={bracketData} />
           </div>
 
           {/* Scaled visible content */}
@@ -823,7 +868,7 @@ export default function App() {
               willChange: 'transform'
             }}
           >
-            <BracketContent />
+            <BracketContent brackets={bracketData} />
           </div>
         </div>
 
