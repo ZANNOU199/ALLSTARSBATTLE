@@ -1,11 +1,16 @@
 import React, { useState } from 'react';
 import { CMSData, MediaItem } from '../../types';
-import { Plus, Trash2, Edit2, Image as ImageIcon, Video, Archive } from 'lucide-react';
+import { Plus, Trash2, Edit2, Image as ImageIcon, Video, Archive, X } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
 
 export default function MediaArchives({ data, setData }: { data: CMSData, setData: React.Dispatch<React.SetStateAction<CMSData>> }) {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [filterYear, setFilterYear] = useState<number | 'all'>('all');
   const [filterType, setFilterType] = useState<'all' | 'photo' | 'video'>('all');
+  const [showGalleryModal, setShowGalleryModal] = useState(false);
+  const [selectedMediaForEdit, setSelectedMediaForEdit] = useState<string | null>(null);
+  const [isAddingMedia, setIsAddingMedia] = useState(false);
+  const [newMediaForm, setNewMediaForm] = useState<MediaItem | null>(null);
 
   // Les années disponibles historiquement
   const years = [2026, 2025, 2024, 2023, 2022, 2021, 2020];
@@ -53,6 +58,37 @@ export default function MediaArchives({ data, setData }: { data: CMSData, setDat
     updateMedia([...media, newMedia]);
   };
 
+  const initAddingMedia = () => {
+    setIsAddingMedia(true);
+    setNewMediaForm({
+      id: '',
+      year: new Date().getFullYear(),
+      type: 'photo',
+      url: '',
+      title: '',
+      description: '',
+      thumbnail: '',
+      tag: 'archive'
+    });
+  };
+
+  const cancelAddingMedia = () => {
+    setIsAddingMedia(false);
+    setNewMediaForm(null);
+  };
+
+  const saveNewMedia = () => {
+    if (newMediaForm) {
+      const newMedia: MediaItem = {
+        ...newMediaForm,
+        id: Date.now().toString()
+      };
+      updateMedia([...media, newMedia]);
+      setIsAddingMedia(false);
+      setNewMediaForm(null);
+    }
+  };
+
   const removeMedia = (id: string) => {
     if (confirm('Êtes-vous sûr de vouloir supprimer ce média?')) {
       updateMedia(media.filter(m => m.id !== id));
@@ -84,7 +120,7 @@ export default function MediaArchives({ data, setData }: { data: CMSData, setDat
         <div className="flex justify-between items-center">
           <h3 className="font-heading text-lg">Filtres & Actions</h3>
           <button 
-            onClick={addMedia}
+            onClick={initAddingMedia}
             className="flex items-center gap-2 bg-primary/20 hover:bg-primary/40 text-primary rounded-lg px-4 py-2 transition-all font-bold"
           >
             <Plus size={18} /> Ajouter Média
@@ -129,169 +165,497 @@ export default function MediaArchives({ data, setData }: { data: CMSData, setDat
         </div>
       </div>
 
-      {/* Liste des Médias */}
-      <div className="space-y-6">
-        {filteredMedia.length > 0 ? (
-          filteredMedia.map(mediaItem => (
-            <div key={mediaItem.id} className="bg-[#111] border border-white/10 p-6 rounded-2xl space-y-4">
-              {/* En-tête */}
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex items-center gap-3">
-                  {mediaItem.type === 'photo' ? (
-                    <ImageIcon className="text-primary" size={24} />
-                  ) : (
-                    <Video className="text-primary" size={24} />
-                  )}
-                  <div>
-                    <h4 className="font-bold text-white">{mediaItem.title || 'Sans titre'}</h4>
-                    <p className="text-xs text-slate-500">{mediaItem.year} • {mediaItem.type.toUpperCase()}</p>
-                  </div>
-                </div>
-                <button 
-                  onClick={() => removeMedia(mediaItem.id)}
-                  className="text-accent-red hover:text-accent-red/80 transition-colors p-2 hover:bg-accent-red/10 rounded"
+      {/* Liste des Médias - Section cachée par défaut */}
+      {!showGalleryModal && !selectedMediaForEdit && !isAddingMedia && (
+        <div className="bg-[#111] border border-white/10 p-12 rounded-2xl text-center space-y-6">
+          <Archive className="mx-auto text-primary" size={64} />
+          <div>
+            <h3 className="text-2xl font-bold text-white mb-2">Galerie de Médias</h3>
+            <p className="text-slate-400">Vous avez <span className="text-white font-bold">{media.length}</span> média(s) en stock</p>
+          </div>
+          <button 
+            onClick={() => setShowGalleryModal(true)}
+            className="inline-flex items-center gap-2 bg-primary/20 hover:bg-primary/40 text-primary rounded-lg px-6 py-3 transition-all font-bold"
+          >
+            <ImageIcon size={20} /> Voir liste des médias
+          </button>
+        </div>
+      )}
+
+      {/* Section Ajout Nouveau Média */}
+      {isAddingMedia && newMediaForm && (
+        <div className="space-y-6">
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-bold text-white">Ajouter un nouveau média</h3>
+            <button
+              onClick={cancelAddingMedia}
+              className="p-2 hover:bg-white/10 rounded-lg transition-all"
+            >
+              <X className="text-white" size={20} />
+            </button>
+          </div>
+
+          <div className="bg-[#111] border border-white/10 p-6 rounded-2xl space-y-4">
+            {/* Grille de champs */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Année */}
+              <div className="space-y-2">
+                <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 block">Année d'archivage</label>
+                <select 
+                  value={newMediaForm.year}
+                  onChange={e => setNewMediaForm({ ...newMediaForm, year: parseInt(e.target.value) })}
+                  className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-sm outline-none focus:border-primary transition-all min-h-[44px]"
                 >
-                  <Trash2 size={18} />
-                </button>
+                  {years.map(year => (
+                    <option key={year} value={year}>{year}</option>
+                  ))}
+                </select>
               </div>
 
-              {/* Grille de champs */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* Année */}
-                <div className="space-y-2">
-                  <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 block">Année d'archivage</label>
-                  <select 
-                    value={mediaItem.year}
-                    onChange={e => updateMediaField(mediaItem.id, 'year', parseInt(e.target.value))}
-                    className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-sm outline-none focus:border-primary transition-all min-h-[44px]"
-                  >
-                    {years.map(year => (
-                      <option key={year} value={year}>{year}</option>
-                    ))}
-                  </select>
-                </div>
+              {/* Type */}
+              <div className="space-y-2">
+                <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 block">Type de média</label>
+                <select 
+                  value={newMediaForm.type}
+                  onChange={e => setNewMediaForm({ ...newMediaForm, type: e.target.value as 'photo' | 'video' })}
+                  className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-sm outline-none focus:border-primary transition-all min-h-[44px]"
+                >
+                  <option value="photo">Photo</option>
+                  <option value="video">Vidéo / Aftermovie</option>
+                </select>
+              </div>
 
-                {/* Type */}
-                <div className="space-y-2">
-                  <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 block">Type de média</label>
-                  <select 
-                    value={mediaItem.type}
-                    onChange={e => updateMediaField(mediaItem.id, 'type', e.target.value as 'photo' | 'video')}
-                    className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-sm outline-none focus:border-primary transition-all min-h-[44px]"
-                  >
-                    <option value="photo">Photo</option>
-                    <option value="video">Vidéo / Aftermovie</option>
-                  </select>
-                </div>
+              {/* Titre */}
+              <div className="space-y-2">
+                <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 block">Titre</label>
+                <input 
+                  type="text" 
+                  value={newMediaForm.title || ''}
+                  onChange={e => setNewMediaForm({ ...newMediaForm, title: e.target.value })}
+                  className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-sm outline-none focus:border-primary transition-all min-h-[44px]"
+                  placeholder="Ex: Finales 2026, Highlights Round 1..."
+                />
+              </div>
 
-                {/* Titre */}
-                <div className="space-y-2">
-                  <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 block">Titre</label>
-                  <input 
-                    type="text" 
-                    value={mediaItem.title || ''}
-                    onChange={e => updateMediaField(mediaItem.id, 'title', e.target.value)}
-                    className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-sm outline-none focus:border-primary transition-all min-h-[44px]"
-                    placeholder="Ex: Finales 2026, Highlights Round 1..."
-                  />
-                </div>
+              {/* Tag/Catégorie */}
+              <div className="space-y-2">
+                <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 block">Tag/Catégorie</label>
+                <select 
+                  value={newMediaForm.tag || ''}
+                  onChange={e => setNewMediaForm({ ...newMediaForm, tag: e.target.value })}
+                  className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-sm outline-none focus:border-primary transition-all min-h-[44px]"
+                >
+                  <option value="">-- Sélectionner un tag --</option>
+                  {availableTags.map(tag => (
+                    <option key={tag} value={tag}>{tag}</option>
+                  ))}
+                </select>
+              </div>
 
-                {/* Tag/Catégorie */}
-                <div className="space-y-2">
-                  <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 block">Tag/Catégorie</label>
-                  <select 
-                    value={mediaItem.tag || ''}
-                    onChange={e => updateMediaField(mediaItem.id, 'tag', e.target.value)}
-                    className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-sm outline-none focus:border-primary transition-all min-h-[44px]"
-                  >
-                    <option value="">-- Sélectionner un tag --</option>
-                    {availableTags.map(tag => (
-                      <option key={tag} value={tag}>{tag}</option>
-                    ))}
-                  </select>
-                </div>
+              {/* URL */}
+              <div className="md:col-span-2 space-y-2">
+                <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 block">URL du média</label>
+                <input 
+                  type="text" 
+                  value={newMediaForm.url}
+                  onChange={e => setNewMediaForm({ ...newMediaForm, url: e.target.value })}
+                  className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-sm outline-none focus:border-primary transition-all min-h-[44px]"
+                  placeholder="https://..."
+                />
+              </div>
 
-                {/* URL */}
+              {/* Description */}
+              <div className="md:col-span-2 space-y-2">
+                <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 block">Description</label>
+                <textarea 
+                  value={newMediaForm.description || ''}
+                  onChange={e => setNewMediaForm({ ...newMediaForm, description: e.target.value })}
+                  rows={3}
+                  className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-sm outline-none focus:border-primary transition-all resize-none"
+                  placeholder="Description détaillée du média..."
+                />
+              </div>
+
+              {/* Thumbnail (pour vidéos) */}
+              {newMediaForm.type === 'video' && (
                 <div className="md:col-span-2 space-y-2">
-                  <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 block">URL du média</label>
+                  <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 block">URL Thumbnail (optionnel)</label>
                   <input 
                     type="text" 
-                    value={mediaItem.url}
-                    onChange={e => updateMediaField(mediaItem.id, 'url', e.target.value)}
+                    value={newMediaForm.thumbnail || ''}
+                    onChange={e => setNewMediaForm({ ...newMediaForm, thumbnail: e.target.value })}
                     className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-sm outline-none focus:border-primary transition-all min-h-[44px]"
                     placeholder="https://..."
                   />
                 </div>
+              )}
 
-                {/* Description */}
-                <div className="md:col-span-2 space-y-2">
-                  <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 block">Description</label>
-                  <textarea 
-                    value={mediaItem.description || ''}
-                    onChange={e => updateMediaField(mediaItem.id, 'description', e.target.value)}
-                    rows={3}
-                    className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-sm outline-none focus:border-primary transition-all resize-none"
-                    placeholder="Description détaillée du média..."
+              {/* Durée (pour vidéos) */}
+              {newMediaForm.type === 'video' && (
+                <div className="space-y-2">
+                  <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 block">Durée (optionnel)</label>
+                  <input 
+                    type="text" 
+                    value={newMediaForm.duration || ''}
+                    onChange={e => setNewMediaForm({ ...newMediaForm, duration: e.target.value })}
+                    className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-sm outline-none focus:border-primary transition-all min-h-[44px]"
+                    placeholder="4:32"
                   />
                 </div>
-
-                {/* Thumbnail (pour vidéos) */}
-                {mediaItem.type === 'video' && (
-                  <div className="md:col-span-2 space-y-2">
-                    <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 block">URL Thumbnail (optionnel)</label>
-                    <input 
-                      type="text" 
-                      value={mediaItem.thumbnail || ''}
-                      onChange={e => updateMediaField(mediaItem.id, 'thumbnail', e.target.value)}
-                      className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-sm outline-none focus:border-primary transition-all min-h-[44px]"
-                      placeholder="https://..."
-                    />
-                  </div>
-                )}
-
-                {/* Durée (pour vidéos) */}
-                {mediaItem.type === 'video' && (
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 block">Durée (optionnel)</label>
-                    <input 
-                      type="text" 
-                      value={mediaItem.duration || ''}
-                      onChange={e => updateMediaField(mediaItem.id, 'duration', e.target.value)}
-                      className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-sm outline-none focus:border-primary transition-all min-h-[44px]"
-                      placeholder="4:32"
-                    />
-                  </div>
-                )}
-              </div>
-
-              {/* Aperçu */}
-              <div className="pt-4 border-t border-white/10">
-                <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-3">Aperçu</p>
-                {mediaItem.type === 'photo' ? (
-                  <div className="w-full h-48 bg-white/5 border border-white/10 rounded-lg overflow-hidden">
-                    <img src={mediaItem.url} alt={mediaItem.title} className="w-full h-full object-cover" onError={(e) => e.currentTarget.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="100" height="100"%3E%3Crect fill="%23444" width="100" height="100"/%3E%3C/svg%3E'} referrerPolicy="no-referrer" />
-                  </div>
-                ) : (
-                  <div className="w-full h-48 bg-black border border-white/10 rounded-lg flex items-center justify-center">
-                    <Video className="text-white/30" size={48} />
-                  </div>
-                )}
-              </div>
+              )}
             </div>
-          ))
-        ) : (
-          <div className="bg-[#111] border border-white/10 p-12 rounded-2xl text-center">
-            <Archive className="mx-auto mb-4 text-white/30" size={48} />
-            <p className="text-white/60 mb-4">Aucun média trouvé avec les filtres appliqués</p>
-            <button 
-              onClick={addMedia}
-              className="inline-flex items-center gap-2 bg-primary/20 hover:bg-primary/40 text-primary rounded-lg px-4 py-2 transition-all font-bold"
+
+            {/* Aperçu */}
+            <div className="pt-4 border-t border-white/10">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-3">Aperçu</p>
+              {newMediaForm.type === 'photo' ? (
+                <div className="w-full h-48 bg-white/5 border border-white/10 rounded-lg overflow-hidden">
+                  {newMediaForm.url ? (
+                    <img src={newMediaForm.url} alt={newMediaForm.title} className="w-full h-full object-cover" onError={(e) => e.currentTarget.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="100" height="100"%3E%3Crect fill="%23444" width="100" height="100"/%3E%3C/svg%3E'} referrerPolicy="no-referrer" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <ImageIcon className="text-white/30" size={48} />
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="w-full h-48 bg-black border border-white/10 rounded-lg flex items-center justify-center">
+                  <Video className="text-white/30" size={48} />
+                </div>
+              )}
+            </div>
+
+            {/* Boutons d'action */}
+            <div className="flex gap-4 pt-4">
+              <button 
+                onClick={saveNewMedia}
+                className="flex-1 bg-primary/20 hover:bg-primary/40 text-primary rounded-lg px-6 py-3 transition-all font-bold uppercase tracking-widest"
+              >
+                Enregistrer
+              </button>
+              <button 
+                onClick={cancelAddingMedia}
+                className="flex-1 bg-white/10 hover:bg-white/20 text-white rounded-lg px-6 py-3 transition-all font-bold uppercase tracking-widest"
+              >
+                Annuler
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Section Édition - Affichée quand un média est sélectionné */}
+      {selectedMediaForEdit && !isAddingMedia && (
+        <div className="space-y-6">
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-bold text-white">Édition du média</h3>
+            <button
+              onClick={() => setSelectedMediaForEdit(null)}
+              className="p-2 hover:bg-white/10 rounded-lg transition-all"
             >
-              <Plus size={18} /> Ajouter le premier média
+              <X className="text-white" size={20} />
             </button>
           </div>
+
+          {media.find(m => m.id === selectedMediaForEdit) && (
+            <div className="bg-[#111] border border-white/10 p-6 rounded-2xl space-y-4">
+              {(() => {
+                const mediaItem = media.find(m => m.id === selectedMediaForEdit)!;
+                return (
+                  <>
+                    {/* En-tête */}
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex items-center gap-3">
+                        {mediaItem.type === 'photo' ? (
+                          <ImageIcon className="text-primary" size={24} />
+                        ) : (
+                          <Video className="text-primary" size={24} />
+                        )}
+                        <div>
+                          <h4 className="font-bold text-white">{mediaItem.title || 'Sans titre'}</h4>
+                          <p className="text-xs text-slate-500">{mediaItem.year} • {mediaItem.type.toUpperCase()}</p>
+                        </div>
+                      </div>
+                      <button 
+                        onClick={() => {
+                          removeMedia(mediaItem.id);
+                          setSelectedMediaForEdit(null);
+                        }}
+                        className="text-accent-red hover:text-accent-red/80 transition-colors p-2 hover:bg-accent-red/10 rounded"
+                      >
+                        <Trash2 size={18} />
+                      </button>
+                    </div>
+
+                    {/* Grille de champs */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {/* Année */}
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 block">Année d'archivage</label>
+                        <select 
+                          value={mediaItem.year}
+                          onChange={e => updateMediaField(mediaItem.id, 'year', parseInt(e.target.value))}
+                          className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-sm outline-none focus:border-primary transition-all min-h-[44px]"
+                        >
+                          {years.map(year => (
+                            <option key={year} value={year}>{year}</option>
+                          ))}
+                        </select>
+                      </div>
+
+                      {/* Type */}
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 block">Type de média</label>
+                        <select 
+                          value={mediaItem.type}
+                          onChange={e => updateMediaField(mediaItem.id, 'type', e.target.value as 'photo' | 'video')}
+                          className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-sm outline-none focus:border-primary transition-all min-h-[44px]"
+                        >
+                          <option value="photo">Photo</option>
+                          <option value="video">Vidéo / Aftermovie</option>
+                        </select>
+                      </div>
+
+                      {/* Titre */}
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 block">Titre</label>
+                        <input 
+                          type="text" 
+                          value={mediaItem.title || ''}
+                          onChange={e => updateMediaField(mediaItem.id, 'title', e.target.value)}
+                          className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-sm outline-none focus:border-primary transition-all min-h-[44px]"
+                          placeholder="Ex: Finales 2026, Highlights Round 1..."
+                        />
+                      </div>
+
+                      {/* Tag/Catégorie */}
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 block">Tag/Catégorie</label>
+                        <select 
+                          value={mediaItem.tag || ''}
+                          onChange={e => updateMediaField(mediaItem.id, 'tag', e.target.value)}
+                          className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-sm outline-none focus:border-primary transition-all min-h-[44px]"
+                        >
+                          <option value="">-- Sélectionner un tag --</option>
+                          {availableTags.map(tag => (
+                            <option key={tag} value={tag}>{tag}</option>
+                          ))}
+                        </select>
+                      </div>
+
+                      {/* URL */}
+                      <div className="md:col-span-2 space-y-2">
+                        <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 block">URL du média</label>
+                        <input 
+                          type="text" 
+                          value={mediaItem.url}
+                          onChange={e => updateMediaField(mediaItem.id, 'url', e.target.value)}
+                          className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-sm outline-none focus:border-primary transition-all min-h-[44px]"
+                          placeholder="https://..."
+                        />
+                      </div>
+
+                      {/* Description */}
+                      <div className="md:col-span-2 space-y-2">
+                        <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 block">Description</label>
+                        <textarea 
+                          value={mediaItem.description || ''}
+                          onChange={e => updateMediaField(mediaItem.id, 'description', e.target.value)}
+                          rows={3}
+                          className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-sm outline-none focus:border-primary transition-all resize-none"
+                          placeholder="Description détaillée du média..."
+                        />
+                      </div>
+
+                      {/* Thumbnail (pour vidéos) */}
+                      {mediaItem.type === 'video' && (
+                        <div className="md:col-span-2 space-y-2">
+                          <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 block">URL Thumbnail (optionnel)</label>
+                          <input 
+                            type="text" 
+                            value={mediaItem.thumbnail || ''}
+                            onChange={e => updateMediaField(mediaItem.id, 'thumbnail', e.target.value)}
+                            className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-sm outline-none focus:border-primary transition-all min-h-[44px]"
+                            placeholder="https://..."
+                          />
+                        </div>
+                      )}
+
+                      {/* Durée (pour vidéos) */}
+                      {mediaItem.type === 'video' && (
+                        <div className="space-y-2">
+                          <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 block">Durée (optionnel)</label>
+                          <input 
+                            type="text" 
+                            value={mediaItem.duration || ''}
+                            onChange={e => updateMediaField(mediaItem.id, 'duration', e.target.value)}
+                            className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-sm outline-none focus:border-primary transition-all min-h-[44px]"
+                            placeholder="4:32"
+                          />
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Aperçu */}
+                    <div className="pt-4 border-t border-white/10">
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-3">Aperçu</p>
+                      {mediaItem.type === 'photo' ? (
+                        <div className="w-full h-48 bg-white/5 border border-white/10 rounded-lg overflow-hidden">
+                          <img src={mediaItem.url} alt={mediaItem.title} className="w-full h-full object-cover" onError={(e) => e.currentTarget.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="100" height="100"%3E%3Crect fill="%23444" width="100" height="100"/%3E%3C/svg%3E'} referrerPolicy="no-referrer" />
+                        </div>
+                      ) : (
+                        <div className="w-full h-48 bg-black border border-white/10 rounded-lg flex items-center justify-center">
+                          <Video className="text-white/30" size={48} />
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Boutons d'action */}
+                    <div className="flex gap-4 pt-4">
+                      <button 
+                        onClick={() => setSelectedMediaForEdit(null)}
+                        className="flex-1 bg-primary/20 hover:bg-primary/40 text-primary rounded-lg px-6 py-3 transition-all font-bold uppercase tracking-widest"
+                      >
+                        Enregistrer
+                      </button>
+                      <button 
+                        onClick={() => setSelectedMediaForEdit(null)}
+                        className="flex-1 bg-white/10 hover:bg-white/20 text-white rounded-lg px-6 py-3 transition-all font-bold uppercase tracking-widest"
+                      >
+                        Fermer
+                      </button>
+                    </div>
+                  </>
+                );
+              })()}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Modal Galerie */}
+      <AnimatePresence>
+        {showGalleryModal && !isAddingMedia && !selectedMediaForEdit && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/90 z-50 flex flex-col"
+          >
+            {/* Header */}
+            <div className="flex justify-between items-center p-6 border-b border-white/10">
+              <div>
+                <h2 className="text-2xl font-bold uppercase text-white">Galerie Médias</h2>
+                <p className="text-sm text-slate-400 mt-1">Total: {filteredMedia.length} média(s)</p>
+              </div>
+              <button 
+                onClick={() => setShowGalleryModal(false)}
+                className="p-2 hover:bg-white/10 rounded-lg transition-all"
+              >
+                <X className="text-white" size={24} />
+              </button>
+            </div>
+
+            {/* Filtres */}
+            <div className="flex gap-4 p-6 border-b border-white/10 flex-wrap">
+              <div className="flex-1 min-w-[200px]">
+                <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 block mb-2">Année</label>
+                <select 
+                  value={filterYear}
+                  onChange={e => setFilterYear(e.target.value === 'all' ? 'all' : parseInt(e.target.value))}
+                  className="w-full bg-white/5 border border-white/10 rounded-lg p-2 text-sm outline-none focus:border-primary transition-all"
+                >
+                  <option value="all">Toutes</option>
+                  {years.map(year => (
+                    <option key={year} value={year}>{year}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="flex-1 min-w-[200px]">
+                <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 block mb-2">Type</label>
+                <select 
+                  value={filterType}
+                  onChange={e => setFilterType(e.target.value as any)}
+                  className="w-full bg-white/5 border border-white/10 rounded-lg p-2 text-sm outline-none focus:border-primary transition-all"
+                >
+                  <option value="all">Tous</option>
+                  <option value="photo">Photos</option>
+                  <option value="video">Vidéos</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Gallery Grid */}
+            <div className="flex-1 overflow-y-auto p-6">
+              {filteredMedia.length > 0 ? (
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+                  {filteredMedia.map(mediaItem => (
+                    <div key={mediaItem.id} className="group relative overflow-hidden rounded-lg border border-white/10 hover:border-primary transition-all">
+                      <div className="relative aspect-square">
+                        {mediaItem.type === 'photo' ? (
+                          <img 
+                            src={mediaItem.url} 
+                            alt={mediaItem.title} 
+                            className="w-full h-full object-cover"
+                            referrerPolicy="no-referrer"
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-black/50 flex items-center justify-center">
+                            <Video className="text-white/50" size={40} />
+                          </div>
+                        )}
+
+                        {/* Overlay with actions */}
+                        <div className="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
+                          <button
+                            onClick={() => {
+                              setSelectedMediaForEdit(mediaItem.id);
+                              setShowGalleryModal(false);
+                            }}
+                            className="p-3 bg-primary/80 hover:bg-primary text-black rounded-full transition-all"
+                            title="Modifier"
+                          >
+                            <Edit2 size={20} />
+                          </button>
+                          <button
+                            onClick={() => removeMedia(mediaItem.id)}
+                            className="p-3 bg-accent-red/80 hover:bg-accent-red text-white rounded-full transition-all"
+                            title="Supprimer"
+                          >
+                            <Trash2 size={20} />
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Info */}
+                      <div className="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black to-transparent">
+                        <p className="text-[10px] font-bold text-slate-300 truncate">{mediaItem.title || 'Sans titre'}</p>
+                        <p className="text-[8px] text-slate-500">{mediaItem.year}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center h-full text-center">
+                  <Archive className="text-white/30 mb-4" size={48} />
+                  <p className="text-white/60">Aucun média trouvé</p>
+                </div>
+              )}
+            </div>
+
+            {/* Footer */}
+            <div className="p-6 border-t border-white/10">
+              <button 
+                onClick={() => setShowGalleryModal(false)}
+                className="w-full bg-white/10 hover:bg-white/20 text-white rounded-lg px-4 py-3 transition-all font-bold uppercase tracking-widest"
+              >
+                Fermer
+              </button>
+            </div>
+          </motion.div>
         )}
-      </div>
+      </AnimatePresence>
     </div>
   );
 }

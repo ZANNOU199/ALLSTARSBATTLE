@@ -12,6 +12,7 @@ const Media = () => {
   const [galleryPage, setGalleryPage] = useState(0);
   const [desktopPage, setDesktopPage] = useState(0);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  const [showMediaGallery, setShowMediaGallery] = useState(false);
 
   useEffect(() => {
     const data = cmsService.getData();
@@ -27,45 +28,24 @@ const Media = () => {
   }, []);
 
   // Fallback data if CMS is empty
-  const fallbackPhotos = [
-    "https://lh3.googleusercontent.com/aida-public/AB6AXuD9xPXChwqoHKYNjo6-R2Iielz0x1_qdIaedLHTI-SxhMsLB2uZjRgmQZt55dP7f1Qawd3uU-df4W1wi6UxJcHsq5LrEgCU4iDgMEe2oBm5k50RdXP3uvyj_IQJ86Mu0mzEjefEM_kwogdioXdVnC3ZRJAc2RhKLqVbwkgueQP4-v8GPLV9qM_CZQQARhn2kcLpupXzhH1ZIhC0CLoyBeSwTQH2vUK0_K5twIrvHM0b96u_Y5_0X_1WooLz1zJhuH3B_cf_UO8LGkaN",
-    "https://lh3.googleusercontent.com/aida-public/AB6AXuDUhFl2n0qh-ZGeucLIhUqCXQgpDjQce1YXl1v1DXlyMEirhTmaz0Xl3sNoOUhMKNabQVLMsIRx3jZoQoxGXwENVOn6AC9OdUhu3Z6p6RkZckIwfOEGtpYMa_uklFtAg5hnxv6UtyqUsjIjENF3YtJGd_6SHhY2spXJrnQQ2cvzwoQno8Cr8DqKYT1ZNdiyRy8cUB8VaxazhlsVERIASD30T0EuwR2WvLOuuO6ul2rAcGiyXdMACpxKxpvdYNiZGqRsJ6qWOKuEDXYn",
-    "https://lh3.googleusercontent.com/aida-public/AB6AXuDlYi46n2V_gWoARvufGOALxqIMik-sJTRgYn9sWhELo8icVITWM8I0ia9AOgZF6NkDu_WUwsLOO5UJdckyMsXG4TsilpOdOL8ZRRGbXIVhxOfz5p7Dt2Nmf6QRKyfMchgX2saH9Yx5Nu13Md0fr5La_D-XHELIkBnS3T3GTkTX-xZvBSJjTUXdBs_uZzDdTDILrI8F-NwxaRaEH-FZbqRzV1a_xqCl78heyGFQyofoxQ2ipdHrApQf3UQ-PGGlAgJ8I-xG_YofUz7M",
-    "https://lh3.googleusercontent.com/aida-public/AB6AXuAPY8pW4yquxlXj_gmPW3ktaDHPZqc0Lg34Ca7SDGSN7TJDvgMLm8AziEWmiz7I-1NtsriRVLpPAWoM6UKbhWHOknaUkZlCc4suS0FtAwSAenU2BuJxsOHOXokg0-Kafj0nBWFgG7lXKalvYvdydYxNstKAjZ7FiOAEf1nnYTRoxMHpddETmdeAlPXVS6_gFe-3ZMDqFUpAi2Dk8VxmmmpaEYLwCJF1U45Yrdwpnx7jvGto3bN3sWc8xspsFi4tOQWzcB70ut25zfxk",
-    "https://lh3.googleusercontent.com/aida-public/AB6AXuDv7dDfTrKQfSOcHBSioqejsrURxghmsb7VGJEVYb2fRLG-ZDez3Q1u-Xx-5jES8SPGeVrvX4xiJzuEYdy9-F9SUdpmrVyJy08_KisCwo3T1zhGkWHQZQCvbzfiW-tZLGm2SB08DQl74G5KPLX5UyKGhi825Vdd2XTOmXTnnXddg67VMJu1utljtmjZZpatzp3O8GSCAEAlRfZYyC7e72iHdVjEOuSS0nQrApz8jibMt_FH4PRH7DrmSrQLhY1sATbUmluqmmNJU8fY",
-    "https://lh3.googleusercontent.com/aida-public/AB6AXuAxwPxmZ5ltHpl70EHoIX88NCXfX-CnA-Msk8H7itZuOsFeaoVvx6pPIWSQhziLpKmbhbavNo8aVptJcrDWAeYjG14DBqxxOUwV15Lr8K2u9VQxhLVE2u_dB_0NNgYdy6ni-UMr-_rCHFz5HP3206TmmVZGQ0OWC4LNOBXETMl6qqWRa4tp0JsR_yNkCCHZsjIVcOgeQg_fTeAyydukjadNfoNKNBIzAIlBxQflStxan25vcLIeUEf9eoTnJ_1fiEyD10rj-0oLiCQj"
-  ];
+  const fallbackPhotos: string[] = [];
 
-  const fallbackVideos = [
-    {
-      title: "Grande Finale : Junior vs Flash | Edition 2026",
-      desc: "Une bataille épique pour le titre de champion d'Afrique. Intensité maximum au Palais des Congrès.",
-      thumb: "https://lh3.googleusercontent.com/aida-public/AB6AXuDMkGNpuifFwnVWmRyAEi62j4okjsk2AGk7htsWqJJ5Tgq2tcP3SJAyJ1rdE3dGctaaGP9fviSs9AJ7eQ-W8v_wa1YiAVPUcll9BPeXmpOKbxc639NFT_BIoDxo0PllGZheqyXUk3J172KVKat4u56ZikImlZNkV8lF3fDwC5h0EqrtHFkBvgXp1PmQRk_7Hwt9FDuAzEzStye-cDpUfIV-wt5BJxS6F_752z7NIIDm6iMn_NHIFBQ3clAQvAJonPZTHTf4FE4rb_FB",
-      duration: "12:45",
-      tag: "Replay"
-    },
-    {
-      title: "Aftermovie Officiel : L'énergie de Lomé",
-      desc: "Plongez dans les coulisses et l'ambiance électrique de l'ASBI Togo 2026.",
-      thumb: "https://lh3.googleusercontent.com/aida-public/AB6AXuC6Y5KhdIdLdMWZqG8ujhfsSHsWDUItyVRMHAkK1iti02_vL4V-f94Xqm6b8UExrKratgJMlIqoUupZFn3v8_8qaC-ZZEdoHIweTlolLZfwbawWlTIUHH1bdwLjjfzQo2uu_3TAAT3ogtMPDIrSeRdJA3hpbH4fDGtfLmN_aHJb4JBCYRlMP3pVmysYXurV2VXW2-bWBek0rxLu6OEjVRSfng3r6UdcAYcPl6O1mtCqAujrPGczBSXa0O-0xFI7IeI-lyVJ46RGgTJI",
-      duration: "04:20",
-      tag: "Exclusif"
-    }
-  ];
+  const fallbackVideos: any[] = [];
 
-  const filteredPhotos = mediaItems.length > 0 
-    ? mediaItems.filter(item => item.year === selectedYear && item.type === 'photo').map(item => item.url)
-    : (selectedYear === 2026 ? fallbackPhotos : []);
+  const filteredPhotos = mediaItems
+    .filter(item => item.year === selectedYear && item.type === 'photo')
+    .map(item => item.url);
 
-  const filteredVideos = mediaItems.length > 0
-    ? mediaItems.filter(item => item.year === selectedYear && item.type === 'video').map(item => ({
-        title: item.title,
-        desc: item.description,
-        thumb: item.thumbnail || item.url,
-        duration: item.duration,
-        tag: item.tag
-      }))
-    : (selectedYear === 2026 ? fallbackVideos : []);
+  const filteredVideos = mediaItems
+    .filter(item => item.year === selectedYear && item.type === 'video')
+    .map(item => ({
+      title: item.title,
+      desc: item.description,
+      thumb: item.thumbnail || item.url,
+      duration: item.duration,
+      tag: item.tag,
+      id: item.id
+    }));
 
   // Pagination settings
   const itemsPerPageMobile = 4;
@@ -121,28 +101,53 @@ const Media = () => {
       </section>
 
       <div className="max-w-7xl mx-auto px-6 py-12">
-        {/* Year Filter */}
-        <div className="flex flex-wrap justify-center gap-4 sm:gap-8 mb-12 border-b border-white/10 pb-8">
-          {[2026, 2025, 2024, 2023, 2022, 2020, 2018, 2016, 2015].map((year) => (
+        {!showMediaGallery ? (
+          /* Empty State Screen */
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex flex-col items-center justify-center min-h-[60vh] text-center space-y-8"
+          >
+            <div>
+              <h2 className="font-heading text-5xl md:text-7xl text-white uppercase mb-4 leading-none">
+                Galerie de <span className="text-primary">Médias</span>
+              </h2>
+              <p className="text-slate-400 text-lg md:text-xl max-w-2xl mx-auto">
+                Explorez les photos, vidéos et aftermovies ajoutés par nos équipes. Filtrez par année et type de contenu.
+              </p>
+            </div>
             <button
-              key={year}
-              onClick={() => setSelectedYear(year)}
-              className={`text-lg sm:text-xl font-heading tracking-widest transition-all ${selectedYear === year ? 'text-primary scale-110 sm:scale-125' : 'text-slate-500 hover:text-white'}`}
+              onClick={() => setShowMediaGallery(true)}
+              className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-primary to-accent-red hover:shadow-2xl text-black font-black uppercase tracking-widest rounded-lg transition-all transform hover:scale-105"
             >
-              {year}
+              <Play size={24} className="fill-current" />
+              Voir les médias
             </button>
-          ))}
-        </div>
+          </motion.div>
+        ) : (
+          <>
+            {/* Year Filter */}
+            <div className="flex flex-wrap justify-center gap-4 sm:gap-8 mb-12 border-b border-white/10 pb-8">
+              {[2026, 2025, 2024, 2023, 2022, 2020, 2018, 2016, 2015].map((year) => (
+                <button
+                  key={year}
+                  onClick={() => setSelectedYear(year)}
+                  className={`text-lg sm:text-xl font-heading tracking-widest transition-all ${selectedYear === year ? 'text-primary scale-110 sm:scale-125' : 'text-slate-500 hover:text-white'}`}
+                >
+                  {year}
+                </button>
+              ))}
+            </div>
 
-        {/* Tabs */}
-        <div className="flex flex-wrap items-center justify-center gap-4 mb-16">
-          {['photos', 'vidéos', 'aftermovies'].map((tab) => (
-            <button 
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              className={`px-8 py-3 font-black uppercase tracking-widest rounded-lg skew-x-[-12deg] transition-all ${activeTab === tab ? 'bg-primary text-black' : 'bg-white/5 hover:bg-white/10 text-white'}`}
-            >
-              <span className="inline-block skew-x-[12deg]">{tab}</span>
+            {/* Tabs */}
+            <div className="flex flex-wrap items-center justify-center gap-4 mb-16">
+              {['photos', 'vidéos', 'aftermovies'].map((tab) => (
+                <button 
+                  key={tab}
+                  onClick={() => setActiveTab(tab)}
+                  className={`px-8 py-3 font-black uppercase tracking-widest rounded-lg skew-x-[-12deg] transition-all ${activeTab === tab ? 'bg-primary text-black' : 'bg-white/5 hover:bg-white/10 text-white'}`}
+                >
+                  <span className="inline-block skew-x-[12deg]">{tab}</span>
             </button>
           ))}
         </div>
@@ -334,6 +339,8 @@ const Media = () => {
             )}
           </motion.div>
         )}
+        </>
+      )}
       </div>
 
       {/* Mobile Gallery Modal */}
