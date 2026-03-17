@@ -303,22 +303,22 @@ export default function CompetitionBrackets({ data, setData }: { data: CMSData, 
     };
   }, []);
 
-  const BracketMatch = ({ player1, player2, score1 = "--", score2 = "--", country1, country2, countryCode1, countryCode2, side = "left", color = "primary" }: any) => (
+  const BracketMatch = ({ player1, player2, country1, country2, countryCode1, countryCode2, side = "left", color = "primary" }: any) => (
     <div className={`flex flex-col gap-1 bg-white/5 p-2 md:p-4 rounded border-${side === "left" ? "l" : "r"}-4 ${color === "primary" ? "border-primary" : "border-accent-red"} relative transition-all hover:bg-white/10`}>
       <div className={`flex justify-between items-center ${side === "right" ? "flex-row-reverse" : ""}`}>
         <span className="font-bold text-xl sm:text-2xl md:text-sm uppercase leading-tight flex items-center gap-1 md:gap-2">
           {player1}
           {countryCode1 !== 'un' && <img src={`https://flagcdn.com/${countryCode1}.svg`} alt={country1} className="w-4 h-3" onError={(e) => { e.currentTarget.style.display = 'none'; }} />}
         </span>
-        <span className="text-primary font-mono text-xl sm:text-2xl md:text-sm">{score1}</span>
       </div>
-      <div className="h-[1px] bg-white/10 my-1 md:my-2"></div>
+      <div className="flex justify-center">
+        <span className="text-primary font-mono text-xs">--</span>
+      </div>
       <div className={`flex justify-between items-center ${side === "right" ? "flex-row-reverse" : ""}`}>
         <span className="font-bold text-xl sm:text-2xl md:text-sm uppercase leading-tight flex items-center gap-1 md:gap-2">
           {player2}
           {countryCode2 !== 'un' && <img src={`https://flagcdn.com/${countryCode2}.svg`} alt={country2} className="w-4 h-3" onError={(e) => { e.currentTarget.style.display = 'none'; }} />}
         </span>
-        <span className="text-primary font-mono text-xl sm:text-2xl md:text-sm">{score2}</span>
       </div>
     </div>
   );
@@ -338,8 +338,6 @@ export default function CompetitionBrackets({ data, setData }: { data: CMSData, 
               player2={match.player2} 
               country2={match.country2} 
               countryCode2={match.countryCode2}
-              score1={match.score1}
-              score2={match.score2}
               color={idx % 2 === 0 ? "accent-red" : "primary"}
             />
           ))}
@@ -359,8 +357,6 @@ export default function CompetitionBrackets({ data, setData }: { data: CMSData, 
               player2={match.player2} 
               country2="" 
               countryCode2="un"
-              score1={match.score1}
-              score2={match.score2}
             />
           ))}
         </div>
@@ -373,9 +369,7 @@ export default function CompetitionBrackets({ data, setData }: { data: CMSData, 
           {data.competition.brackets.pouleA.semis.map((match) => (
             <div key={match.id} className="flex flex-col gap-1 bg-accent-red/10 p-3 rounded border border-accent-red/30 text-xs">
               <div className="text-center font-bold text-white uppercase text-[10px]">{match.player1}</div>
-              <div className="text-center text-primary font-mono text-xs">{match.score1}</div>
-              <div className="text-center text-primary font-bold text-[10px]">VS</div>
-              <div className="text-center text-primary font-mono text-xs">{match.score2}</div>
+              <div className="text-center text-primary font-mono text-xs">--</div>
               <div className="text-center font-bold text-white uppercase text-[10px]">{match.player2}</div>
             </div>
           ))}
@@ -392,11 +386,9 @@ export default function CompetitionBrackets({ data, setData }: { data: CMSData, 
           <div className="bg-black p-3 md:p-4 rounded-md flex flex-col items-center gap-2 md:gap-3">
             <div className="text-center">
               <h3 className="font-heading text-[10px] md:text-xs text-white uppercase font-bold">{data.competition.brackets.final.player1 || 'TBD'}</h3>
-              <span className="text-primary font-mono text-xs">{data.competition.brackets.final.score1}</span>
             </div>
-            <span className="text-primary text-xs font-bold">VS</span>
+            <span className="text-primary text-xs font-mono">--</span>
             <div className="text-center">
-              <span className="text-primary font-mono text-xs">{data.competition.brackets.final.score2}</span>
               <h3 className="font-heading text-[10px] md:text-xs text-white uppercase font-bold">{data.competition.brackets.final.player2 || 'TBD'}</h3>
             </div>
           </div>
@@ -410,9 +402,7 @@ export default function CompetitionBrackets({ data, setData }: { data: CMSData, 
           {data.competition.brackets.pouleB.semis.map((match) => (
             <div key={match.id} className="flex flex-col gap-1 bg-accent-red/10 p-3 rounded border border-accent-red/30 text-xs">
               <div className="text-center font-bold text-white uppercase text-[10px]">{match.player1}</div>
-              <div className="text-center text-primary font-mono text-xs">{match.score1}</div>
-              <div className="text-center text-primary font-bold text-[10px]">VS</div>
-              <div className="text-center text-primary font-mono text-xs">{match.score2}</div>
+              <div className="text-center text-primary font-mono text-xs">--</div>
               <div className="text-center font-bold text-white uppercase text-[10px]">{match.player2}</div>
             </div>
           ))}
@@ -432,8 +422,6 @@ export default function CompetitionBrackets({ data, setData }: { data: CMSData, 
               player2={match.player2} 
               country2="" 
               countryCode2="un"
-              score1={match.score1}
-              score2={match.score2}
               side="right"
             />
           ))}
@@ -453,8 +441,6 @@ export default function CompetitionBrackets({ data, setData }: { data: CMSData, 
               player2={match.player2} 
               country2={match.country2} 
               countryCode2={match.countryCode2}
-              score1={match.score1}
-              score2={match.score2}
               side="right"
               color={idx % 2 === 0 ? "accent-red" : "primary"}
             />
