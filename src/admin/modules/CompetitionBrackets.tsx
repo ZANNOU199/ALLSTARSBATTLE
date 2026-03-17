@@ -257,16 +257,26 @@ export default function CompetitionBrackets({ data, setData }: { data: CMSData, 
     const updateScale = () => {
       if (!bracketContainerRef.current) return;
 
-      const containerWidth = bracketContainerRef.current.clientWidth;
+      const container = bracketContainerRef.current;
+      const containerWidth = container.clientWidth;
+      const containerHeight = container.clientHeight;
       const targetWidth = 900;
+      const targetHeight = 600;
 
-      // Aggressively scale to fit: no minimum limit for small screens
-      const scale = Math.min(1, (containerWidth - 20) / targetWidth);
+      // Utilise la plus petite dimension disponible pour calculer le scale
+      // Cela garantit que le bracket rentre complètement dans le conteneur
+      const scaleX = (containerWidth * 0.98) / targetWidth; // 98% de la largeur (2% margin)
+      const scaleY = (containerHeight * 0.98) / targetHeight; // 98% de la hauteur
       
-      setBracketScale(Math.max(0.25, scale)); // Allow much smaller scale for mobile
+      // Prend le scale le plus restrictif pour tout faire rentrer
+      const scale = Math.min(scaleX, scaleY, 1); // Max 100%
+      
+      // Minimum de 0.2 pour les très petits écrans
+      setBracketScale(Math.max(0.2, scale));
     };
 
-    // Initial scale calculation
+    // Attendre que le DOM soit prêt
+    const timer = setTimeout(updateScale, 100);
     updateScale();
     
     // Recalculate on resize
@@ -279,6 +289,7 @@ export default function CompetitionBrackets({ data, setData }: { data: CMSData, 
     return () => {
       window.removeEventListener('resize', updateScale);
       resizeObserver.disconnect();
+      clearTimeout(timer);
     };
   }, []);
 
