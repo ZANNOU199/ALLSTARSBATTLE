@@ -160,9 +160,22 @@ const initialData: CMSData = {
   },
   partners: {
     logos: [
-      { id: '1', name: 'Sponsor 1', logo: 'https://picsum.photos/seed/logo1/200/200', category: 'Main', tier: 'Partenaire Officiel' }
+      { id: '1', name: 'Partenaire Institutionnel 1', logo: 'https://picsum.photos/seed/instit1/200/200', category: 'Institutional' },
+      { id: '2', name: 'Partenaire Institutionnel 2', logo: 'https://picsum.photos/seed/instit2/200/200', category: 'Institutional' },
+      { id: '3', name: 'Partenaire Institutionnel 3', logo: 'https://picsum.photos/seed/instit3/200/200', category: 'Institutional' },
+      { id: '4', name: 'Partenaire Institutionnel 4', logo: 'https://picsum.photos/seed/instit4/200/200', category: 'Institutional' },
+      { id: '5', name: 'Sponsor Majeur 1', logo: 'https://picsum.photos/seed/sponsor1/200/200', category: 'Main', tier: 'Sponsor Platine' },
+      { id: '6', name: 'Sponsor Majeur 2', logo: 'https://picsum.photos/seed/sponsor2/200/200', category: 'Main', tier: 'Sponsor Or' },
+      { id: '7', name: 'Sponsor Majeur 3', logo: 'https://picsum.photos/seed/sponsor3/200/200', category: 'Main', tier: 'Sponsor Argent' },
+      { id: '8', name: 'Média Partenaire 1', logo: 'https://picsum.photos/seed/media1/200/200', category: 'Media' },
+      { id: '9', name: 'Média Partenaire 2', logo: 'https://picsum.photos/seed/media2/200/200', category: 'Media' }
     ],
-    sponsoringPdfUrl: '#'
+    sponsoringPdfUrl: '#',
+    cta: {
+      title: 'Devenez un Acteur de l\'Histoire',
+      subtitle: 'Rejoignez l\'élite de la culture urbaine africaine',
+      buttonText: 'Devenir Partenaire'
+    }
   },
   media: [
     {
@@ -321,6 +334,14 @@ export const cmsService = {
               ...initialData.globalConfig.vip,
               ...parsed.globalConfig?.vip,
               features: parsed.globalConfig?.vip?.features || initialData.globalConfig.vip.features
+            }
+          },
+          partners: {
+            logos: parsed.partners?.logos || initialData.partners.logos,
+            sponsoringPdfUrl: parsed.partners?.sponsoringPdfUrl || initialData.partners.sponsoringPdfUrl,
+            cta: {
+              ...initialData.partners.cta,
+              ...parsed.partners?.cta
             }
           }
         };

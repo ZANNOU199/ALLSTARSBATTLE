@@ -230,6 +230,11 @@ export interface CMSData {
   partners: {
     logos: Partner[];
     sponsoringPdfUrl: string;
+    cta: {
+      title: string;
+      subtitle: string;
+      buttonText: string;
+    };
   };
   media: MediaItem[];
   globalConfig: GlobalConfig;

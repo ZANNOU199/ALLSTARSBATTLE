@@ -26,6 +26,11 @@ const Partners = ({ onContactClick }: PartnersProps) => {
     media: string[];
   }>({ institutional: [], main: [], media: [] });
   const [sponsoringPdfUrl, setSponsoringPdfUrl] = React.useState("");
+  const [ctaData, setCtaData] = React.useState<{ title: string; subtitle: string; buttonText: string }>({
+    title: "DEVENIR PARTENAIRE",
+    subtitle: "Rejoignez l'élite de la culture urbaine africaine",
+    buttonText: "Nous contacter"
+  });
 
   React.useEffect(() => {
     const data = cmsService.getData();
@@ -37,6 +42,15 @@ const Partners = ({ onContactClick }: PartnersProps) => {
       media: allPartners.filter(p => p.category === 'Media').map(p => p.logo)
     });
     setSponsoringPdfUrl(data.partners.sponsoringPdfUrl);
+    
+    // Load CTA data with fallback defaults
+    if (data.partners?.cta) {
+      setCtaData({
+        title: data.partners.cta.title || "DEVENIR PARTENAIRE",
+        subtitle: data.partners.cta.subtitle || "Rejoignez l'élite de la culture urbaine africaine",
+        buttonText: data.partners.cta.buttonText || "Nous contacter"
+      });
+    }
   }, []);
   
   const handleSubmit = (e: React.FormEvent) => {
@@ -273,8 +287,8 @@ const Partners = ({ onContactClick }: PartnersProps) => {
           <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl -mr-32 -mt-32"></div>
           <div className="grid md:grid-cols-2 gap-12 items-center relative z-10">
             <div>
-              <h2 className="font-heading text-4xl md:text-6xl text-white mb-6 uppercase tracking-tight leading-none">Devenez un Acteur <span className="text-primary">de l'Histoire</span></h2>
-              <p className="text-slate-400 mb-10 leading-relaxed font-light italic">Associez votre image à l'événement de danse urbaine le plus prestigieux d'Afrique de l'Ouest. Bénéficiez d'une visibilité internationale et soutenez l'émergence des talents locaux.</p>
+              <h2 className="font-heading text-4xl md:text-6xl text-white mb-6 uppercase tracking-tight leading-none">{ctaData.title}</h2>
+              <p className="text-slate-400 mb-10 leading-relaxed font-light italic">{ctaData.subtitle}</p>
               <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
                 <button 
                   onClick={handleDownload}
@@ -302,7 +316,7 @@ const Partners = ({ onContactClick }: PartnersProps) => {
                   className="btn-luxury-secondary w-full sm:w-auto text-center flex items-center justify-center gap-2"
                 >
                   <Mail className="w-4 h-4" />
-                  Nous Contacter
+                  {ctaData.buttonText}
                 </button>
               </div>
             </div>

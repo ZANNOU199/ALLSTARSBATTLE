@@ -1,107 +1,320 @@
 import React, { useState } from 'react';
 import { CMSData, Partner } from '../../types';
-import { Plus, Trash2, Edit, Save, X, Handshake, FileText } from 'lucide-react';
+import { Plus, Trash2, X, Handshake, FileText, Building2 } from 'lucide-react';
+import { motion } from 'motion/react';
 
 export default function PartnersMedia({ data, setData }: { data: CMSData, setData: React.Dispatch<React.SetStateAction<CMSData>> }) {
-  const [isAdding, setIsAdding] = useState(false);
-  const [formData, setFormData] = useState<Partial<Partner>>({});
+  const [isAddingPartner, setIsAddingPartner] = useState(false);
+  const [newPartnerForm, setNewPartnerForm] = useState<Partial<Partner> | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<'Institutional' | 'Main' | 'Media'>('Institutional');
 
-  const handleAddPartner = () => {
-    const newPartner: Partner = {
-      id: Date.now().toString(),
-      name: formData.name || '',
-      logo: formData.logo || 'https://picsum.photos/seed/logo/200/200',
-      category: formData.category || 'sponsor'
+  // Ensure partners data exists
+  const partnersData = data.partners || {
+    logos: [],
+    sponsoringPdfUrl: '#',
+    cta: {
+      title: 'Devenez un Acteur de l\'Histoire',
+      subtitle: 'Rejoignez l\'élite de la culture urbaine africaine',
+      buttonText: 'Devenir Partenaire'
+    }
+  };
+
+  const categories = ['Institutional', 'Main', 'Media'] as const;
+  const tiers = ['Sponsor Platine', 'Sponsor Or', 'Sponsor Argent', 'Partenaire Officiel'];
+
+  const filteredPartners = (partnersData.logos || []).filter(p => p.category === selectedCategory);
+
+  const initAddingPartner = () => {
+    setIsAddingPartner(true);
+    setNewPartnerForm({
+      category: selectedCategory,
+      name: '',
+      logo: '',
+      tier: 'Partenaire Officiel'
+    });
+  };
+
+  const saveNewPartner = () => {
+    if (newPartnerForm && newPartnerForm.name && newPartnerForm.logo) {
+      const partner: Partner = {
+        id: Date.now().toString(),
+        name: newPartnerForm.name,
+        logo: newPartnerForm.logo,
+        category: newPartnerForm.category as 'Institutional' | 'Main' | 'Media',
+        tier: newPartnerForm.tier
+      };
+      setData(prev => ({
+        ...prev,
+        partners: {
+          ...prev.partners,
+          logos: [...prev.partners.logos, partner]
+        }
+      }));
+      setIsAddingPartner(false);
+      setNewPartnerForm(null);
+    }
+  };
+
+  const removePartner = (id: string) => {
+    if (confirm('Êtes-vous sûr de vouloir supprimer ce partenaire?')) {
+      setData(prev => ({
+        ...prev,
+        partners: {
+          ...prev.partners,
+          logos: prev.partners.logos.filter(p => p.id !== id)
+        }
+      }));
+    }
+  };
+
+  const getCategoryLabel = (cat: string) => {
+    const labels: { [key: string]: string } = {
+      'Institutional': 'Partenaires Institutionnels',
+      'Main': 'Sponsors Majeurs',
+      'Media': 'Média & Broadcasting'
     };
-    setData(prev => ({ ...prev, partners: { ...prev.partners, logos: [...prev.partners.logos, newPartner] } }));
-    setIsAdding(false);
-    setFormData({});
+    return labels[cat] || cat;
   };
 
   return (
-    <div className="space-y-8">
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2 space-y-6">
-          <div className="flex justify-between items-center">
-            <h4 className="font-heading text-lg flex items-center gap-2"><Handshake size={20} className="text-primary" /> Logos Partenaires</h4>
-            <button onClick={() => setIsAdding(true)} className="flex items-center gap-2 px-4 py-2 bg-primary text-background-dark font-bold rounded-xl"><Plus size={18} /> Ajouter</button>
+    <div className="space-y-12">
+      <header>
+        <h2 className="text-3xl font-black tracking-tighter">Partenaires & Sponsors</h2>
+        <p className="text-zinc-500 mt-1">Gérez tous les partenaires, sponsors et médias partenaires.</p>
+      </header>
+
+      {/* Section Partenaires */}
+      <div className="space-y-8">
+        {/* Sélecteur de catégorie */}
+        <div className="flex gap-3 flex-wrap">
+          {categories.map(cat => (
+            <button
+              key={cat}
+              onClick={() => setSelectedCategory(cat)}
+              className={`px-6 py-3 rounded-lg font-bold uppercase tracking-widest text-sm transition-all ${
+                selectedCategory === cat
+                  ? 'bg-primary text-background-dark'
+                  : 'bg-white/10 hover:bg-white/20 text-white'
+              }`}
+            >
+              {getCategoryLabel(cat)}
+            </button>
+          ))}
+        </div>
+
+        {/* Ajout de partenaire */}
+        <div className="bg-[#111] border border-white/10 p-6 rounded-2xl">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="font-heading text-lg">{getCategoryLabel(selectedCategory)}</h3>
+            <button
+              onClick={initAddingPartner}
+              className="flex items-center gap-2 bg-primary/20 hover:bg-primary/40 text-primary rounded-lg px-4 py-2 transition-all font-bold"
+            >
+              <Plus size={18} /> Ajouter Partenaire
+            </button>
           </div>
 
-          {isAdding && (
-            <div className="bg-[#111] border border-white/10 p-6 rounded-2xl space-y-4">
+          {/* Formulaire d'ajout */}
+          {isAddingPartner && newPartnerForm && (
+            <div className="bg-white/5 border border-white/10 p-6 rounded-xl mb-6 space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Nom</label>
-                  <input 
-                    type="text" 
-                    value={formData.name || ''} 
-                    onChange={e => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full bg-white/5 border border-white/10 rounded-xl p-3 focus:border-primary outline-none transition-all"
+                  <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Nom du Partenaire</label>
+                  <input
+                    type="text"
+                    value={newPartnerForm.name || ''}
+                    onChange={e => setNewPartnerForm({ ...newPartnerForm, name: e.target.value })}
+                    className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-sm outline-none focus:border-primary transition-all"
+                    placeholder="Nom de l'entreprise..."
                   />
                 </div>
-                <div className="space-y-2">
-                  <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Catégorie</label>
-                  <select 
-                    value={formData.category || 'sponsor'} 
-                    onChange={e => setFormData({ ...formData, category: e.target.value as any })}
-                    className="w-full bg-white/5 border border-white/10 rounded-xl p-3 focus:border-primary outline-none transition-all appearance-none"
-                  >
-                    <option value="institutional">Institutionnel</option>
-                    <option value="sponsor">Sponsor</option>
-                    <option value="media">Média</option>
-                  </select>
-                </div>
-                <div className="space-y-2 md:col-span-2">
-                  <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Logo (URL)</label>
-                  <input 
-                    type="text" 
-                    value={formData.logo || ''} 
-                    onChange={e => setFormData({ ...formData, logo: e.target.value })}
-                    className="w-full bg-white/5 border border-white/10 rounded-xl p-3 focus:border-primary outline-none transition-all"
+
+                {selectedCategory === 'Main' && (
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Tier</label>
+                    <select
+                      value={newPartnerForm.tier || 'Partenaire Officiel'}
+                      onChange={e => setNewPartnerForm({ ...newPartnerForm, tier: e.target.value })}
+                      className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-sm outline-none focus:border-primary transition-all"
+                    >
+                      {tiers.map(tier => (
+                        <option key={tier} value={tier}>{tier}</option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+
+                <div className="md:col-span-2 space-y-2">
+                  <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">URL du Logo</label>
+                  <input
+                    type="text"
+                    value={newPartnerForm.logo || ''}
+                    onChange={e => setNewPartnerForm({ ...newPartnerForm, logo: e.target.value })}
+                    className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-sm outline-none focus:border-primary transition-all"
+                    placeholder="https://..."
                   />
                 </div>
               </div>
-              <div className="flex justify-end gap-4">
-                <button onClick={() => setIsAdding(false)} className="px-6 py-2 text-xs font-bold uppercase tracking-widest text-slate-500">Annuler</button>
-                <button onClick={handleAddPartner} className="px-6 py-2 bg-primary text-background-dark rounded-xl font-bold text-xs uppercase tracking-widest">Ajouter</button>
+
+              {/* Aperçu du logo */}
+              {newPartnerForm.logo && (
+                <div className="flex justify-center pt-4">
+                  <div className="w-32 h-32 bg-white/10 rounded-lg flex items-center justify-center p-4">
+                    <img src={newPartnerForm.logo} alt={newPartnerForm.name} className="max-w-full max-h-full object-contain" referrerPolicy="no-referrer" />
+                  </div>
+                </div>
+              )}
+
+              <div className="flex gap-4 pt-4">
+                <button
+                  onClick={saveNewPartner}
+                  className="flex-1 bg-primary/20 hover:bg-primary/40 text-primary rounded-lg px-6 py-3 transition-all font-bold uppercase tracking-widest"
+                >
+                  Enregistrer
+                </button>
+                <button
+                  onClick={() => {
+                    setIsAddingPartner(false);
+                    setNewPartnerForm(null);
+                  }}
+                  className="flex-1 bg-white/10 hover:bg-white/20 text-white rounded-lg px-6 py-3 transition-all font-bold uppercase tracking-widest"
+                >
+                  Annuler
+                </button>
               </div>
             </div>
           )}
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {data.partners.logos.map(partner => (
-              <div key={partner.id} className="bg-[#111] border border-white/5 p-4 rounded-2xl group relative hover:border-white/10 transition-all text-center">
-                <button 
-                  onClick={() => setData(prev => ({ ...prev, partners: { ...prev.partners, logos: prev.partners.logos.filter(p => p.id !== partner.id) } }))}
-                  className="absolute top-2 right-2 p-1 text-slate-500 hover:text-accent-red opacity-0 group-hover:opacity-100 transition-all"
-                >
-                  <Trash2 size={14} />
-                </button>
-                <div className="aspect-square bg-white rounded-xl p-4 mb-3 flex items-center justify-center">
-                  <img src={partner.logo} alt={partner.name} className="max-w-full max-h-full object-contain" referrerPolicy="no-referrer" />
+          {/* Grille des partenaires */}
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {filteredPartners.map(partner => (
+              <motion.div
+                key={partner.id}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="bg-white/5 border border-white/10 p-4 rounded-lg group hover:border-primary/50 transition-all"
+              >
+                <div className="relative mb-3">
+                  <div className="aspect-square bg-white/10 rounded-lg p-3 flex items-center justify-center">
+                    <img src={partner.logo} alt={partner.name} className="max-w-full max-h-full object-contain" referrerPolicy="no-referrer" />
+                  </div>
+                  <button
+                    onClick={() => removePartner(partner.id)}
+                    className="absolute top-2 right-2 p-2 bg-accent-red/20 hover:bg-accent-red/40 text-accent-red rounded opacity-0 group-hover:opacity-100 transition-all"
+                  >
+                    <Trash2 size={14} />
+                  </button>
                 </div>
-                <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 truncate">{partner.name}</p>
-                <p className="text-[8px] font-bold uppercase tracking-widest text-primary mt-1">{partner.category}</p>
-              </div>
+                <div className="space-y-1">
+                  <p className="text-xs font-bold text-white truncate">{partner.name}</p>
+                  {partner.tier && (
+                    <p className="text-[10px] text-primary font-bold uppercase tracking-widest">{partner.tier}</p>
+                  )}
+                </div>
+              </motion.div>
             ))}
           </div>
         </div>
+      </div>
 
-        <div className="space-y-6">
-          <h4 className="font-heading text-lg flex items-center gap-2"><FileText size={20} className="text-primary" /> Dossier Sponsoring</h4>
-          <div className="bg-[#111] border border-white/10 p-6 rounded-2xl space-y-4">
+      {/* Section CTA - Devenir Partenaire */}
+      <div className="bg-[#111] border border-white/10 p-6 rounded-2xl space-y-6">
+        <div className="flex items-center gap-3">
+          <Building2 className="text-primary" size={24} />
+          <h3 className="font-heading text-lg">Section "Devenir Partenaire"</h3>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-4">
             <div className="space-y-2">
-              <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Lien du PDF</label>
-              <input 
-                type="text" 
-                value={data.partners.sponsoringPdfUrl} 
-                onChange={e => setData(prev => ({ ...prev, partners: { ...prev.partners, sponsoringPdfUrl: e.target.value } }))}
-                className="w-full bg-white/5 border border-white/10 rounded-xl p-3 focus:border-primary outline-none transition-all"
+              <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Titre CTA</label>
+              <input
+                type="text"
+                value={partnersData.cta.title}
+                onChange={e => setData(prev => ({
+                  ...prev,
+                  partners: {
+                    ...prev.partners,
+                    cta: { ...prev.partners.cta, title: e.target.value }
+                  }
+                }))}
+                className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-sm outline-none focus:border-primary transition-all"
+                placeholder="Ex: Devenez un Acteur de l'Histoire"
               />
             </div>
-            <p className="text-xs text-slate-500 italic">Ce lien sera utilisé pour le bouton de téléchargement du dossier de sponsoring sur le site public.</p>
+
+            <div className="space-y-2">
+              <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Sous-titre</label>
+              <input
+                type="text"
+                value={partnersData.cta.subtitle}
+                onChange={e => setData(prev => ({
+                  ...prev,
+                  partners: {
+                    ...prev.partners,
+                    cta: { ...prev.partners.cta, subtitle: e.target.value }
+                  }
+                }))}
+                className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-sm outline-none focus:border-primary transition-all"
+                placeholder="Ex: Rejoignez l'élite de la culture urbaine africaine"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Texte du Bouton</label>
+              <input
+                type="text"
+                value={partnersData.cta.buttonText}
+                onChange={e => setData(prev => ({
+                  ...prev,
+                  partners: {
+                    ...prev.partners,
+                    cta: { ...prev.partners.cta, buttonText: e.target.value }
+                  }
+                }))}
+                className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-sm outline-none focus:border-primary transition-all"
+                placeholder="Ex: Devenir Partenaire"
+              />
+            </div>
+          </div>
+
+          {/* Aperçu CTA */}
+          <div className="bg-surface-dark border border-primary/20 rounded-lg p-6 flex flex-col justify-center">
+            <div className="text-center space-y-4">
+              <h2 className="font-heading text-4xl text-white leading-tight">{partnersData.cta.title}</h2>
+              <p className="text-slate-400 text-lg italic">{partnersData.cta.subtitle}</p>
+              <button className="mt-4 px-8 py-3 bg-primary/20 hover:bg-primary/40 text-primary rounded-lg font-bold uppercase tracking-widest">
+                {partnersData.cta.buttonText}
+              </button>
+            </div>
           </div>
         </div>
+      </div>
+
+      {/* Dossier Sponsoring */}
+      <div className="bg-[#111] border border-white/10 p-6 rounded-2xl space-y-4">
+        <div className="flex items-center gap-3">
+          <FileText className="text-primary" size={24} />
+          <h3 className="font-heading text-lg">Dossier de Sponsoring</h3>
+        </div>
+
+        <div className="space-y-2">
+          <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Lien du PDF (URL ou #)</label>
+          <input
+            type="text"
+            value={partnersData.sponsoringPdfUrl}
+            onChange={e => setData(prev => ({
+              ...prev,
+              partners: {
+                ...prev.partners,
+                sponsoringPdfUrl: e.target.value
+              }
+            }))}
+            className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-sm outline-none focus:border-primary transition-all"
+            placeholder="https://... ou # pour générer automatiquement"
+          />
+        </div>
+        <p className="text-xs text-slate-500 italic">Le bouton "Dossier de Sponsoring" sur le site public utilisera ce lien. Si "#", le PDF será généré automatiquement.</p>
       </div>
     </div>
   );

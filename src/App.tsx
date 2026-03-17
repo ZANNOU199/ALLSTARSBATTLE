@@ -342,6 +342,7 @@ export default function App() {
   const [programData, setProgramData] = useState<any[]>([]);
   const [bracketData, setBracketData] = useState<any>(null);
   const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
+  const [partnerData, setPartnerData] = useState<any>(null);
 
   useEffect(() => {
     const data = cmsService.getData();
@@ -352,6 +353,7 @@ export default function App() {
     setProgramData(data.program);
     setBracketData(data.competition.brackets);
     setMediaItems(data.media || []);
+    setPartnerData(data.partners);
   }, []);
 
   // Recharge la config quand on revient de l'admin avec les nouvelles données
@@ -361,6 +363,7 @@ export default function App() {
       setConfig(data.globalConfig);
       setBracketData(data.competition.brackets);
       setMediaItems(data.media || []);
+      setPartnerData(data.partners);
     }
   }, [currentPage]);
 
@@ -1005,27 +1008,37 @@ export default function App() {
           </div>
           
           <div className="space-y-24">
-            <div>
-              <h3 className="text-slate-500 font-bold tracking-[0.3em] uppercase text-[10px] text-center mb-12 border-b border-white/5 pb-4">Partenaires Institutionnels</h3>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-8 items-center">
-                {[1, 2, 3, 4].map(i => (
-                  <div key={i} className="bg-surface-dark/40 border border-white/5 p-8 flex items-center justify-center grayscale hover:grayscale-0 hover:border-primary/30 transition-all duration-500">
-                    <img src={`https://picsum.photos/seed/logo${i}/200/100`} alt="Partner" className="h-12 w-auto object-contain" referrerPolicy="no-referrer" />
-                  </div>
-                ))}
+            {/* Partenaires Institutionnels */}
+            {partnerData?.logos && partnerData.logos.filter((p: any) => p.category === 'Institutional').length > 0 && (
+              <div>
+                <h3 className="text-slate-500 font-bold tracking-[0.3em] uppercase text-[10px] text-center mb-12 border-b border-white/5 pb-4">Partenaires Institutionnels</h3>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-8 items-center">
+                  {partnerData.logos
+                    .filter((p: any) => p.category === 'Institutional')
+                    .map((partner: any, idx: number) => (
+                      <div key={partner.id || idx} className="bg-surface-dark/40 border border-white/5 p-8 flex items-center justify-center grayscale hover:grayscale-0 hover:border-primary/30 transition-all duration-500">
+                        <img src={partner.logo} alt={partner.name} className="h-12 w-auto object-contain" referrerPolicy="no-referrer" />
+                      </div>
+                    ))}
+                </div>
               </div>
-            </div>
+            )}
             
-            <div>
-              <h3 className="text-slate-500 font-bold tracking-[0.3em] uppercase text-[10px] text-center mb-12 border-b border-white/5 pb-4">Sponsors Majeurs</h3>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
-                {[5, 6, 7].map(i => (
-                  <div key={i} className="bg-gradient-to-b from-primary/5 to-transparent border border-primary/20 p-12 flex items-center justify-center hover:border-primary transition-all duration-500 group">
-                    <img src={`https://picsum.photos/seed/sponsor${i}/300/150`} alt="Sponsor" className="h-16 w-auto object-contain grayscale hover:grayscale-0 group-hover:scale-110 transition-all" referrerPolicy="no-referrer" />
-                  </div>
-                ))}
+            {/* Sponsors Majeurs */}
+            {partnerData?.logos && partnerData.logos.filter((p: any) => p.category === 'Main').length > 0 && (
+              <div>
+                <h3 className="text-slate-500 font-bold tracking-[0.3em] uppercase text-[10px] text-center mb-12 border-b border-white/5 pb-4">Sponsors Majeurs</h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
+                  {partnerData.logos
+                    .filter((p: any) => p.category === 'Main')
+                    .map((sponsor: any, idx: number) => (
+                      <div key={sponsor.id || idx} className="bg-gradient-to-b from-primary/5 to-transparent border border-primary/20 p-12 flex items-center justify-center hover:border-primary transition-all duration-500 group">
+                        <img src={sponsor.logo} alt={sponsor.name} className="h-16 w-auto object-contain grayscale hover:grayscale-0 group-hover:scale-110 transition-all" referrerPolicy="no-referrer" />
+                      </div>
+                    ))}
+                </div>
               </div>
-            </div>
+            )}
           </div>
           
           <div className="mt-20 text-center">
