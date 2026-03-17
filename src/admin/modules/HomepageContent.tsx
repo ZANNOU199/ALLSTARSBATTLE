@@ -49,6 +49,55 @@ export default function HomepageContent({ data, setData }: { data: CMSData, setD
     }));
   };
 
+  const updateVipFeature = (featureIndex: number, field: 'icon' | 'title' | 'description', value: string) => {
+    const newFeatures = [...data.globalConfig.vip.features];
+    newFeatures[featureIndex] = { ...newFeatures[featureIndex], [field]: value };
+    setData(prev => ({
+      ...prev,
+      globalConfig: {
+        ...prev.globalConfig,
+        vip: {
+          ...prev.globalConfig.vip,
+          features: newFeatures
+        }
+      }
+    }));
+  };
+
+  const addVipFeature = () => {
+    const newFeatures = [...data.globalConfig.vip.features];
+    newFeatures.push({
+      icon: 'Star',
+      title: 'Nouvelle Fonctionnalité',
+      description: 'Description de la fonctionnalité'
+    });
+    setData(prev => ({
+      ...prev,
+      globalConfig: {
+        ...prev.globalConfig,
+        vip: {
+          ...prev.globalConfig.vip,
+          features: newFeatures
+        }
+      }
+    }));
+  };
+
+  const removeVipFeature = (featureIndex: number) => {
+    const newFeatures = [...data.globalConfig.vip.features];
+    newFeatures.splice(featureIndex, 1);
+    setData(prev => ({
+      ...prev,
+      globalConfig: {
+        ...prev.globalConfig,
+        vip: {
+          ...prev.globalConfig.vip,
+          features: newFeatures
+        }
+      }
+    }));
+  };
+
   const addActivity = (dayIndex: number) => {
     const newProgram = [...data.program];
     const newActivity: Activity = {
@@ -274,6 +323,63 @@ export default function HomepageContent({ data, setData }: { data: CMSData, setD
             onChange={e => updateSection('vip', 'sectionDescription', e.target.value)}
             className="w-full bg-white/5 border border-white/10 rounded-xl p-3 focus:border-primary outline-none transition-all resize-none"
           />
+        </div>
+
+        {/* VIP Features */}
+        <div className="space-y-4">
+          <div className="flex justify-between items-center">
+            <h5 className="text-sm font-bold text-white">Fonctionnalités VIP</h5>
+            <button 
+              onClick={addVipFeature}
+              className="flex items-center gap-1 text-xs bg-primary/20 hover:bg-primary/40 text-primary rounded-lg px-3 py-1 transition-all"
+            >
+              <Plus size={14} /> Ajouter Fonctionnalité
+            </button>
+          </div>
+          {data.globalConfig.vip.features.map((feature, idx) => (
+            <div key={idx} className="bg-white/5 border border-white/10 p-4 rounded-xl space-y-4">
+              <div className="flex justify-between items-start">
+                <div className="flex-1 space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Icône (nom Lucide)</label>
+                      <input 
+                        type="text" 
+                        value={feature.icon} 
+                        onChange={e => updateVipFeature(idx, 'icon', e.target.value)}
+                        placeholder="Verified, GlassWater, etc."
+                        className="w-full bg-background-dark border border-white/10 rounded-lg p-2 text-xs outline-none focus:border-primary transition-all"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Titre</label>
+                      <input 
+                        type="text" 
+                        value={feature.title} 
+                        onChange={e => updateVipFeature(idx, 'title', e.target.value)}
+                        className="w-full bg-background-dark border border-white/10 rounded-lg p-2 text-xs outline-none focus:border-primary transition-all"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Description</label>
+                      <input 
+                        type="text" 
+                        value={feature.description} 
+                        onChange={e => updateVipFeature(idx, 'description', e.target.value)}
+                        className="w-full bg-background-dark border border-white/10 rounded-lg p-2 text-xs outline-none focus:border-primary transition-all"
+                      />
+                    </div>
+                  </div>
+                </div>
+                <button 
+                  onClick={() => removeVipFeature(idx)}
+                  className="ml-3 text-accent-red hover:text-accent-red/80 transition-colors flex-shrink-0 p-2 hover:bg-accent-red/10 rounded"
+                >
+                  <Trash2 size={16} />
+                </button>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
 

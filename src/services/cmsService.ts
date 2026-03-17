@@ -203,7 +203,19 @@ const initialData: CMSData = {
     },
     vip: {
       sectionTitle: 'EXPÉRIENCE VIP',
-      sectionDescription: 'Plongez au cœur de l\'action avec un accès privilégié. Vivez le All Stars Battle International dans les meilleures conditions possibles.'
+      sectionDescription: 'Plongez au cœur de l\'action avec un accès privilégié. Vivez le All Stars Battle International dans les meilleures conditions possibles.',
+      features: [
+        {
+          icon: 'Verified',
+          title: 'Platinum Backstage',
+          description: 'Rencontrez les juges et les danseurs dans la zone athlètes.'
+        },
+        {
+          icon: 'GlassWater',
+          title: 'Lounge Exclusif',
+          description: 'Open bar et buffet gastronomique dans une ambiance premium.'
+        }
+      ]
     },
     stats: [
       { label: 'Danseurs Qualifiés', value: '16' },
@@ -241,7 +253,12 @@ export const cmsService = {
           ...parsed,
           globalConfig: {
             ...initialData.globalConfig,
-            ...parsed.globalConfig
+            ...parsed.globalConfig,
+            vip: {
+              ...initialData.globalConfig.vip,
+              ...parsed.globalConfig?.vip,
+              features: parsed.globalConfig?.vip?.features || initialData.globalConfig.vip.features
+            }
           }
         };
         

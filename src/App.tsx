@@ -29,6 +29,32 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
+// Icon mapping for dynamic rendering
+const iconMap: Record<string, React.ComponentType<{ size?: number; className?: string }>> = {
+  Verified,
+  GlassWater,
+  Trophy,
+  User,
+  Megaphone,
+  Globe,
+  Mail,
+  Instagram,
+  Facebook,
+  Twitter,
+  Youtube,
+  Menu,
+  X,
+  ChevronsDown,
+  Calendar,
+  MapPin,
+  ArrowRight,
+  ChevronDown
+};
+
+const getIcon = (iconName: string) => {
+  return iconMap[iconName] || Verified; // Default to Verified if not found
+};
+
 const NavLink = ({ href, children, active = false, red = false, onClick }: { href: string, children: React.ReactNode, active?: boolean, red?: boolean, onClick?: (e: React.MouseEvent) => void }) => (
   <a 
     href={href} 
@@ -896,20 +922,35 @@ export default function App() {
                   {config?.vip.sectionDescription || 'Plongez au cœur de l\'action avec un accès privilégié. Vivez le All Stars Battle International dans les meilleures conditions possibles.'}
                 </p>
                 <div className="space-y-6 mb-12">
-                  <div className="flex items-start gap-4">
-                    <Verified className="text-primary w-6 h-6 mt-1" />
-                    <div>
-                      <h4 className="text-white font-bold uppercase tracking-widest text-sm">Platinum Backstage</h4>
-                      <p className="text-slate-400 text-sm">Rencontrez les juges et les danseurs dans la zone athlètes.</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-4">
-                    <GlassWater className="text-primary w-6 h-6 mt-1" />
-                    <div>
-                      <h4 className="text-white font-bold uppercase tracking-widest text-sm">Lounge Exclusif</h4>
-                      <p className="text-slate-400 text-sm">Open bar et buffet gastronomique dans une ambiance premium.</p>
-                    </div>
-                  </div>
+                  {config?.vip?.features?.map((feature, idx) => {
+                    const IconComponent = getIcon(feature.icon);
+                    return (
+                      <div key={idx} className="flex items-start gap-4">
+                        <IconComponent className="text-primary w-6 h-6 mt-1" />
+                        <div>
+                          <h4 className="text-white font-bold uppercase tracking-widest text-sm">{feature.title}</h4>
+                          <p className="text-slate-400 text-sm">{feature.description}</p>
+                        </div>
+                      </div>
+                    );
+                  }) || (
+                    <>
+                      <div className="flex items-start gap-4">
+                        <Verified className="text-primary w-6 h-6 mt-1" />
+                        <div>
+                          <h4 className="text-white font-bold uppercase tracking-widest text-sm">Platinum Backstage</h4>
+                          <p className="text-slate-400 text-sm">Rencontrez les juges et les danseurs dans la zone athlètes.</p>
+                        </div>
+                      </div>
+                      <div className="flex items-start gap-4">
+                        <GlassWater className="text-primary w-6 h-6 mt-1" />
+                        <div>
+                          <h4 className="text-white font-bold uppercase tracking-widest text-sm">Lounge Exclusif</h4>
+                          <p className="text-slate-400 text-sm">Open bar et buffet gastronomique dans une ambiance premium.</p>
+                        </div>
+                      </div>
+                    </>
+                  )}
                 </div>
                 <button className="btn-luxury-vip shimmer-effect">DÉCOUVRIR LES OFFRES</button>
               </div>

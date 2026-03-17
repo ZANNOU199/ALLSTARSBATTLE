@@ -155,6 +155,11 @@ export interface GlobalConfig {
   vip: {
     sectionTitle: string;
     sectionDescription: string;
+    features: {
+      icon: string;
+      title: string;
+      description: string;
+    }[];
   };
   stats: {
     label: string;
