@@ -325,16 +325,27 @@ export default function CompetitionBrackets({ data, setData }: { data: CMSData, 
 
   const BracketContent = () => {
     const containerWidth = bracketContainerRef.current?.clientWidth || 400;
-    const isMobile = containerWidth < 640;
-    const minHeight = isMobile ? '900px' : '600px';
-    const gapClass = isMobile ? 'gap-2' : 'gap-1';
+    const isSmallMobile = containerWidth < 480;
+    const isMobile = containerWidth < 768;
+    
+    // Tailles dynamiques basées sur la largeur du conteneur
+    const textSizeTitle = isSmallMobile ? 'text-[10px]' : isMobile ? 'text-xs' : 'text-sm';
+    const textSizeMatch = isSmallMobile ? 'text-[11px]' : isMobile ? 'text-sm' : 'text-sm';
+    const textSizeVs = isSmallMobile ? 'text-[8px]' : isMobile ? 'text-[9px]' : 'text-xs';
+    const minHeightBracket = isSmallMobile ? '1000px' : isMobile ? '900px' : '600px';
+    const gapMatch = isSmallMobile ? 'gap-2' : isMobile ? 'gap-2' : 'gap-1';
+    const gapCol = isSmallMobile ? 'gap-1.5' : isMobile ? 'gap-1.5' : 'gap-1';
+    const paddingMatch = isSmallMobile ? 'p-3' : isMobile ? 'p-3' : 'p-2';
+    const paddingFinal = isSmallMobile ? 'p-2' : isMobile ? 'p-2' : 'p-1';
+    const flagSize = isSmallMobile ? 'w-6 h-5' : isMobile ? 'w-5 h-4' : 'w-4 h-3';
+    const trophySize = isSmallMobile ? 'w-6 h-6' : isMobile ? 'w-6 h-6' : 'w-5 h-5';
     
     return (
-    <div className={`grid grid-cols-7 ${gapClass} items-stretch py-6 px-2 bg-gradient-to-b from-transparent via-white/[0.02] to-transparent rounded-lg`} style={{ minHeight, minWidth: '900px' }}>
+    <div className={`grid grid-cols-7 ${gapCol} items-stretch py-2 px-0.5 bg-gradient-to-b from-transparent via-white/[0.02] to-transparent rounded-lg`} style={{ minHeight: minHeightBracket, minWidth: '900px', overflow: 'visible' }}>
       {/* Poule A: Top 16 (Left) */}
       <div className="flex flex-col h-full justify-between">
-        <h3 className="font-heading text-xs sm:text-[10px] text-primary mb-2 text-center shrink-0 font-bold">HUITIÈMES (A)</h3>
-        <div className="flex-1 flex flex-col justify-around gap-2 sm:gap-1">
+        <h3 className={`font-heading ${textSizeTitle} text-primary mb-1 text-center shrink-0 font-bold leading-tight`}>HUITIÈMES<br className={isSmallMobile ? 'hidden' : ''}></br>(A)</h3>
+        <div className={`flex-1 flex flex-col justify-around ${gapMatch}`}>
           {data.competition.brackets.pouleA.huitiemes.map((match, idx) => (
             <BracketMatch 
               key={match.id}
@@ -351,9 +362,9 @@ export default function CompetitionBrackets({ data, setData }: { data: CMSData, 
       </div>
 
       {/* Poule A: Quarts (Left) */}
-      <div className="flex flex-col h-full justify-between px-1">
-        <h3 className="font-heading text-xs sm:text-[10px] text-slate-400 mb-2 text-center shrink-0 font-bold">QUARTS</h3>
-        <div className="flex-1 flex flex-col justify-around gap-2 sm:gap-1">
+      <div className="flex flex-col h-full justify-between px-0.5">
+        <h3 className={`font-heading ${textSizeTitle} text-slate-400 mb-1 text-center shrink-0 font-bold`}>QUARTS</h3>
+        <div className={`flex-1 flex flex-col justify-around ${gapMatch}`}>
           {data.competition.brackets.pouleA.quarts.map((match) => (
             <BracketMatch 
               key={match.id}
@@ -651,63 +662,7 @@ export default function CompetitionBrackets({ data, setData }: { data: CMSData, 
             </div>
           </div>
 
-          {/* VISUALISATION DU BRACKET */}
-          <section id="brackets" className="py-8 md:py-16 lg:py-24 bg-background-dark overflow-x-auto md:overflow-hidden relative border-t border-white/10">
-          <div className="absolute inset-0 pointer-events-none grain-texture z-0 opacity-5"></div>
-          <div className="absolute inset-0 pointer-events-none diagonal-lines z-0 opacity-10"></div>
           
-          <div className="max-w-6xl lg:max-w-7xl mx-auto px-2 sm:px-4 text-center mb-6 md:mb-10 lg:mb-16 relative z-10">
-            <div className="inline-block px-3 md:px-4 py-1 border border-primary/30 bg-primary/10 rounded-full mb-2 md:mb-3 lg:mb-6">
-              <span className="text-primary text-[10px] md:text-xs font-bold tracking-[0.2em] uppercase">Phase Finale - Lomé, Togo</span>
-            </div>
-            <h1 className="font-heading text-lg sm:text-2xl md:text-4xl lg:text-5xl xl:text-6xl text-white mb-1 md:mb-2 lg:mb-4 tracking-tight uppercase">
-              TABLEAU DES BATTLES <span className="text-primary">-</span> TOP 16
-            </h1>
-          </div>
-
-          <div ref={bracketContainerRef} className="w-full relative z-10 overflow-hidden bg-black/20 rounded-lg border border-white/5" style={{ 
-            minHeight: '400px',
-            maxHeight: '85vh',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '4px'
-          }}>
-            {/* Hidden clone for measurement */}
-            <div 
-              ref={measureRef} 
-              className="absolute top-0 left-0 invisible pointer-events-none" 
-              style={{ width: '900px' }}
-            >
-              <BracketContent />
-            </div>
-
-            {/* Full visible content - always shown completely */}
-            <div 
-              style={{ 
-                width: '900px',
-                minWidth: '900px',
-                position: 'relative',
-                padding: '8px',
-                transform: `scale(${bracketScale})`,
-                transformOrigin: 'center center',
-                transition: 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-                willChange: 'transform'
-              }}
-            >
-              <BracketContent />
-            </div>
-          </div>
-
-          <div className="max-w-6xl lg:max-w-7xl mx-auto px-2 sm:px-4 mt-6 md:mt-8 lg:mt-12 lg:mt-20 grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4 md:gap-6 lg:gap-8 relative z-10">
-            {data.globalConfig.homepageStats?.map((stat, idx) => (
-              <div key={idx} className={`bg-white/5 p-4 sm:p-6 md:p-8 rounded-lg md:rounded-xl border border-white/10 hover:border-${idx === 0 ? 'primary' : idx === 1 ? 'accent-red' : 'white'}/30 transition-all`}>
-                <h4 className={`font-heading text-2xl sm:text-3xl md:text-4xl text-${idx === 0 ? 'primary' : idx === 1 ? 'accent-red' : 'white'} mb-2`}>{stat.value}</h4>
-                <p className="text-slate-400 uppercase text-xs font-bold tracking-widest">{stat.label}</p>
-              </div>
-            ))}
-          </div>
-        </section>
         </div>
       )}
     </div>
