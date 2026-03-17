@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'motion/react';
-import { Play } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
+import { Play, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { cmsService } from './services/cmsService';
 import { MediaItem } from './types';
 
@@ -8,10 +8,21 @@ const Media = () => {
   const [activeTab, setActiveTab] = useState('photos');
   const [selectedYear, setSelectedYear] = useState(2026);
   const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
+  const [showGalleryModal, setShowGalleryModal] = useState(false);
+  const [galleryPage, setGalleryPage] = useState(0);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
 
   useEffect(() => {
     const data = cmsService.getData();
     setMediaItems(data.media || []);
+  }, []);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   // Fallback data if CMS is empty
@@ -54,6 +65,25 @@ const Media = () => {
         tag: item.tag
       }))
     : (selectedYear === 2026 ? fallbackVideos : []);
+
+  // Pagination settings
+  const itemsPerPageMobile = 4;
+  const itemsPerPageDesktop = 6;
+  const galleryPageSize = 10;
+
+  // Get current content to display
+  const currentData = activeTab === 'photos' ? filteredPhotos : filteredVideos;
+  
+  // Desktop pagination
+  const desktopPageSize = itemsPerPageDesktop;
+  const desktopPages = Math.ceil(currentData.length / desktopPageSize);
+  const desktopCurrentPage = isMobile ? 0 : Math.floor(currentData.length / desktopPageSize) > 0 ? 0 : 0;
+  
+  // Mobile preview + gallery pagination
+  const previewItems = isMobile ? currentData.slice(0, itemsPerPageMobile) : currentData.slice(0, desktopPageSize);
+  const galleryItems = currentData;
+  const galleryPages = Math.ceil(galleryItems.length / galleryPageSize);
+  const currentGalleryItems = galleryItems.slice(galleryPage * galleryPageSize, (galleryPage + 1) * galleryPageSize);
 
   return (
     <div className="bg-background-dark text-slate-100 font-display min-h-screen grainy-bg">
@@ -115,23 +145,58 @@ const Media = () => {
             key={`${selectedYear}-photos`}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6 mb-24"
+            className="mb-24"
           >
-            {filteredPhotos.map((src: string, i: number) => (
-              <div key={i} className="masonry-item relative group overflow-hidden rounded-xl border-2 border-white/5 hover:border-primary transition-all">
-                <img 
-                  src={src} 
-                  alt={`Gallery ${i}`} 
-                  className="w-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500"
-                  loading="lazy"
-                  referrerPolicy="no-referrer"
-                />
-                <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
-                  <p className="text-primary font-bold uppercase tracking-widest">Edition {selectedYear}</p>
-                  <p className="text-xs text-slate-400">Lomé, Togo</p>
+            {/* Mobile Preview */}
+            {isMobile && (
+              <>
+                <div className="grid grid-cols-2 gap-4 mb-8">
+                  {previewItems.map((src: string, i: number) => (
+                    <div key={i} className="relative group overflow-hidden rounded-lg border border-white/5 hover:border-primary transition-all">
+                      <img 
+                        src={src} 
+                        alt={`Gallery ${i}`} 
+                        className="w-full aspect-square object-cover grayscale group-hover:grayscale-0 transition-all duration-500"
+                        loading="lazy"
+                        referrerPolicy="no-referrer"
+                      />
+                    </div>
+                  ))}
                 </div>
+                {currentData.length > itemsPerPageMobile && (
+                  <button
+                    onClick={() => {
+                      setShowGalleryModal(true);
+                      setGalleryPage(0);
+                    }}
+                    className="w-full bg-primary/20 hover:bg-primary/40 text-primary rounded-lg px-6 py-3 transition-all font-bold uppercase tracking-widest mb-12"
+                  >
+                    Voir la galerie complète ({currentData.length})
+                  </button>
+                )}
+              </>
+            )}
+
+            {/* Desktop Full Gallery */}
+            {!isMobile && (
+              <div className="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6">
+                {currentData.map((src: string, i: number) => (
+                  <div key={i} className="masonry-item relative group overflow-hidden rounded-xl border-2 border-white/5 hover:border-primary transition-all">
+                    <img 
+                      src={src} 
+                      alt={`Gallery ${i}`} 
+                      className="w-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500"
+                      loading="lazy"
+                      referrerPolicy="no-referrer"
+                    />
+                    <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+                      <p className="text-primary font-bold uppercase tracking-widest">Edition {selectedYear}</p>
+                      <p className="text-xs text-slate-400">Lomé, Togo</p>
+                    </div>
+                  </div>
+                ))}
               </div>
-            ))}
+            )}
           </motion.div>
         )}
 
@@ -140,41 +205,172 @@ const Media = () => {
             key={`${selectedYear}-videos`}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
+            className="mb-24"
           >
-            <div className="flex items-center gap-6 mb-12">
-              <h2 className="font-heading text-6xl text-white uppercase">REPLAYS <span className="text-accent-red">&</span> EXCLUSIFS {selectedYear}</h2>
-              <div className="h-1 flex-grow bg-gradient-to-r from-accent-red to-transparent"></div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-24">
-              {filteredVideos.map((video: any, i: number) => (
-                <div key={i} className="group relative bg-white/5 rounded-xl overflow-hidden border border-white/10 hover:border-primary/50 transition-all">
-                  <div className="relative aspect-video">
-                    <img 
-                      src={video.thumb} 
-                      alt={video.title} 
-                      className="w-full h-full object-cover brightness-50 group-hover:brightness-75 transition-all"
-                      loading="lazy"
-                      referrerPolicy="no-referrer"
-                    />
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="w-20 h-20 bg-primary rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
-                        <Play className="text-black w-10 h-10 fill-current" />
+            {/* Mobile Preview */}
+            {isMobile && (
+              <>
+                <div className="grid grid-cols-2 gap-4 mb-8">
+                  {previewItems.map((video: any, i: number) => (
+                    <div key={i} className="relative group overflow-hidden rounded-lg border border-white/10 hover:border-primary transition-all">
+                      <div className="relative aspect-video">
+                        <img 
+                          src={video.thumb} 
+                          alt={video.title} 
+                          className="w-full h-full object-cover brightness-50 group-hover:brightness-75 transition-all"
+                          loading="lazy"
+                          referrerPolicy="no-referrer"
+                        />
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <Play className="text-black w-6 h-6 fill-current" />
+                          </div>
+                        </div>
+                        <span className="absolute top-2 left-2 bg-accent-red text-white text-[8px] font-black px-2 py-0.5 rounded uppercase tracking-widest">{video.tag}</span>
+                        <span className="absolute bottom-2 right-2 bg-black/80 text-white text-[8px] font-bold px-1.5 py-0.5 rounded">{video.duration}</span>
                       </div>
                     </div>
-                    <span className="absolute top-4 left-4 bg-accent-red text-white text-[10px] font-black px-3 py-1 rounded uppercase tracking-widest">{video.tag}</span>
-                    <span className="absolute bottom-4 right-4 bg-black/80 text-white text-[10px] font-bold px-2 py-1 rounded">{video.duration}</span>
-                  </div>
-                  <div className="p-6">
-                    <h3 className="text-xl font-bold uppercase tracking-tight mb-2 group-hover:text-primary transition-colors">{video.title}</h3>
-                    <p className="text-slate-400 text-sm">{video.desc}</p>
-                  </div>
+                  ))}
                 </div>
-              ))}
-            </div>
+                {currentData.length > itemsPerPageMobile && (
+                  <button
+                    onClick={() => {
+                      setShowGalleryModal(true);
+                      setGalleryPage(0);
+                    }}
+                    className="w-full bg-primary/20 hover:bg-primary/40 text-primary rounded-lg px-6 py-3 transition-all font-bold uppercase tracking-widest mb-12"
+                  >
+                    Voir la galerie complète ({currentData.length})
+                  </button>
+                )}
+              </>
+            )}
+
+            {/* Desktop Full Gallery */}
+            {!isMobile && (
+              <>
+                <div className="flex items-center gap-6 mb-12">
+                  <h2 className="font-heading text-6xl text-white uppercase">REPLAYS <span className="text-accent-red">&</span> EXCLUSIFS {selectedYear}</h2>
+                  <div className="h-1 flex-grow bg-gradient-to-r from-accent-red to-transparent"></div>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  {currentData.map((video: any, i: number) => (
+                    <div key={i} className="group relative bg-white/5 rounded-xl overflow-hidden border border-white/10 hover:border-primary/50 transition-all">
+                      <div className="relative aspect-video">
+                        <img 
+                          src={video.thumb} 
+                          alt={video.title} 
+                          className="w-full h-full object-cover brightness-50 group-hover:brightness-75 transition-all"
+                          loading="lazy"
+                          referrerPolicy="no-referrer"
+                        />
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <div className="w-20 h-20 bg-primary rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <Play className="text-black w-10 h-10 fill-current" />
+                          </div>
+                        </div>
+                        <span className="absolute top-4 left-4 bg-accent-red text-white text-[10px] font-black px-3 py-1 rounded uppercase tracking-widest">{video.tag}</span>
+                        <span className="absolute bottom-4 right-4 bg-black/80 text-white text-[10px] font-bold px-2 py-1 rounded">{video.duration}</span>
+                      </div>
+                      <div className="p-6">
+                        <h3 className="text-xl font-bold uppercase tracking-tight mb-2 group-hover:text-primary transition-colors">{video.title}</h3>
+                        <p className="text-slate-400 text-sm">{video.desc}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
           </motion.div>
         )}
       </div>
+
+      {/* Mobile Gallery Modal */}
+      <AnimatePresence>
+        {showGalleryModal && isMobile && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/90 z-50 flex flex-col"
+          >
+            {/* Header */}
+            <div className="flex justify-between items-center p-4 border-b border-white/10">
+              <h2 className="text-xl font-bold uppercase text-white">
+                {activeTab === 'photos' ? 'Galerie Photos' : 'Galerie Vidéos'} {selectedYear}
+              </h2>
+              <button 
+                onClick={() => setShowGalleryModal(false)}
+                className="p-2 hover:bg-white/10 rounded-lg transition-all"
+              >
+                <X className="text-white" size={24} />
+              </button>
+            </div>
+
+            {/* Gallery Content */}
+            <div className="flex-1 overflow-y-auto p-4">
+              <div className={`grid ${
+                currentGalleryItems.length <= 2 ? 'grid-cols-2' : 
+                currentGalleryItems.length <= 3 ? 'grid-cols-3' : 
+                'grid-cols-2 gap-3'
+              } gap-3`}>
+                {activeTab === 'photos' ? (
+                  currentGalleryItems.map((src: string, i: number) => (
+                    <div key={i} className="relative overflow-hidden rounded-lg border border-white/10 aspect-square">
+                      <img 
+                        src={src} 
+                        alt={`Photo ${i}`} 
+                        className="w-full h-full object-cover"
+                        loading="lazy"
+                        referrerPolicy="no-referrer"
+                      />
+                    </div>
+                  ))
+                ) : (
+                  currentGalleryItems.map((video: any, i: number) => (
+                    <div key={i} className="relative overflow-hidden rounded-lg border border-white/10 aspect-video">
+                      <img 
+                        src={video.thumb} 
+                        alt={video.title} 
+                        className="w-full h-full object-cover brightness-50"
+                        loading="lazy"
+                        referrerPolicy="no-referrer"
+                      />
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <Play className="text-primary w-6 h-6 fill-current" />
+                      </div>
+                      <span className="absolute top-1 left-1 bg-accent-red text-white text-[7px] font-black px-1.5 py-0.5 rounded uppercase">{video.tag}</span>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+
+            {/* Pagination Controls */}
+            {galleryPages > 1 && (
+              <div className="flex items-center justify-between p-4 border-t border-white/10">
+                <button 
+                  onClick={() => setGalleryPage(p => Math.max(0, p - 1))}
+                  disabled={galleryPage === 0}
+                  className="p-2 hover:bg-white/10 disabled:opacity-50 transition-all rounded-lg"
+                >
+                  <ChevronLeft className="text-white" size={20} />
+                </button>
+                <span className="text-white font-bold text-sm">
+                  Page {galleryPage + 1} / {galleryPages}
+                </span>
+                <button 
+                  onClick={() => setGalleryPage(p => Math.min(galleryPages - 1, p + 1))}
+                  disabled={galleryPage === galleryPages - 1}
+                  className="p-2 hover:bg-white/10 disabled:opacity-50 transition-all rounded-lg"
+                >
+                  <ChevronRight className="text-white" size={20} />
+                </button>
+              </div>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

@@ -10,6 +10,19 @@ export default function MediaArchives({ data, setData }: { data: CMSData, setDat
   // Les années disponibles historiquement
   const years = [2026, 2025, 2024, 2023, 2022, 2021, 2020];
 
+  // Tags disponibles
+  const availableTags = [
+    'archive',
+    'highlight',
+    'aftermovie',
+    'replay',
+    'exclusif',
+    'coulisses',
+    'portraits',
+    'final',
+    'semi-final'
+  ];
+
   const getOrCreateMediaArray = (): MediaItem[] => {
     if (!Array.isArray(data.media)) {
       return [];
@@ -186,13 +199,16 @@ export default function MediaArchives({ data, setData }: { data: CMSData, setDat
                 {/* Tag/Catégorie */}
                 <div className="space-y-2">
                   <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 block">Tag/Catégorie</label>
-                  <input 
-                    type="text" 
+                  <select 
                     value={mediaItem.tag || ''}
                     onChange={e => updateMediaField(mediaItem.id, 'tag', e.target.value)}
                     className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-sm outline-none focus:border-primary transition-all min-h-[44px]"
-                    placeholder="Ex: archive, highlight, aftermovie..."
-                  />
+                  >
+                    <option value="">-- Sélectionner un tag --</option>
+                    {availableTags.map(tag => (
+                      <option key={tag} value={tag}>{tag}</option>
+                    ))}
+                  </select>
                 </div>
 
                 {/* URL */}
