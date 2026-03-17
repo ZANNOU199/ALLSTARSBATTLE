@@ -151,7 +151,7 @@ export default function HomepageContent({ data, setData }: { data: CMSData, setD
           </div>
         </div>
       </div>
-
+ 
 
       {/* VIP Section */}
       <div className="bg-[#111] border border-white/10 p-4 sm:p-8 rounded-2xl space-y-6">

@@ -713,7 +713,7 @@ export default function App() {
             <p className="text-slate-400 leading-relaxed mb-8 text-lg">
               {config?.competition.description || 'L\'élite mondiale du breaking et du hip-hop se réunit sur les terres du Togo pour la plus grande battle d\'Afrique. 3 jours de compétition intense, de workshops et de culture urbaine. Le vainqueur n\'emporte pas seulement le titre, il entre dans l\'histoire.'}
             </p>
-            <a href="#" className="inline-flex items-center gap-2 text-primary font-bold tracking-widest uppercase hover:underline">
+            <a href="#competition" onClick={navigateTo('home', '#competition')} className="inline-flex items-center gap-2 text-primary font-bold tracking-widest uppercase hover:underline cursor-pointer">
               Détails du tournoi <ArrowRight className="w-4 h-4" />
             </a>
           </div>
@@ -728,7 +728,7 @@ export default function App() {
               <span className="text-accent-red font-bold tracking-[0.3em] uppercase text-xs">{config?.dancers.sectionSubtitle || 'Featured'}</span>
               <h2 className="font-heading text-5xl md:text-7xl text-white uppercase leading-none">{config?.dancers.sectionTitle || 'LES DANSEURS'}</h2>
             </div>
-            <a href="#" className="text-slate-500 hover:text-white transition-colors uppercase font-bold text-xs tracking-widest pb-2">Voir tous les profils</a>
+            <a href="#dancers" onClick={navigateTo('dancers')} className="text-slate-500 hover:text-white transition-colors uppercase font-bold text-xs tracking-widest pb-2 cursor-pointer">Voir tous les profils</a>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {participants
@@ -916,7 +916,7 @@ export default function App() {
                     </>
                   )}
                 </div>
-                <button className="btn-luxury-vip shimmer-effect">DÉCOUVRIR LES OFFRES</button>
+                <button onClick={navigateTo('tickets')} className="btn-luxury-vip shimmer-effect">DÉCOUVRIR LES OFFRES</button>
               </div>
               <div className="relative group">
                 <div className="absolute -inset-1 bg-gradient-to-r from-primary to-accent-red rounded-lg blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
@@ -942,7 +942,7 @@ export default function App() {
               <span className="text-primary font-bold tracking-[0.3em] uppercase text-xs">Archives</span>
               <h2 className="font-heading text-5xl md:text-7xl text-white uppercase leading-none">MÉDIAS</h2>
             </div>
-            <a href="#" className="text-slate-500 hover:text-white transition-colors uppercase font-bold text-xs tracking-widest pb-2 underline decoration-primary underline-offset-8">Accéder à la galerie</a>
+            <a href="#media" onClick={navigateTo('media')} className="text-slate-500 hover:text-white transition-colors uppercase font-bold text-xs tracking-widest pb-2 underline decoration-primary underline-offset-8 cursor-pointer">Accéder à la galerie</a>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="aspect-square bg-surface-dark overflow-hidden group">
