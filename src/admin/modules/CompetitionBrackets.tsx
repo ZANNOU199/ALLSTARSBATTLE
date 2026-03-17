@@ -257,26 +257,28 @@ export default function CompetitionBrackets({ data, setData }: { data: CMSData, 
     const updateScale = () => {
       if (!bracketContainerRef.current) return;
 
-      const containerWidth = window.innerWidth;
-      const containerHeight = window.innerHeight;
+      const containerWidth = bracketContainerRef.current.clientWidth;
       const targetWidth = 900;
-      const targetHeight = Math.max(300, bracketHeightRef.current);
 
-      const scaleWidth = (containerWidth - 24) / targetWidth;
-      const scaleHeight = (containerHeight - 200) / targetHeight;
-
-      let scale = containerWidth >= targetWidth ? 1 : scaleWidth;
-      scale = Math.max(0.3, scale);
-
-      setBracketScale(scale);
+      // Aggressively scale to fit: no minimum limit for small screens
+      const scale = Math.min(1, (containerWidth - 20) / targetWidth);
+      
+      setBracketScale(Math.max(0.25, scale)); // Allow much smaller scale for mobile
     };
 
+    // Initial scale calculation
     updateScale();
-    const timer = setTimeout(updateScale, 500);
+    
+    // Recalculate on resize
     window.addEventListener('resize', updateScale);
+    const resizeObserver = new ResizeObserver(updateScale);
+    if (bracketContainerRef.current) {
+      resizeObserver.observe(bracketContainerRef.current);
+    }
+    
     return () => {
       window.removeEventListener('resize', updateScale);
-      clearTimeout(timer);
+      resizeObserver.disconnect();
     };
   }, []);
 
@@ -304,31 +306,35 @@ export default function CompetitionBrackets({ data, setData }: { data: CMSData, 
   }, []);
 
   const BracketMatch = ({ player1, player2, country1, country2, countryCode1, countryCode2, side = "left", color = "primary" }: any) => (
-    <div className={`flex flex-col gap-1 bg-white/5 p-2 md:p-4 rounded border-${side === "left" ? "l" : "r"}-4 ${color === "primary" ? "border-primary" : "border-accent-red"} relative transition-all hover:bg-white/10`}>
-      <div className={`flex justify-between items-center ${side === "right" ? "flex-row-reverse" : ""}`}>
-        <span className="font-bold text-xl sm:text-2xl md:text-sm uppercase leading-tight flex items-center gap-1 md:gap-2">
-          {player1}
-          {countryCode1 !== 'un' && <img src={`https://flagcdn.com/${countryCode1}.svg`} alt={country1} className="w-4 h-3" onError={(e) => { e.currentTarget.style.display = 'none'; }} />}
+    <div className={`flex flex-col gap-2 sm:gap-1 bg-white/5 p-4 sm:p-3 rounded border-${side === "left" ? "l" : "r"}-4 ${color === "primary" ? "border-primary" : "border-accent-red"} relative transition-all hover:bg-white/10 whitespace-normal overflow-hidden`}>
+      <div className={`flex justify-between items-center gap-2 ${side === "right" ? "flex-row-reverse" : ""}`}>
+        <span className="font-bold text-sm sm:text-xs uppercase leading-tight flex items-center gap-2 sm:gap-1 truncate flex-shrink min-w-0">
+          <span className="truncate">{player1}</span>
+          {countryCode1 !== 'un' && <img src={`https://flagcdn.com/${countryCode1}.svg`} alt={country1} className="w-6 h-5 sm:w-4 sm:h-3 flex-shrink-0" onError={(e) => { e.currentTarget.style.display = 'none'; }} />}
         </span>
       </div>
-      <div className="flex justify-center">
-        <span className="text-primary font-mono text-xs">--</span>
-      </div>
-      <div className={`flex justify-between items-center ${side === "right" ? "flex-row-reverse" : ""}`}>
-        <span className="font-bold text-xl sm:text-2xl md:text-sm uppercase leading-tight flex items-center gap-1 md:gap-2">
-          {player2}
-          {countryCode2 !== 'un' && <img src={`https://flagcdn.com/${countryCode2}.svg`} alt={country2} className="w-4 h-3" onError={(e) => { e.currentTarget.style.display = 'none'; }} />}
+      <div className="h-[1px] bg-white/10 my-1 sm:my-0"></div>
+      <div className={`flex justify-between items-center gap-2 ${side === "right" ? "flex-row-reverse" : ""}`}>
+        <span className="font-bold text-sm sm:text-xs uppercase leading-tight flex items-center gap-2 sm:gap-1 truncate flex-shrink min-w-0">
+          <span className="truncate">{player2}</span>
+          {countryCode2 !== 'un' && <img src={`https://flagcdn.com/${countryCode2}.svg`} alt={country2} className="w-6 h-5 sm:w-4 sm:h-3 flex-shrink-0" onError={(e) => { e.currentTarget.style.display = 'none'; }} />}
         </span>
       </div>
     </div>
   );
 
-  const BracketContent = () => (
-    <div className="grid grid-cols-7 gap-0 items-stretch py-8 min-h-[800px] md:min-h-[600px] lg:min-h-[500px]">
+  const BracketContent = () => {
+    const containerWidth = bracketContainerRef.current?.clientWidth || 400;
+    const isMobile = containerWidth < 640;
+    const minHeight = isMobile ? '900px' : '600px';
+    const gapClass = isMobile ? 'gap-2' : 'gap-1';
+    
+    return (
+    <div className={`grid grid-cols-7 ${gapClass} items-stretch py-6 px-2 bg-gradient-to-b from-transparent via-white/[0.02] to-transparent rounded-lg`} style={{ minHeight, minWidth: '900px' }}>
       {/* Poule A: Top 16 (Left) */}
-      <div className="flex flex-col h-full">
-        <h3 className="font-heading text-sm md:text-base text-primary mb-4 text-center shrink-0">HUITIÈMES (A)</h3>
-        <div className="flex-1 flex flex-col justify-around py-2">
+      <div className="flex flex-col h-full justify-between">
+        <h3 className="font-heading text-xs sm:text-[10px] text-primary mb-2 text-center shrink-0 font-bold">HUITIÈMES (A)</h3>
+        <div className="flex-1 flex flex-col justify-around gap-2 sm:gap-1">
           {data.competition.brackets.pouleA.huitiemes.map((match, idx) => (
             <BracketMatch 
               key={match.id}
@@ -345,10 +351,10 @@ export default function CompetitionBrackets({ data, setData }: { data: CMSData, 
       </div>
 
       {/* Poule A: Quarts (Left) */}
-      <div className="flex flex-col h-full pl-4">
-        <h3 className="font-heading text-sm md:text-base text-slate-400 mb-4 text-center shrink-0">QUARTS</h3>
-        <div className="flex-1 flex flex-col justify-around py-2">
-          {data.competition.brackets.pouleA.quarts.map((match, idx) => (
+      <div className="flex flex-col h-full justify-between px-1">
+        <h3 className="font-heading text-xs sm:text-[10px] text-slate-400 mb-2 text-center shrink-0 font-bold">QUARTS</h3>
+        <div className="flex-1 flex flex-col justify-around gap-2 sm:gap-1">
+          {data.competition.brackets.pouleA.quarts.map((match) => (
             <BracketMatch 
               key={match.id}
               player1={match.player1} 
@@ -363,57 +369,57 @@ export default function CompetitionBrackets({ data, setData }: { data: CMSData, 
       </div>
 
       {/* Poule A: Semis (Left) */}
-      <div className="flex flex-col h-full pr-4 pl-4">
-        <h3 className="font-heading text-sm md:text-base text-accent-red mb-4 text-center uppercase shrink-0">DEMI-FINALE</h3>
-        <div className="flex-1 flex flex-col justify-around py-2">
+      <div className="flex flex-col h-full justify-between px-1">
+        <h3 className="font-heading text-xs sm:text-[10px] text-accent-red mb-2 text-center uppercase shrink-0 font-bold">DEMI</h3>
+        <div className="flex-1 flex flex-col justify-around gap-2 sm:gap-1">
           {data.competition.brackets.pouleA.semis.map((match) => (
-            <div key={match.id} className="flex flex-col gap-1 bg-accent-red/10 p-3 rounded border border-accent-red/30 text-xs">
-              <div className="text-center font-bold text-white uppercase text-[10px]">{match.player1}</div>
-              <div className="text-center text-primary font-mono text-xs">--</div>
-              <div className="text-center font-bold text-white uppercase text-[10px]">{match.player2}</div>
+            <div key={match.id} className="flex flex-col gap-2 sm:gap-1 bg-accent-red/10 p-3 sm:p-2 rounded border border-accent-red/30 text-xs">
+              <div className="text-center font-bold text-white uppercase text-sm sm:text-[10px] truncate">{match.player1}</div>
+              <div className="text-center text-primary font-mono text-[10px] sm:text-[8px]">--</div>
+              <div className="text-center font-bold text-white uppercase text-sm sm:text-[10px] truncate">{match.player2}</div>
             </div>
           ))}
         </div>
       </div>
 
       {/* Center: Final */}
-      <div className="flex flex-col h-full items-center justify-center px-2">
-        <div className="text-center mb-4 shrink-0">
-          <Trophy className="text-primary w-8 h-8 mx-auto mb-2" />
-          <h2 className="font-heading text-xs md:text-sm text-white uppercase">FINALE</h2>
+      <div className="flex flex-col h-full items-center justify-center px-1">
+        <div className="text-center mb-2 shrink-0">
+          <Trophy className="text-primary w-7 h-7 sm:w-6 sm:h-6 mx-auto mb-1" />
+          <h2 className="font-heading text-[11px] sm:text-[10px] text-white uppercase font-bold">FINALE</h2>
         </div>
-        <div className="w-full max-w-[120px] md:max-w-[150px] p-1 bg-gradient-to-b from-primary via-accent-red to-primary rounded-lg shadow-[0_0_40px_rgba(244,209,37,0.2)]">
-          <div className="bg-black p-3 md:p-4 rounded-md flex flex-col items-center gap-2 md:gap-3">
+        <div className="w-full max-w-[110px] sm:max-w-[100px] p-1 bg-gradient-to-b from-primary via-accent-red to-primary rounded shadow-[0_0_20px_rgba(244,209,37,0.2)]">
+          <div className="bg-black p-2 sm:p-1 rounded-sm flex flex-col items-center gap-2 sm:gap-1">
             <div className="text-center">
-              <h3 className="font-heading text-[10px] md:text-xs text-white uppercase font-bold">{data.competition.brackets.final.player1 || 'TBD'}</h3>
+              <h3 className="font-heading text-[10px] sm:text-[9px] text-white uppercase font-bold truncate">{data.competition.brackets.final.player1 || 'TBD'}</h3>
             </div>
-            <span className="text-primary text-xs font-mono">--</span>
+            <span className="text-[8px]">•</span>
             <div className="text-center">
-              <h3 className="font-heading text-[10px] md:text-xs text-white uppercase font-bold">{data.competition.brackets.final.player2 || 'TBD'}</h3>
+              <h3 className="font-heading text-[10px] sm:text-[9px] text-white uppercase font-bold truncate">{data.competition.brackets.final.player2 || 'TBD'}</h3>
             </div>
           </div>
         </div>
       </div>
 
       {/* Poule B: Semis (Right) */}
-      <div className="flex flex-col h-full pl-4 pr-4">
-        <h3 className="font-heading text-sm md:text-base text-accent-red mb-4 text-center uppercase shrink-0">DEMI-FINALE</h3>
-        <div className="flex-1 flex flex-col justify-around py-2">
+      <div className="flex flex-col h-full justify-between px-1">
+        <h3 className="font-heading text-xs sm:text-[10px] text-accent-red mb-2 text-center uppercase shrink-0 font-bold">DEMI</h3>
+        <div className="flex-1 flex flex-col justify-around gap-2 sm:gap-1">
           {data.competition.brackets.pouleB.semis.map((match) => (
-            <div key={match.id} className="flex flex-col gap-1 bg-accent-red/10 p-3 rounded border border-accent-red/30 text-xs">
-              <div className="text-center font-bold text-white uppercase text-[10px]">{match.player1}</div>
-              <div className="text-center text-primary font-mono text-xs">--</div>
-              <div className="text-center font-bold text-white uppercase text-[10px]">{match.player2}</div>
+            <div key={match.id} className="flex flex-col gap-2 sm:gap-1 bg-accent-red/10 p-3 sm:p-2 rounded border border-accent-red/30 text-xs">
+              <div className="text-center font-bold text-white uppercase text-sm sm:text-[10px] truncate">{match.player1}</div>
+              <div className="text-center text-primary font-mono text-[10px] sm:text-[8px]">--</div>
+              <div className="text-center font-bold text-white uppercase text-sm sm:text-[10px] truncate">{match.player2}</div>
             </div>
           ))}
         </div>
       </div>
 
       {/* Poule B: Quarts (Right) */}
-      <div className="flex flex-col h-full pr-4">
-        <h3 className="font-heading text-sm md:text-base text-slate-400 mb-4 text-center shrink-0">QUARTS</h3>
-        <div className="flex-1 flex flex-col justify-around py-2">
-          {data.competition.brackets.pouleB.quarts.map((match, idx) => (
+      <div className="flex flex-col h-full justify-between px-1">
+        <h3 className="font-heading text-xs sm:text-[10px] text-slate-400 mb-2 text-center shrink-0 font-bold">QUARTS</h3>
+        <div className="flex-1 flex flex-col justify-around gap-2 sm:gap-1">
+          {data.competition.brackets.pouleB.quarts.map((match) => (
             <BracketMatch 
               key={match.id}
               player1={match.player1} 
@@ -429,9 +435,9 @@ export default function CompetitionBrackets({ data, setData }: { data: CMSData, 
       </div>
 
       {/* Poule B: Top 16 (Right) */}
-      <div className="flex flex-col h-full">
-        <h3 className="font-heading text-sm md:text-base text-primary mb-4 text-center shrink-0">HUITIÈMES (B)</h3>
-        <div className="flex-1 flex flex-col justify-around py-2">
+      <div className="flex flex-col h-full justify-between">
+        <h3 className="font-heading text-xs sm:text-[10px] text-primary mb-2 text-center shrink-0 font-bold">HUITIÈMES (B)</h3>
+        <div className="flex-1 flex flex-col justify-around gap-2 sm:gap-1">
           {data.competition.brackets.pouleB.huitiemes.map((match, idx) => (
             <BracketMatch 
               key={match.id}
@@ -449,6 +455,7 @@ export default function CompetitionBrackets({ data, setData }: { data: CMSData, 
       </div>
     </div>
   );
+  };
 
   return (
     <div className="space-y-8">
@@ -645,21 +652,27 @@ export default function CompetitionBrackets({ data, setData }: { data: CMSData, 
           </div>
 
           {/* VISUALISATION DU BRACKET */}
-          <section id="brackets" className="py-16 md:py-24 bg-background-dark overflow-hidden relative border-t border-white/10">
+          <section id="brackets" className="py-8 md:py-16 lg:py-24 bg-background-dark overflow-x-auto md:overflow-hidden relative border-t border-white/10">
           <div className="absolute inset-0 pointer-events-none grain-texture z-0 opacity-5"></div>
           <div className="absolute inset-0 pointer-events-none diagonal-lines z-0 opacity-10"></div>
           
-          <div className="max-w-6xl lg:max-w-7xl mx-auto px-4 text-center mb-10 md:mb-16 relative z-10">
-            <div className="inline-block px-3 md:px-4 py-1 border border-primary/30 bg-primary/10 rounded-full mb-3 md:mb-6">
+          <div className="max-w-6xl lg:max-w-7xl mx-auto px-2 sm:px-4 text-center mb-6 md:mb-10 lg:mb-16 relative z-10">
+            <div className="inline-block px-3 md:px-4 py-1 border border-primary/30 bg-primary/10 rounded-full mb-2 md:mb-3 lg:mb-6">
               <span className="text-primary text-[10px] md:text-xs font-bold tracking-[0.2em] uppercase">Phase Finale - Lomé, Togo</span>
             </div>
-            <h1 className="font-heading text-2xl md:text-4xl lg:text-5xl xl:text-6xl text-white mb-2 md:mb-4 tracking-tight uppercase">
+            <h1 className="font-heading text-lg sm:text-2xl md:text-4xl lg:text-5xl xl:text-6xl text-white mb-1 md:mb-2 lg:mb-4 tracking-tight uppercase">
               TABLEAU DES BATTLES <span className="text-primary">-</span> TOP 16
             </h1>
-            
           </div>
 
-          <div ref={bracketContainerRef} className="w-full relative z-10 overflow-hidden" style={{ height: `${bracketHeight * bracketScale + 30}px`, minHeight: '320px' }}>
+          <div ref={bracketContainerRef} className="w-full relative z-10 overflow-hidden bg-black/20 rounded-lg border border-white/5" style={{ 
+            minHeight: '400px',
+            maxHeight: '85vh',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '4px'
+          }}>
             {/* Hidden clone for measurement */}
             <div 
               ref={measureRef} 
@@ -669,15 +682,15 @@ export default function CompetitionBrackets({ data, setData }: { data: CMSData, 
               <BracketContent />
             </div>
 
-            {/* Scaled visible content */}
+            {/* Full visible content - always shown completely */}
             <div 
               style={{ 
                 width: '900px',
-                position: 'absolute',
-                left: '50%',
-                top: 0,
-                transform: `translateX(-50%) scale(${bracketScale})`,
-                transformOrigin: 'top center',
+                minWidth: '900px',
+                position: 'relative',
+                padding: '8px',
+                transform: `scale(${bracketScale})`,
+                transformOrigin: 'center center',
                 transition: 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
                 willChange: 'transform'
               }}
@@ -686,10 +699,10 @@ export default function CompetitionBrackets({ data, setData }: { data: CMSData, 
             </div>
           </div>
 
-          <div className="max-w-6xl lg:max-w-7xl mx-auto px-4 mt-8 md:mt-16 lg:mt-20 grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8 relative z-10">
+          <div className="max-w-6xl lg:max-w-7xl mx-auto px-2 sm:px-4 mt-6 md:mt-8 lg:mt-12 lg:mt-20 grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4 md:gap-6 lg:gap-8 relative z-10">
             {data.globalConfig.homepageStats?.map((stat, idx) => (
-              <div key={idx} className={`bg-white/5 p-6 md:p-8 rounded-xl border border-white/10 hover:border-${idx === 0 ? 'primary' : idx === 1 ? 'accent-red' : 'white'}/30 transition-all`}>
-                <h4 className={`font-heading text-3xl md:text-4xl text-${idx === 0 ? 'primary' : idx === 1 ? 'accent-red' : 'white'} mb-2`}>{stat.value}</h4>
+              <div key={idx} className={`bg-white/5 p-4 sm:p-6 md:p-8 rounded-lg md:rounded-xl border border-white/10 hover:border-${idx === 0 ? 'primary' : idx === 1 ? 'accent-red' : 'white'}/30 transition-all`}>
+                <h4 className={`font-heading text-2xl sm:text-3xl md:text-4xl text-${idx === 0 ? 'primary' : idx === 1 ? 'accent-red' : 'white'} mb-2`}>{stat.value}</h4>
                 <p className="text-slate-400 uppercase text-xs font-bold tracking-widest">{stat.label}</p>
               </div>
             ))}
