@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, ComponentType } from 'react';
 import Competition from './Competition';
 import Dancers from './Dancers';
 import Judges from './Judges';
@@ -7,52 +7,16 @@ import History from './History';
 import Tickets from './Tickets';
 import Program from './Program';
 import News from './News';
-import { 
-  Menu, 
-  X, 
-  ChevronsDown, 
-  Calendar, 
-  MapPin, 
-  ArrowRight, 
-  Verified, 
-  GlassWater, 
-  Megaphone, 
-  Globe, 
-  Mail, 
-  Instagram, 
-  Facebook, 
-  Twitter, 
-  Youtube,
-  Trophy,
-  User,
-  ChevronDown
-} from 'lucide-react';
+import * as LucideIcons from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
-// Icon mapping for dynamic rendering
-const iconMap: Record<string, React.ComponentType<{ size?: number; className?: string }>> = {
-  Verified,
-  GlassWater,
-  Trophy,
-  User,
-  Megaphone,
-  Globe,
-  Mail,
-  Instagram,
-  Facebook,
-  Twitter,
-  Youtube,
-  Menu,
-  X,
-  ChevronsDown,
-  Calendar,
-  MapPin,
-  ArrowRight,
-  ChevronDown
-};
+// Extraire les icônes nécessaires
+const { Menu, X, ChevronsDown, ChevronDown, Verified, Star, Instagram, Facebook, Twitter, Youtube, Calendar, MapPin, ArrowRight, GlassWater, Megaphone, Globe, Mail, Trophy, User } = LucideIcons as any;
 
-const getIcon = (iconName: string) => {
-  return iconMap[iconName] || Verified; // Default to Verified if not found
+// Fonction pour obtenir une icône dynamiquement
+const getIcon = (iconName: string): ComponentType<{ size?: number; className?: string }> => {
+  const Icon = (LucideIcons as any)[iconName];
+  return Icon || Verified; // Default to Verified if not found
 };
 
 const NavLink = ({ href, children, active = false, red = false, onClick }: { href: string, children: React.ReactNode, active?: boolean, red?: boolean, onClick?: (e: React.MouseEvent) => void }) => (
