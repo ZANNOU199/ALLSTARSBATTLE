@@ -557,9 +557,7 @@ export default function CompetitionBrackets({ data, setData }: { data: CMSData, 
                           <CountrySearchSelect value={match.countryCode1} onChange={code => updateMatch('pouleA', 'huitiemes', match.id, 'countryCode1', code)} countries={countries} />
                         </div>
                       </div>
-                      <input type="text" value={match.score1} onChange={e => updateMatch('pouleA', 'huitiemes', match.id, 'score1', e.target.value)} placeholder="Score" className="w-full bg-white/5 border border-white/10 rounded p-1.5 md:p-2 text-center font-mono text-xs md:text-sm text-primary" />
-                      <div className="text-center text-primary font-bold text-xs md:text-sm">VS</div>
-                      <input type="text" value={match.score2} onChange={e => updateMatch('pouleA', 'huitiemes', match.id, 'score2', e.target.value)} placeholder="Score" className="w-full bg-white/5 border border-white/10 rounded p-1.5 md:p-2 text-center font-mono text-xs md:text-sm text-primary" />
+                      <div className="text-center text-primary font-mono text-xs md:text-sm">--</div>
                       <div className="flex gap-1 md:gap-2 flex-wrap md:flex-nowrap">
                         <input type="text" value={match.player2} onChange={e => updateMatch('pouleA', 'huitiemes', match.id, 'player2', e.target.value)} placeholder="Joueur 2" className="flex-1 min-w-[80px] bg-white/5 border border-white/10 rounded p-1.5 md:p-2 text-xs md:text-sm uppercase focus:border-primary outline-none" />
                         <div className="w-20 md:w-24 lg:w-32">
@@ -586,9 +584,7 @@ export default function CompetitionBrackets({ data, setData }: { data: CMSData, 
                           <CountrySearchSelect value={match.countryCode1} onChange={code => updateMatch('pouleB', 'huitiemes', match.id, 'countryCode1', code)} countries={countries} />
                         </div>
                       </div>
-                      <input type="text" value={match.score1} onChange={e => updateMatch('pouleB', 'huitiemes', match.id, 'score1', e.target.value)} placeholder="Score" className="w-full bg-white/5 border border-white/10 rounded p-1.5 md:p-2 text-center font-mono text-xs md:text-sm text-primary" />
-                      <div className="text-center text-primary font-bold text-xs md:text-sm">VS</div>
-                      <input type="text" value={match.score2} onChange={e => updateMatch('pouleB', 'huitiemes', match.id, 'score2', e.target.value)} placeholder="Score" className="w-full bg-white/5 border border-white/10 rounded p-1.5 md:p-2 text-center font-mono text-xs md:text-sm text-primary" />
+                      <div className="text-center text-primary font-mono text-xs md:text-sm">--</div>
                       <div className="flex gap-1 md:gap-2 flex-wrap md:flex-nowrap">
                         <input type="text" value={match.player2} onChange={e => updateMatch('pouleB', 'huitiemes', match.id, 'player2', e.target.value)} placeholder="Joueur 2" className="flex-1 min-w-[80px] bg-white/5 border border-white/10 rounded p-1.5 md:p-2 text-xs md:text-sm uppercase focus:border-primary outline-none" />
                         <div className="w-20 md:w-24 lg:w-32">
@@ -609,9 +605,7 @@ export default function CompetitionBrackets({ data, setData }: { data: CMSData, 
                   <div key={match.id} className="bg-white/5 border border-white/10 p-3 md:p-4 lg:p-6 rounded-lg md:rounded-xl space-y-2 md:space-y-3">
                     <div className="text-[8px] md:text-[10px] font-bold uppercase tracking-widest text-slate-500">Quart A{idx + 1}</div>
                     <input type="text" value={match.player1} onChange={e => updateMatch('pouleA', 'quarts', match.id, 'player1', e.target.value)} placeholder="Joueur 1" className="w-full bg-white/5 border border-white/10 rounded p-1.5 md:p-2 text-xs md:text-sm uppercase focus:border-primary outline-none" />
-                    <input type="text" value={match.score1} onChange={e => updateMatch('pouleA', 'quarts', match.id, 'score1', e.target.value)} placeholder="Score" className="w-full bg-white/5 border border-white/10 rounded p-1.5 md:p-2 text-center font-mono text-xs md:text-sm text-primary" />
-                    <div className="text-center text-primary text-xs md:text-sm">VS</div>
-                    <input type="text" value={match.score2} onChange={e => updateMatch('pouleA', 'quarts', match.id, 'score2', e.target.value)} placeholder="Score" className="w-full bg-white/5 border border-white/10 rounded p-1.5 md:p-2 text-center font-mono text-xs md:text-sm text-primary" />
+                    <div className="text-center text-primary font-mono text-xs md:text-sm">--</div>
                     <input type="text" value={match.player2} onChange={e => updateMatch('pouleA', 'quarts', match.id, 'player2', e.target.value)} placeholder="Joueur 2" className="w-full bg-white/5 border border-white/10 rounded p-1.5 md:p-2 text-xs md:text-sm uppercase focus:border-primary outline-none" />
                   </div>
                 ))}
@@ -619,9 +613,7 @@ export default function CompetitionBrackets({ data, setData }: { data: CMSData, 
                   <div key={match.id} className="bg-white/5 border border-white/10 p-3 md:p-4 lg:p-6 rounded-lg md:rounded-xl space-y-2 md:space-y-3">
                     <div className="text-[8px] md:text-[10px] font-bold uppercase tracking-widest text-slate-500">Quart B{idx + 1}</div>
                     <input type="text" value={match.player1} onChange={e => updateMatch('pouleB', 'quarts', match.id, 'player1', e.target.value)} placeholder="Joueur 1" className="w-full bg-white/5 border border-white/10 rounded p-1.5 md:p-2 text-xs md:text-sm uppercase focus:border-primary outline-none" />
-                    <input type="text" value={match.score1} onChange={e => updateMatch('pouleB', 'quarts', match.id, 'score1', e.target.value)} placeholder="Score" className="w-full bg-white/5 border border-white/10 rounded p-1.5 md:p-2 text-center font-mono text-xs md:text-sm text-primary" />
-                    <div className="text-center text-primary text-xs md:text-sm">VS</div>
-                    <input type="text" value={match.score2} onChange={e => updateMatch('pouleB', 'quarts', match.id, 'score2', e.target.value)} placeholder="Score" className="w-full bg-white/5 border border-white/10 rounded p-1.5 md:p-2 text-center font-mono text-xs md:text-sm text-primary" />
+                    <div className="text-center text-primary font-mono text-xs md:text-sm">--</div>
                     <input type="text" value={match.player2} onChange={e => updateMatch('pouleB', 'quarts', match.id, 'player2', e.target.value)} placeholder="Joueur 2" className="w-full bg-white/5 border border-white/10 rounded p-1.5 md:p-2 text-xs md:text-sm uppercase focus:border-primary outline-none" />
                   </div>
                 ))}
@@ -636,9 +628,7 @@ export default function CompetitionBrackets({ data, setData }: { data: CMSData, 
                   <div key={match.id} className="bg-white/5 border border-white/10 p-3 md:p-4 lg:p-6 rounded-lg md:rounded-xl space-y-2 md:space-y-3">
                     <div className="text-[8px] md:text-[10px] font-bold uppercase tracking-widest text-slate-500">Demi A{idx + 1}</div>
                     <input type="text" value={match.player1} onChange={e => updateMatch('pouleA', 'semis', match.id, 'player1', e.target.value)} placeholder="Joueur 1" className="w-full bg-white/5 border border-white/10 rounded p-1.5 md:p-2 text-xs md:text-sm uppercase focus:border-primary outline-none" />
-                    <input type="text" value={match.score1} onChange={e => updateMatch('pouleA', 'semis', match.id, 'score1', e.target.value)} placeholder="Score" className="w-full bg-white/5 border border-white/10 rounded p-1.5 md:p-2 text-center font-mono text-xs md:text-sm text-primary" />
-                    <div className="text-center text-primary text-xs md:text-sm font-bold">VS</div>
-                    <input type="text" value={match.score2} onChange={e => updateMatch('pouleA', 'semis', match.id, 'score2', e.target.value)} placeholder="Score" className="w-full bg-white/5 border border-white/10 rounded p-1.5 md:p-2 text-center font-mono text-xs md:text-sm text-primary" />
+                    <div className="text-center text-primary font-mono text-xs md:text-sm">--</div>
                     <input type="text" value={match.player2} onChange={e => updateMatch('pouleA', 'semis', match.id, 'player2', e.target.value)} placeholder="Joueur 2" className="w-full bg-white/5 border border-white/10 rounded p-1.5 md:p-2 text-xs md:text-sm uppercase focus:border-primary outline-none" />
                   </div>
                 ))}
@@ -646,9 +636,7 @@ export default function CompetitionBrackets({ data, setData }: { data: CMSData, 
                   <div key={match.id} className="bg-white/5 border border-white/10 p-3 md:p-4 lg:p-6 rounded-lg md:rounded-xl space-y-2 md:space-y-3">
                     <div className="text-[8px] md:text-[10px] font-bold uppercase tracking-widest text-slate-500">Demi B{idx + 1}</div>
                     <input type="text" value={match.player1} onChange={e => updateMatch('pouleB', 'semis', match.id, 'player1', e.target.value)} placeholder="Joueur 1" className="w-full bg-white/5 border border-white/10 rounded p-1.5 md:p-2 text-xs md:text-sm uppercase focus:border-primary outline-none" />
-                    <input type="text" value={match.score1} onChange={e => updateMatch('pouleB', 'semis', match.id, 'score1', e.target.value)} placeholder="Score" className="w-full bg-white/5 border border-white/10 rounded p-1.5 md:p-2 text-center font-mono text-xs md:text-sm text-primary" />
-                    <div className="text-center text-primary text-xs md:text-sm font-bold">VS</div>
-                    <input type="text" value={match.score2} onChange={e => updateMatch('pouleB', 'semis', match.id, 'score2', e.target.value)} placeholder="Score" className="w-full bg-white/5 border border-white/10 rounded p-1.5 md:p-2 text-center font-mono text-xs md:text-sm text-primary" />
+                    <div className="text-center text-primary font-mono text-xs md:text-sm">--</div>
                     <input type="text" value={match.player2} onChange={e => updateMatch('pouleB', 'semis', match.id, 'player2', e.target.value)} placeholder="Joueur 2" className="w-full bg-white/5 border border-white/10 rounded p-1.5 md:p-2 text-xs md:text-sm uppercase focus:border-primary outline-none" />
                   </div>
                 ))}
@@ -661,11 +649,9 @@ export default function CompetitionBrackets({ data, setData }: { data: CMSData, 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4 lg:gap-6">
                 <div className="bg-white/5 border border-white/10 p-3 md:p-4 lg:p-6 rounded-lg md:rounded-xl space-y-2 md:space-y-3">
                   <input type="text" value={data.competition.brackets.final.player1} onChange={e => updateFinal('player1', e.target.value)} placeholder="Joueur 1" className="w-full bg-white/5 border border-white/10 rounded p-1.5 md:p-2 text-xs md:text-sm uppercase focus:border-primary outline-none" />
-                  <input type="text" value={data.competition.brackets.final.score1} onChange={e => updateFinal('score1', e.target.value)} placeholder="Score" className="w-full bg-white/5 border border-white/10 rounded p-1.5 md:p-2 text-center font-mono text-xs md:text-sm text-primary" />
-                  <div className="text-center text-primary text-xs md:text-sm font-bold">VS</div>
+                  <div className="text-center text-primary font-mono text-xs md:text-sm">--</div>
                 </div>
                 <div className="bg-white/5 border border-white/10 p-3 md:p-4 lg:p-6 rounded-lg md:rounded-xl space-y-2 md:space-y-3">
-                  <input type="text" value={data.competition.brackets.final.score2} onChange={e => updateFinal('score2', e.target.value)} placeholder="Score" className="w-full bg-white/5 border border-white/10 rounded p-1.5 md:p-2 text-center font-mono text-xs md:text-sm text-primary" />
                   <input type="text" value={data.competition.brackets.final.player2} onChange={e => updateFinal('player2', e.target.value)} placeholder="Joueur 2" className="w-full bg-white/5 border border-white/10 rounded p-1.5 md:p-2 text-xs md:text-sm uppercase focus:border-primary outline-none" />
                 </div>
               </div>
