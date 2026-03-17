@@ -35,6 +35,7 @@ import CompetitionBrackets from './modules/CompetitionBrackets';
 import TicketingFAQ from './modules/TicketingFAQ';
 import HistoryLegends from './modules/HistoryLegends';
 import PartnersMedia from './modules/PartnersMedia';
+import MediaArchives from './modules/MediaArchives';
 import GlobalConfigSEO from './modules/GlobalConfigSEO';
 import HomepageContent from './modules/HomepageContent';
 
@@ -48,6 +49,7 @@ type ModuleId =
   | 'ticketing' 
   | 'history' 
   | 'partners' 
+  | 'media'
   | 'config'
   | 'homepage';
 
@@ -70,7 +72,8 @@ export default function AdminDashboard({ onLogout }: { onLogout: () => void }) {
     { id: 'competition', label: 'Compétition & Brackets', icon: Trophy },
     { id: 'ticketing', label: 'Billetterie & FAQ', icon: Ticket },
     { id: 'history', label: 'Histoire & Légendes', icon: History },
-    { id: 'partners', label: 'Partenaires & Médias', icon: Handshake },
+    { id: 'media', label: 'Galerie & Archives Média', icon: ImageIcon },
+    { id: 'partners', label: 'Partenaires', icon: Handshake },
     { id: 'config', label: 'Configuration & SEO', icon: Settings },
   ];
 
@@ -85,6 +88,7 @@ export default function AdminDashboard({ onLogout }: { onLogout: () => void }) {
       case 'competition': return <CompetitionBrackets data={data} setData={setData} />;
       case 'ticketing': return <TicketingFAQ data={data} setData={setData} />;
       case 'history': return <HistoryLegends data={data} setData={setData} />;
+      case 'media': return <MediaArchives data={data} setData={setData} />;
       case 'partners': return <PartnersMedia data={data} setData={setData} />;
       case 'config': return <GlobalConfigSEO data={data} setData={setData} />;
       default: return <DashboardOverview data={data} />;

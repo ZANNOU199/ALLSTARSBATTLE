@@ -328,7 +328,7 @@ import Contact from './Contact';
 import Partners from './Partners';
 import AdminDashboard from './admin/AdminDashboard';
 import { cmsService } from './services/cmsService';
-import { GlobalConfig } from './types';
+import { GlobalConfig, MediaItem } from './types';
 
 export default function App() {
   const [currentPage, setCurrentPage] = useState<'home' | 'competition' | 'dancers' | 'judges' | 'media' | 'history' | 'tickets' | 'program' | 'news' | 'artistic' | 'contact' | 'partners' | 'admin'>('home');
@@ -341,6 +341,7 @@ export default function App() {
   const [participants, setParticipants] = useState<any[]>([]);
   const [programData, setProgramData] = useState<any[]>([]);
   const [bracketData, setBracketData] = useState<any>(null);
+  const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
 
   useEffect(() => {
     const data = cmsService.getData();
@@ -350,6 +351,7 @@ export default function App() {
     setParticipants(data.participants);
     setProgramData(data.program);
     setBracketData(data.competition.brackets);
+    setMediaItems(data.media || []);
   }, []);
 
   // Recharge la config quand on revient de l'admin avec les nouvelles données
@@ -358,6 +360,7 @@ export default function App() {
       const data = cmsService.getData();
       setConfig(data.globalConfig);
       setBracketData(data.competition.brackets);
+      setMediaItems(data.media || []);
     }
   }, [currentPage]);
 
@@ -945,24 +948,48 @@ export default function App() {
             <a href="#media" onClick={navigateTo('media')} className="text-slate-500 hover:text-white transition-colors uppercase font-bold text-xs tracking-widest pb-2 underline decoration-primary underline-offset-8 cursor-pointer">Accéder à la galerie</a>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="aspect-square bg-surface-dark overflow-hidden group">
-              <img src="https://picsum.photos/seed/m1/400/400" alt="Media" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" referrerPolicy="no-referrer" />
-            </div>
-            <div className="aspect-square md:aspect-auto md:row-span-2 bg-surface-dark overflow-hidden group">
-              <img src="https://picsum.photos/seed/m2/400/800" alt="Media" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" referrerPolicy="no-referrer" />
-            </div>
-            <div className="aspect-square bg-surface-dark overflow-hidden group">
-              <img src="https://picsum.photos/seed/m3/400/400" alt="Media" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" referrerPolicy="no-referrer" />
-            </div>
-            <div className="aspect-square bg-surface-dark overflow-hidden group">
-              <img src="https://picsum.photos/seed/m4/400/400" alt="Media" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" referrerPolicy="no-referrer" />
-            </div>
-            <div className="aspect-square bg-surface-dark overflow-hidden group">
-              <img src="https://picsum.photos/seed/m5/400/400" alt="Media" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" referrerPolicy="no-referrer" />
-            </div>
-            <div className="aspect-square bg-surface-dark overflow-hidden group">
-              <img src="https://picsum.photos/seed/m6/400/400" alt="Media" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" referrerPolicy="no-referrer" />
-            </div>
+            {/* Get photos from CMS, display first 6 */}
+            {mediaItems
+              .filter(item => item.type === 'photo')
+              .sort((a, b) => b.year - a.year) // Most recent first
+              .slice(0, 6)
+              .map((media, idx) => (
+                <div 
+                  key={media.id} 
+                  className={`bg-surface-dark overflow-hidden group ${idx === 1 ? 'md:row-span-2 aspect-square md:aspect-auto' : 'aspect-square'}`}
+                >
+                  <img 
+                    src={media.url} 
+                    alt={media.title || `Photo ${idx + 1}`}
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
+                    referrerPolicy="no-referrer"
+                    loading="lazy"
+                  />
+                </div>
+              ))}
+            {/* Fallback if no media items */}
+            {mediaItems.filter(item => item.type === 'photo').length === 0 && (
+              <>
+                <div className="aspect-square bg-surface-dark overflow-hidden group">
+                  <img src="https://picsum.photos/seed/m1/400/400" alt="Media" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" referrerPolicy="no-referrer" />
+                </div>
+                <div className="aspect-square md:aspect-auto md:row-span-2 bg-surface-dark overflow-hidden group">
+                  <img src="https://picsum.photos/seed/m2/400/800" alt="Media" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" referrerPolicy="no-referrer" />
+                </div>
+                <div className="aspect-square bg-surface-dark overflow-hidden group">
+                  <img src="https://picsum.photos/seed/m3/400/400" alt="Media" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" referrerPolicy="no-referrer" />
+                </div>
+                <div className="aspect-square bg-surface-dark overflow-hidden group">
+                  <img src="https://picsum.photos/seed/m4/400/400" alt="Media" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" referrerPolicy="no-referrer" />
+                </div>
+                <div className="aspect-square bg-surface-dark overflow-hidden group">
+                  <img src="https://picsum.photos/seed/m5/400/400" alt="Media" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" referrerPolicy="no-referrer" />
+                </div>
+                <div className="aspect-square bg-surface-dark overflow-hidden group">
+                  <img src="https://picsum.photos/seed/m6/400/400" alt="Media" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" referrerPolicy="no-referrer" />
+                </div>
+              </>
+            )}
           </div>
         </div>
       </section>

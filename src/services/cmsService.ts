@@ -164,7 +164,70 @@ const initialData: CMSData = {
     ],
     sponsoringPdfUrl: '#'
   },
-  media: [],
+  media: [
+    {
+      id: '1',
+      year: 2026,
+      type: 'photo',
+      title: 'Finale ASBI 2026 - Junior vs Flash',
+      description: 'Moment épique de la finale avec l\'énergie maximale du public',
+      url: 'https://picsum.photos/seed/asbi26_1/800/600',
+      tag: 'archive',
+      thumbnail: ''
+    },
+    {
+      id: '2',
+      year: 2026,
+      type: 'photo',
+      title: 'Demi-finale Poule A',
+      description: 'Action intense lors de la demi-finale de la poule A',
+      url: 'https://picsum.photos/seed/asbi26_2/800/600',
+      tag: 'archive',
+      thumbnail: ''
+    },
+    {
+      id: '3',
+      year: 2026,
+      type: 'photo',
+      title: 'Huitième de finale - Round 1',
+      description: 'Premier round des huitièmes de finale',
+      url: 'https://picsum.photos/seed/asbi26_3/800/600',
+      tag: 'archive',
+      thumbnail: ''
+    },
+    {
+      id: '4',
+      year: 2026,
+      type: 'video',
+      title: 'Grande Finale : Junior vs Flash | Edition 2026',
+      description: 'Une bataille épique pour le titre de champion d\'Afrique. Intensité maximum au Palais des Congrès.',
+      url: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+      thumbnail: 'https://picsum.photos/seed/asbi26_video1/800/600',
+      duration: '12:45',
+      tag: 'Replay'
+    },
+    {
+      id: '5',
+      year: 2026,
+      type: 'video',
+      title: 'Aftermovie Officiel : L\'énergie de Lomé',
+      description: 'Plongez dans les coulisses et l\'ambiance électrique de l\'ASBI Togo 2026.',
+      url: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+      thumbnail: 'https://picsum.photos/seed/asbi26_video2/800/600',
+      duration: '04:20',
+      tag: 'Exclusif'
+    },
+    {
+      id: '6',
+      year: 2024,
+      type: 'photo',
+      title: 'Moments forts ASBI 2024',
+      description: 'Archives de la compétition 2024',
+      url: 'https://picsum.photos/seed/asbi24_1/800/600',
+      tag: 'archive',
+      thumbnail: ''
+    }
+  ],
   globalConfig: {
     contact: {
       email: 'contact@asbi.com',
