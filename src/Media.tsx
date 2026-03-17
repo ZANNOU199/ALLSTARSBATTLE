@@ -10,6 +10,7 @@ const Media = () => {
   const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
   const [showGalleryModal, setShowGalleryModal] = useState(false);
   const [galleryPage, setGalleryPage] = useState(0);
+  const [desktopPage, setDesktopPage] = useState(0);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
 
   useEffect(() => {
@@ -74,16 +75,22 @@ const Media = () => {
   // Get current content to display
   const currentData = activeTab === 'photos' ? filteredPhotos : filteredVideos;
   
-  // Desktop pagination
+  // Desktop pagination - display 6 items per page
   const desktopPageSize = itemsPerPageDesktop;
   const desktopPages = Math.ceil(currentData.length / desktopPageSize);
-  const desktopCurrentPage = isMobile ? 0 : Math.floor(currentData.length / desktopPageSize) > 0 ? 0 : 0;
+  const currentDesktopItems = currentData.slice(desktopPage * desktopPageSize, (desktopPage + 1) * desktopPageSize);
   
   // Mobile preview + gallery pagination
   const previewItems = isMobile ? currentData.slice(0, itemsPerPageMobile) : currentData.slice(0, desktopPageSize);
   const galleryItems = currentData;
   const galleryPages = Math.ceil(galleryItems.length / galleryPageSize);
   const currentGalleryItems = galleryItems.slice(galleryPage * galleryPageSize, (galleryPage + 1) * galleryPageSize);
+  
+  // Reset pages when switching tabs or years
+  useEffect(() => {
+    setDesktopPage(0);
+    setGalleryPage(0);
+  }, [activeTab, selectedYear]);
 
   return (
     <div className="bg-background-dark text-slate-100 font-display min-h-screen grainy-bg">
@@ -116,7 +123,7 @@ const Media = () => {
       <div className="max-w-7xl mx-auto px-6 py-12">
         {/* Year Filter */}
         <div className="flex flex-wrap justify-center gap-4 sm:gap-8 mb-12 border-b border-white/10 pb-8">
-          {[2026, 2024, 2022, 2020, 2018, 2016, 2015].map((year) => (
+          {[2026, 2025, 2024, 2023, 2022, 2020, 2018, 2016, 2015].map((year) => (
             <button
               key={year}
               onClick={() => setSelectedYear(year)}
@@ -179,23 +186,46 @@ const Media = () => {
 
             {/* Desktop Full Gallery */}
             {!isMobile && (
-              <div className="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6">
-                {currentData.map((src: string, i: number) => (
-                  <div key={i} className="masonry-item relative group overflow-hidden rounded-xl border-2 border-white/5 hover:border-primary transition-all">
-                    <img 
-                      src={src} 
-                      alt={`Gallery ${i}`} 
-                      className="w-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500"
-                      loading="lazy"
-                      referrerPolicy="no-referrer"
-                    />
-                    <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
-                      <p className="text-primary font-bold uppercase tracking-widest">Edition {selectedYear}</p>
-                      <p className="text-xs text-slate-400">Lomé, Togo</p>
+              <>
+                <div className="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6 mb-12">
+                  {currentDesktopItems.map((src: string, i: number) => (
+                    <div key={i} className="masonry-item relative group overflow-hidden rounded-xl border-2 border-white/5 hover:border-primary transition-all">
+                      <img 
+                        src={src} 
+                        alt={`Gallery ${i}`} 
+                        className="w-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500"
+                        loading="lazy"
+                        referrerPolicy="no-referrer"
+                      />
+                      <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+                        <p className="text-primary font-bold uppercase tracking-widest">Edition {selectedYear}</p>
+                        <p className="text-xs text-slate-400">Lomé, Togo</p>
+                      </div>
                     </div>
+                  ))}
+                </div>
+                {desktopPages > 1 && (
+                  <div className="flex items-center justify-center gap-4 pb-12">
+                    <button
+                      onClick={() => setDesktopPage(p => Math.max(0, p - 1))}
+                      disabled={desktopPage === 0}
+                      className="flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg transition-all font-bold uppercase tracking-widest text-sm"
+                    >
+                      <ChevronLeft size={18} /> Précédent
+                    </button>
+                    <span className="text-white font-bold text-sm">
+                      Page {desktopPage + 1} / {desktopPages}
+                    </span>
+                    <button
+                      onClick={() => setDesktopPage(p => Math.min(desktopPages - 1, p + 1))}
+                      disabled={desktopPage === desktopPages - 1}
+                      className="flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg transition-all font-bold uppercase tracking-widest text-sm"
+                    >
+                      Suivant <ChevronRight size={18} />
+                    </button>
                   </div>
-                ))}
-              </div>
+                )}
+              </>
             )}
           </motion.div>
         )}
@@ -253,8 +283,8 @@ const Media = () => {
                   <h2 className="font-heading text-6xl text-white uppercase">REPLAYS <span className="text-accent-red">&</span> EXCLUSIFS {selectedYear}</h2>
                   <div className="h-1 flex-grow bg-gradient-to-r from-accent-red to-transparent"></div>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  {currentData.map((video: any, i: number) => (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+                  {currentDesktopItems.map((video: any, i: number) => (
                     <div key={i} className="group relative bg-white/5 rounded-xl overflow-hidden border border-white/10 hover:border-primary/50 transition-all">
                       <div className="relative aspect-video">
                         <img 
@@ -279,6 +309,27 @@ const Media = () => {
                     </div>
                   ))}
                 </div>
+                {desktopPages > 1 && (
+                  <div className="flex items-center justify-center gap-4">
+                    <button
+                      onClick={() => setDesktopPage(p => Math.max(0, p - 1))}
+                      disabled={desktopPage === 0}
+                      className="flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg transition-all font-bold uppercase tracking-widest text-sm"
+                    >
+                      <ChevronLeft size={18} /> Précédent
+                    </button>
+                    <span className="text-white font-bold text-sm">
+                      Page {desktopPage + 1} / {desktopPages}
+                    </span>
+                    <button
+                      onClick={() => setDesktopPage(p => Math.min(desktopPages - 1, p + 1))}
+                      disabled={desktopPage === desktopPages - 1}
+                      className="flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg transition-all font-bold uppercase tracking-widest text-sm"
+                    >
+                      Suivant <ChevronRight size={18} />
+                    </button>
+                  </div>
+                )}
               </>
             )}
           </motion.div>
