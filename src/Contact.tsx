@@ -233,7 +233,7 @@ const Contact = ({ onNavigateToFAQ }: ContactProps) => {
           >
             <h3 className="text-3xl font-heading uppercase italic tracking-tighter text-white">{contactData.sections.faqTitle}</h3>
             <div className="space-y-4">
-              {faqs.map((faq, idx) => (
+              {faqs.slice(0, 3).map((faq, idx) => (
                 <FAQItem 
                   key={faq.id}
                   question={faq.question} 

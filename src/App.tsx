@@ -7,6 +7,7 @@ import History from './History';
 import Tickets from './Tickets';
 import Program from './Program';
 import News from './News';
+import FAQ from './FAQ';
 import * as LucideIcons from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useThemeApply } from './hooks/useThemeApply';
@@ -398,7 +399,7 @@ export default function App() {
     window.scrollTo(0, 0);
   }, [currentPage]);
 
-  const navigateTo = (page: 'home' | 'competition' | 'dancers' | 'judges' | 'media' | 'history' | 'tickets' | 'program' | 'news' | 'artistic' | 'contact' | 'partners' | 'admin', anchor?: string, articleId?: string) => (e: React.MouseEvent) => {
+  const navigateTo = (page: 'home' | 'competition' | 'dancers' | 'judges' | 'media' | 'history' | 'tickets' | 'program' | 'news' | 'artistic' | 'contact' | 'partners' | 'admin' | 'faq', anchor?: string, articleId?: string) => (e: React.MouseEvent) => {
     e.preventDefault();
     window.scrollTo(0, 0);
     setCurrentPage(page);
@@ -536,6 +537,7 @@ export default function App() {
               <NavLink href="#media" active={currentPage === 'media'} onClick={navigateTo('media')}>Médias</NavLink>
               <NavLink href="#news" active={currentPage === 'news'} onClick={navigateTo('news')}>Blog</NavLink>
               <NavLink href="#vip" red onClick={navigateTo('home', '#vip')}>VIP</NavLink>
+              <NavLink href="#faq" active={currentPage === 'faq'} onClick={navigateTo('faq')}>FAQ</NavLink>
               <NavLink href="#contact" active={currentPage === 'contact'} onClick={navigateTo('contact')}>Contact</NavLink>
               <NavLink href="#admin" active={currentPage === 'admin'} red onClick={navigateTo('admin')}>Admin</NavLink>
             </div>
@@ -592,6 +594,8 @@ export default function App() {
               </div>
 
               <a href="#contact" onClick={navigateTo('contact')} className={`text-3xl font-heading uppercase ${currentPage === 'contact' ? 'text-primary' : 'text-white'}`}>Contact</a>
+              
+              <a href="#faq" onClick={navigateTo('faq')} className={`text-3xl font-heading uppercase ${currentPage === 'faq' ? 'text-primary' : 'text-white'}`}>FAQ</a>
               
               <a href="#admin" onClick={navigateTo('admin')} className={`text-3xl font-heading uppercase ${currentPage === 'admin' ? 'text-primary' : 'text-accent-red'}`}>Admin</a>
             </div>
@@ -1136,13 +1140,7 @@ export default function App() {
       onNavigateToTickets={() => setCurrentPage('tickets')} 
     />
   ) : currentPage === 'contact' ? (
-    <Contact onNavigateToFAQ={() => {
-      setCurrentPage('home');
-      setTimeout(() => {
-        const element = document.getElementById('faq');
-        if (element) element.scrollIntoView({ behavior: 'smooth' });
-      }, 100);
-    }} />
+    <Contact onNavigateToFAQ={() => setCurrentPage('faq')} />
   ) : currentPage === 'partners' ? (
     <Partners onContactClick={navigateTo('contact')} />
   ) : currentPage === 'admin' ? (
@@ -1150,6 +1148,8 @@ export default function App() {
       setIsAdminLoggedIn(false);
       setCurrentPage('home');
     }} />
+  ) : currentPage === 'faq' ? (
+    <FAQ onNavigateBack={() => setCurrentPage('home')} />
   ) : (
     <Media selectedYear={selectedMediaYear} onYearChange={setSelectedMediaYear} />
   )}
@@ -1209,7 +1209,7 @@ export default function App() {
               <h4 className="text-white font-heading text-xl uppercase tracking-widest mb-8 border-b border-primary/30 pb-2 inline-block">Contact</h4>
               <ul className="space-y-4">
                 <li><a href="#contact" onClick={navigateTo('contact')} className="text-slate-400 hover:text-primary transition-colors text-[10px] font-bold tracking-widest uppercase">Nous Contacter</a></li>
-                <li><a href="#" className="text-slate-400 hover:text-primary transition-colors text-[10px] font-bold tracking-widest uppercase">FAQ</a></li>
+                <li><a href="#faq" onClick={navigateTo('faq')} className="text-slate-400 hover:text-primary transition-colors text-[10px] font-bold tracking-widest uppercase">FAQ</a></li>
               </ul>
             </div>
           </div>

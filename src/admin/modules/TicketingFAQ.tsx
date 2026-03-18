@@ -8,6 +8,7 @@ export default function TicketingFAQ({ data, setData }: { data: CMSData, setData
   const [editingId, setEditingId] = useState<string | null>(null);
   const [ticketFormData, setTicketFormData] = useState<Partial<Ticket>>({});
   const [faqFormData, setFaqFormData] = useState<Partial<FAQItem>>({});
+  const [newFeature, setNewFeature] = useState('');
 
   const handleAddTicket = () => {
     const newTicket: Ticket = {
@@ -25,6 +26,7 @@ export default function TicketingFAQ({ data, setData }: { data: CMSData, setData
     setData(prev => ({ ...prev, ticketing: { ...prev.ticketing, tickets: [...prev.ticketing.tickets, newTicket] } }));
     setIsAdding(false);
     setTicketFormData({});
+    setNewFeature('');
   };
 
   const handleAddFAQ = () => {
@@ -36,6 +38,53 @@ export default function TicketingFAQ({ data, setData }: { data: CMSData, setData
     setData(prev => ({ ...prev, ticketing: { ...prev.ticketing, faqs: [...prev.ticketing.faqs, newFAQ] } }));
     setIsAdding(false);
     setFaqFormData({});
+  };
+
+  const handleAddFeature = () => {
+    if (newFeature.trim()) {
+      const currentFeatures = ticketFormData.features || [];
+      setTicketFormData({
+        ...ticketFormData,
+        features: [...currentFeatures, newFeature.trim()]
+      });
+      setNewFeature('');
+    }
+  };
+
+  const handleRemoveFeature = (index: number) => {
+    const currentFeatures = ticketFormData.features || [];
+    setTicketFormData({
+      ...ticketFormData,
+      features: currentFeatures.filter((_, i) => i !== index)
+    });
+  };
+
+  const handleEditTicket = (ticket: Ticket) => {
+    setActiveTab('tickets');
+    setEditingId(ticket.id);
+    setTicketFormData(ticket);
+    setIsAdding(true);
+  };
+
+  const handleUpdateTicket = () => {
+    if (!editingId) return;
+    
+    setData(prev => ({
+      ...prev,
+      ticketing: {
+        ...prev.ticketing,
+        tickets: prev.ticketing.tickets.map(t => 
+          t.id === editingId 
+            ? { ...ticketFormData, id: editingId } as Ticket
+            : t
+        )
+      }
+    }));
+    
+    setIsAdding(false);
+    setEditingId(null);
+    setTicketFormData({});
+    setNewFeature('');
   };
 
   return (
@@ -64,6 +113,9 @@ export default function TicketingFAQ({ data, setData }: { data: CMSData, setData
 
           {isAdding && (
             <div className="bg-[#111] border border-white/10 p-8 rounded-2xl space-y-6">
+              <h5 className="text-lg font-heading text-white mb-4">
+                {editingId ? 'Modifier le Pass' : 'Ajouter un Nouveau Pass'}
+              </h5>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Nom du Pass (ex: Pass VIP)</label>
@@ -75,7 +127,7 @@ export default function TicketingFAQ({ data, setData }: { data: CMSData, setData
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Prix (ex: 50 €)</label>
+                  <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Prix (ex: 5000 FCFA)</label>
                   <input 
                     type="text" 
                     value={ticketFormData.price || ''} 
@@ -93,9 +145,46 @@ export default function TicketingFAQ({ data, setData }: { data: CMSData, setData
                   />
                 </div>
               </div>
+              
+              {/* Features Section */}
+              <div className="space-y-4">
+                <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">DÉTAILS ET AVANTAGES</label>
+                <div className="flex gap-2">
+                  <input 
+                    type="text" 
+                    value={newFeature}
+                    onChange={e => setNewFeature(e.target.value)}
+                    placeholder="Ex: Accès à toutes les masterclasses"
+                    className="flex-1 bg-white/5 border border-white/10 rounded-xl p-3 focus:border-primary outline-none transition-all"
+                    onKeyPress={e => e.key === 'Enter' && (e.preventDefault(), handleAddFeature())}
+                  />
+                  <button 
+                    onClick={handleAddFeature}
+                    className="px-4 py-3 bg-primary text-background-dark rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-primary/90 transition-colors"
+                  >
+                    <Plus size={16} />
+                  </button>
+                </div>
+                
+                {/* Display current features */}
+                <div className="space-y-2">
+                  {(ticketFormData.features || []).map((feature, index) => (
+                    <div key={index} className="flex items-center gap-3 bg-white/5 border border-white/10 rounded-xl p-3">
+                      <div className="w-2 h-2 bg-primary rounded-full flex-shrink-0"></div>
+                      <span className="text-sm text-white flex-1">{feature}</span>
+                      <button 
+                        onClick={() => handleRemoveFeature(index)}
+                        className="text-slate-500 hover:text-accent-red transition-colors"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
               <div className="flex justify-end gap-4">
-                <button onClick={() => setIsAdding(false)} className="px-6 py-2 text-xs font-bold uppercase tracking-widest text-slate-500">Annuler</button>
-                <button onClick={handleAddTicket} className="px-6 py-2 bg-primary text-background-dark rounded-xl font-bold text-xs uppercase tracking-widest">Enregistrer</button>
+                <button onClick={() => { setIsAdding(false); setEditingId(null); setTicketFormData({}); setNewFeature(''); }} className="px-6 py-2 text-xs font-bold uppercase tracking-widest text-slate-500">Annuler</button>
+                <button onClick={editingId ? handleUpdateTicket : handleAddTicket} className="px-6 py-2 bg-primary text-background-dark rounded-xl font-bold text-xs uppercase tracking-widest">Enregistrer</button>
               </div>
             </div>
           )}
@@ -108,12 +197,20 @@ export default function TicketingFAQ({ data, setData }: { data: CMSData, setData
                     <h5 className="text-xl font-heading text-white">{ticket.name}</h5>
                     <p className="text-primary font-mono text-lg">{ticket.price}</p>
                   </div>
-                  <button 
-                    onClick={() => setData(prev => ({ ...prev, ticketing: { ...prev.ticketing, tickets: prev.ticketing.tickets.filter(t => t.id !== ticket.id) } }))}
-                    className="p-2 text-slate-500 hover:text-accent-red transition-colors"
-                  >
-                    <Trash2 size={18} />
-                  </button>
+                  <div className="flex gap-2">
+                    <button 
+                      onClick={() => handleEditTicket(ticket)}
+                      className="p-2 text-slate-500 hover:text-primary transition-colors"
+                    >
+                      <Edit size={18} />
+                    </button>
+                    <button 
+                      onClick={() => setData(prev => ({ ...prev, ticketing: { ...prev.ticketing, tickets: prev.ticketing.tickets.filter(t => t.id !== ticket.id) } }))}
+                      className="p-2 text-slate-500 hover:text-accent-red transition-colors"
+                    >
+                      <Trash2 size={18} />
+                    </button>
+                  </div>
                 </div>
                 <div className="space-y-2">
                   {ticket.features.map((feature, i) => (
@@ -158,8 +255,8 @@ export default function TicketingFAQ({ data, setData }: { data: CMSData, setData
                 </div>
               </div>
               <div className="flex justify-end gap-4">
-                <button onClick={() => setIsAdding(false)} className="px-6 py-2 text-xs font-bold uppercase tracking-widest text-slate-500">Annuler</button>
-                <button onClick={handleAddFAQ} className="px-6 py-2 bg-primary text-background-dark rounded-xl font-bold text-xs uppercase tracking-widest">Enregistrer</button>
+                <button onClick={() => { setIsAdding(false); setEditingId(null); setTicketFormData({}); setNewFeature(''); }} className="px-6 py-2 text-xs font-bold uppercase tracking-widest text-slate-500">Annuler</button>
+                <button onClick={editingId ? handleUpdateTicket : handleAddTicket} className="px-6 py-2 bg-primary text-background-dark rounded-xl font-bold text-xs uppercase tracking-widest">Enregistrer</button>
               </div>
             </div>
           )}
