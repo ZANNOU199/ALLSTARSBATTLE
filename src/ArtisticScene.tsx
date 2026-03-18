@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { cmsService } from './services/cmsService';
 import { Company } from './types';
@@ -8,7 +8,9 @@ import {
   Ticket, 
   ChevronDown,
   TrendingUp,
-  X
+  X,
+  ArrowLeft,
+  Eye
 } from 'lucide-react';
 
 interface ArtisticSceneProps {
@@ -20,16 +22,179 @@ const ArtisticScene = ({ onNavigateToProgram, onNavigateToTickets }: ArtisticSce
   const [showSynopsis, setShowSynopsis] = useState(false);
   const [companies, setCompanies] = useState<Company[]>([]);
   const [selectedCompany, setSelectedCompany] = useState<Company | null>(null);
+  const [showAllGallery, setShowAllGallery] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const prevShowAllGalleryRef = useRef(false);
+  const prevSelectedCompanyRef = useRef<Company | null>(null);
 
   useEffect(() => {
     const data = cmsService.getData();
     setCompanies(data.companies);
   }, []);
 
+  // Scroll to top when opening gallery
+  useEffect(() => {
+    if (showAllGallery) {
+      window.scrollTo(0, 0);
+    }
+  }, [showAllGallery]);
+
+  // Scroll to top when viewing company details
+  useEffect(() => {
+    if (selectedCompany) {
+      window.scrollTo(0, 0);
+    }
+  }, [selectedCompany]);
+
+  // Scroll to companies section when returning from gallery or detail
+  useEffect(() => {
+    // Returning from gallery
+    if (prevShowAllGalleryRef.current && !showAllGallery && !selectedCompany) {
+      setTimeout(() => {
+        const companiesSection = document.getElementById('companies-section');
+        if (companiesSection) {
+          companiesSection.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 100);
+    }
+    // Returning from detail view
+    else if (prevSelectedCompanyRef.current && !selectedCompany && !showAllGallery) {
+      setTimeout(() => {
+        const companiesSection = document.getElementById('companies-section');
+        if (companiesSection) {
+          companiesSection.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 100);
+    }
+
+    prevShowAllGalleryRef.current = showAllGallery;
+    prevSelectedCompanyRef.current = selectedCompany;
+  }, [showAllGallery, selectedCompany]);
+
   return (
     <div className="bg-background-dark text-slate-100 font-sans selection:bg-primary selection:text-background-dark">
       <AnimatePresence mode="wait">
-        {!selectedCompany ? (
+        {showAllGallery ? (
+          // Gallery View with Pagination
+          <motion.div
+            key="gallery"
+            id="gallery-section"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="min-h-screen bg-background-dark pt-32 pb-20"
+          >
+            <div className="max-w-7xl mx-auto px-6">
+              <button 
+                onClick={() => {
+                  setShowAllGallery(false);
+                  setCurrentPage(1);
+                }}
+                className="flex items-center gap-2 text-primary hover:text-white transition-colors mb-12 uppercase font-black tracking-widest text-xs"
+              >
+                <ArrowLeft className="w-4 h-4" /> Retour à l'aperçu
+              </button>
+
+              <div className="mb-16">
+                <h2 className="text-accent-pink font-display text-xl md:text-2xl tracking-[0.3em] mb-4 uppercase">GALERIE COMPLÈTE</h2>
+                <h3 className="text-4xl sm:text-5xl md:text-7xl font-heading text-white uppercase leading-none">TOUTES LES <span className="text-primary italic">COMPAGNIES</span></h3>
+              </div>
+
+              {/* Calculate items per page based on screen size */}
+              {companies.length > 0 && (() => {
+                const itemsPerPage = typeof window !== 'undefined' 
+                  ? window.innerWidth >= 1024 ? 8 : 4 
+                  : 4;
+                const totalPages = Math.ceil(companies.length / itemsPerPage);
+                const startIdx = (currentPage - 1) * itemsPerPage;
+                const endIdx = startIdx + itemsPerPage;
+                const paginatedCompanies = companies.slice(startIdx, endIdx);
+
+                return (
+                  <>
+                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
+                      {paginatedCompanies.map((company, index) => (
+                        <motion.div 
+                          key={index}
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: index * 0.05 }}
+                          onClick={() => {
+                            setSelectedCompany(company);
+                            setShowAllGallery(false);
+                          }}
+                          className="group cursor-pointer"
+                        >
+                          <div className="relative aspect-[3/4] overflow-hidden bg-surface-dark mb-4 rounded-sm border border-white/5">
+                            <div className="absolute inset-0 z-20 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center justify-center">
+                              <div className="bg-background-dark/80 p-4 rounded-full transform scale-50 group-hover:scale-100 transition-transform duration-500">
+                                <Eye className="text-primary w-6 h-6" />
+                              </div>
+                            </div>
+                            <img 
+                              className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-110 transition-all duration-700 ease-out" 
+                              src={company.mainImage} 
+                              alt={company.name}
+                              referrerPolicy="no-referrer"
+                            />
+                            <div className="absolute bottom-2 left-2 z-20">
+                              <span className="bg-primary text-background-dark text-[8px] font-black px-2 py-0.5 uppercase tracking-widest">
+                                {company.name.split(' ')[0]}
+                              </span>
+                            </div>
+                          </div>
+                          <h4 className="text-sm md:text-lg font-heading text-white group-hover:text-primary transition-colors tracking-tight uppercase leading-tight line-clamp-2">
+                            {company.name}
+                          </h4>
+                          <p className="text-slate-500 text-[9px] uppercase tracking-widest font-bold mt-1">
+                            {company.choreographer}
+                          </p>
+                        </motion.div>
+                      ))}
+                    </div>
+
+                    {/* Pagination Controls */}
+                    {totalPages > 1 && (
+                      <div className="mt-16 flex items-center justify-center gap-4">
+                        <button 
+                          onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                          disabled={currentPage === 1}
+                          className="px-6 py-3 border border-white/10 rounded-lg font-bold text-sm hover:bg-white/5 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        >
+                          ← PRÉCÉDENT
+                        </button>
+                        
+                        <div className="flex items-center gap-2">
+                          {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                            <button
+                              key={page}
+                              onClick={() => setCurrentPage(page)}
+                              className={`w-10 h-10 rounded-lg font-bold text-xs transition-colors ${
+                                currentPage === page 
+                                  ? 'bg-primary text-background-dark' 
+                                  : 'border border-white/10 text-white hover:bg-white/5'
+                              }`}
+                            >
+                              {page}
+                            </button>
+                          ))}
+                        </div>
+
+                        <button 
+                          onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                          disabled={currentPage === totalPages}
+                          className="px-6 py-3 border border-white/10 rounded-lg font-bold text-sm hover:bg-white/5 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        >
+                          SUIVANT →
+                        </button>
+                      </div>
+                    )}
+                  </>
+                );
+              })()}
+            </div>
+          </motion.div>
+        ) : !selectedCompany ? (
           <motion.div
             key="list"
             initial={{ opacity: 0 }}
@@ -108,7 +273,7 @@ const ArtisticScene = ({ onNavigateToProgram, onNavigateToTickets }: ArtisticSce
             </section>
 
             {/* Companies Section */}
-            <section className="py-20 md:py-32 px-6 md:px-16 bg-background-dark grainy-bg">
+            <section id="companies-section" className="py-20 md:py-32 px-6 md:px-16 bg-background-dark grainy-bg">
               <div className="max-w-7xl mx-auto">
                 <div className="flex flex-col lg:flex-row lg:items-end justify-between mb-16 md:mb-24 gap-8">
                   <div className="max-w-2xl">
@@ -120,8 +285,8 @@ const ArtisticScene = ({ onNavigateToProgram, onNavigateToTickets }: ArtisticSce
                   </p>
                 </div>
                 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12">
-                  {companies.map((company, index) => (
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-12">
+                  {companies.slice(0, 4).map((company, index) => (
                     <motion.div 
                       key={index}
                       initial={{ opacity: 0, y: 30 }}
@@ -132,20 +297,24 @@ const ArtisticScene = ({ onNavigateToProgram, onNavigateToTickets }: ArtisticSce
                       className="group cursor-pointer"
                     >
                       <div className="relative aspect-[3/4] overflow-hidden bg-surface-dark mb-8 rounded-sm border border-white/5">
-                        <div className="absolute inset-0 bg-primary/5 group-hover:bg-transparent z-10 transition-colors duration-500"></div>
+                        <div className="absolute inset-0 z-20 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center justify-center">
+                          <div className="bg-background-dark/80 p-4 rounded-full transform scale-50 group-hover:scale-100 transition-transform duration-500">
+                            <Eye className="text-primary w-6 h-6" />
+                          </div>
+                        </div>
                         <img 
                           className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-110 transition-all duration-700 ease-out" 
-                          src={company.image} 
+                          src={company.mainImage} 
                           alt={company.name}
                           referrerPolicy="no-referrer"
                         />
                         <div className="absolute bottom-4 left-4 z-20">
                           <span className="bg-primary text-background-dark text-[9px] font-black px-3 py-1 uppercase tracking-widest shadow-xl">
-                            {company.origin}
+                            {company.name}
                           </span>
                         </div>
                       </div>
-                      <h4 className="text-2xl md:text-3xl font-heading text-white group-hover:text-primary transition-colors tracking-wide uppercase mb-2">
+                      <h4 className="text-2xl md:text-3xl font-heading text-white group-hover:text-primary transition-colors tracking-wide uppercase mb-2 line-clamp-2">
                         {company.name}
                       </h4>
                       <p className="text-slate-500 text-[10px] uppercase tracking-widest font-bold mb-3 italic">
@@ -153,10 +322,19 @@ const ArtisticScene = ({ onNavigateToProgram, onNavigateToTickets }: ArtisticSce
                       </p>
                       <div className="h-px w-12 bg-accent-pink/30 mb-4 group-hover:w-full transition-all duration-500"></div>
                       <p className="text-accent-pink text-xs font-black uppercase tracking-[0.2em]">
-                        Pièce: '{company.piece}'
+                        Pièce: '{company.pieceTitle}'
                       </p>
                     </motion.div>
                   ))}
+                </div>
+
+                <div className="mt-16 md:mt-24 flex justify-center">
+                  <button 
+                    onClick={() => setShowAllGallery(true)}
+                    className="btn-luxury-primary shimmer-effect"
+                  >
+                    VOIR TOUTES LES COMPAGNIES
+                  </button>
                 </div>
               </div>
             </section>
@@ -242,6 +420,7 @@ const ArtisticScene = ({ onNavigateToProgram, onNavigateToTickets }: ArtisticSce
         ) : (
           <motion.div
             key="detail"
+            id="company-detail-section"
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 50 }}
@@ -251,12 +430,9 @@ const ArtisticScene = ({ onNavigateToProgram, onNavigateToTickets }: ArtisticSce
               {/* Back Button */}
               <button 
                 onClick={() => setSelectedCompany(null)}
-                className="flex items-center gap-4 text-slate-500 hover:text-primary transition-colors mb-12 group"
+                className="flex items-center gap-2 text-primary hover:text-white transition-colors mb-12 uppercase font-black tracking-widest text-xs"
               >
-                <div className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center group-hover:border-primary transition-colors">
-                  <ArrowRight className="w-5 h-5 rotate-180" />
-                </div>
-                <span className="text-[10px] font-black uppercase tracking-[0.3em]">Retour à la liste</span>
+                <ArrowLeft className="w-4 h-4" /> Retour aux compagnies
               </button>
 
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
@@ -268,14 +444,14 @@ const ArtisticScene = ({ onNavigateToProgram, onNavigateToTickets }: ArtisticSce
                     className="relative aspect-[16/10] overflow-hidden rounded-sm border border-white/5"
                   >
                     <img 
-                      src={selectedCompany.image} 
+                      src={selectedCompany.mainImage} 
                       alt={selectedCompany.name}
                       className="w-full h-full object-cover"
                       referrerPolicy="no-referrer"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-background-dark/60 to-transparent"></div>
                     <div className="absolute bottom-6 left-6">
-                      <span className="bg-primary text-background-dark px-4 py-1 text-[10px] font-black uppercase tracking-widest">{selectedCompany.origin}</span>
+                      <span className="bg-primary text-background-dark px-4 py-1 text-[10px] font-black uppercase tracking-widest">{selectedCompany.choreographer}</span>
                     </div>
                   </motion.div>
 
@@ -305,7 +481,7 @@ const ArtisticScene = ({ onNavigateToProgram, onNavigateToTickets }: ArtisticSce
                   <div className="space-y-8">
                     <div className="space-y-2">
                       <p className="text-slate-500 text-[10px] uppercase font-black tracking-widest">La Pièce</p>
-                      <p className="text-white font-heading text-3xl uppercase text-primary italic">"{selectedCompany.piece}"</p>
+                      <p className="text-white font-heading text-3xl uppercase text-primary italic">"{ selectedCompany.pieceTitle}"</p>
                     </div>
 
                     <div className="space-y-4">
@@ -323,14 +499,16 @@ const ArtisticScene = ({ onNavigateToProgram, onNavigateToTickets }: ArtisticSce
                     </div>
 
                     <div className="space-y-6">
-                      <p className="text-slate-500 text-[10px] uppercase font-black tracking-widest">Représentations ASBI 2026</p>
-                      <div className="flex flex-col gap-3">
-                        {selectedCompany.performances.map((perf, i) => (
-                          <div key={i} className="flex items-center gap-4 text-white">
-                            <div className="w-2 h-2 rounded-full bg-primary"></div>
-                            <span className="font-heading text-xl uppercase">{perf}</span>
-                          </div>
-                        ))}
+                      <p className="text-slate-500 text-[10px] uppercase font-black tracking-widest">Date de Représentation</p>
+                      <div className="flex gap-6">
+                        <div className="flex flex-col">
+                          <span className="text-slate-500 text-[10px] uppercase font-black tracking-widest mb-2">Date</span>
+                          <span className="font-heading text-xl text-primary uppercase">{selectedCompany.performanceDate}</span>
+                        </div>
+                        <div className="flex flex-col">
+                          <span className="text-slate-500 text-[10px] uppercase font-black tracking-widest mb-2">Heure</span>
+                          <span className="font-heading text-xl text-primary uppercase">{selectedCompany.performanceTime}</span>
+                        </div>
                       </div>
                     </div>
 

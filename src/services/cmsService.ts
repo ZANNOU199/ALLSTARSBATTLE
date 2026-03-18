@@ -314,6 +314,15 @@ const initialData: CMSData = {
       { label: 'Juges Internationaux', value: '8' }
     ],
     eventDate: '2026-03-20T00:00:00'
+  },
+  theme: {
+    primary: '#d35f17',
+    accent: '#f4d125',
+    accentRed: '#dc2626',
+    background: '#0a0807',
+    surface: '#1a1a1a',
+    text: '#ffffff',
+    mutedText: '#94a3b8'
   }
 };
 
@@ -343,6 +352,10 @@ export const cmsService = {
               ...initialData.partners.cta,
               ...parsed.partners?.cta
             }
+          },
+          theme: {
+            ...initialData.theme,
+            ...parsed.theme
           }
         };
         
@@ -362,6 +375,8 @@ export const cmsService = {
 
   saveData: (data: CMSData) => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    // Emit custom event for real-time updates (same-tab)
+    window.dispatchEvent(new CustomEvent('cmsDataChanged', { detail: data }));
   },
 
   resetData: () => {

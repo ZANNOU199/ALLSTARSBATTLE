@@ -22,10 +22,11 @@ const Dancers = ({ onViewPerformances }: DancersProps) => {
   const [showAll, setShowAll] = useState(false);
   const [selectedDancer, setSelectedDancer] = useState<any>(null);
   const [dancersData, setDancersData] = useState<any[]>([]);
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     const data = cmsService.getData();
-    const dancers = data.participants.filter(p => p.category === 'dancer').map(p => ({
+    const dancers = data.participants.filter(p => ['b-boy', 'b-girl', 'crew'].includes(p.category)).map(p => ({
       id: p.id,
       name: p.name,
       origin: p.country,
@@ -33,7 +34,7 @@ const Dancers = ({ onViewPerformances }: DancersProps) => {
       style: p.specialty,
       status: 'Qualifier', // Default status
       image: p.photo,
-      category: 'B-Boy', // Default category for display
+      category: p.category === 'b-boy' ? 'B-Boy' : p.category === 'b-girl' ? 'B-Girl' : 'Crew', // Map to display names
       bio: p.bio
     }));
     setDancersData(dancers);
@@ -43,9 +44,12 @@ const Dancers = ({ onViewPerformances }: DancersProps) => {
     window.scrollTo(0, 0);
   }, [selectedDancer]);
 
-  const filteredDancers = filter === 'All' 
-    ? dancersData 
-    : dancersData.filter(d => d.category === filter);
+  const filteredDancers = dancersData.filter(d => {
+    const matchesFilter = filter === 'All' || d.category === filter;
+    const matchesSearch = d.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                         d.origin.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesFilter && matchesSearch;
+  });
 
   // Initial display counts to fill exactly 2 lines:
   // Mobile (1 col): 2
@@ -182,31 +186,35 @@ const Dancers = ({ onViewPerformances }: DancersProps) => {
       {/* Filter Section */}
       <section className="max-w-7xl mx-auto px-6 -mt-20 relative z-20">
         <div className="bg-surface-dark/80 backdrop-blur-xl border border-white/10 p-6 md:p-8 rounded-xl shadow-2xl">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-            <div className="flex items-center gap-4 overflow-x-auto no-scrollbar pb-2 md:pb-0 w-full md:w-auto">
-              <span className="text-primary/50 text-[10px] font-black uppercase tracking-widest whitespace-nowrap">Filtrer par :</span>
-              {['All', 'B-Boy', 'B-Girl', 'Crew'].map((cat) => (
-                <button
-                  key={cat}
-                  onClick={() => {
-                    setFilter(cat);
-                    setShowAll(false);
-                  }}
-                  className={`px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap ${
-                    filter === cat 
-                      ? 'bg-primary text-background-dark shadow-[0_0_20px_rgba(244,209,37,0.3)]' 
-                      : 'bg-white/5 text-white hover:bg-white/10 border border-white/10'
-                  }`}
-                >
-                  {cat}
-                </button>
-              ))}
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+            <div className="w-full md:w-auto">
+              <span className="text-primary/50 text-[10px] font-black uppercase tracking-widest whitespace-nowrap block mb-3 md:mb-0">Filtrer par :</span>
+              <div className="grid grid-cols-2 md:flex md:items-center gap-2 md:gap-4">
+                {['All', 'B-Boy', 'B-Girl', 'Crew'].map((cat) => (
+                  <button
+                    key={cat}
+                    onClick={() => {
+                      setFilter(cat);
+                      setShowAll(false);
+                    }}
+                    className={`px-4 md:px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap text-center ${
+                      filter === cat 
+                        ? 'bg-primary text-background-dark shadow-[0_0_20px_rgba(244,209,37,0.3)]' 
+                        : 'bg-white/5 text-white hover:bg-white/10 border border-white/10'
+                    }`}
+                  >
+                    {cat}
+                  </button>
+                ))}
+              </div>
             </div>
             <div className="relative w-full md:w-64">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
               <input 
                 type="text" 
                 placeholder="RECHERCHER UN DANSEUR..." 
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full bg-background-dark/50 border border-white/10 rounded-full py-3 pl-12 pr-6 text-[10px] uppercase tracking-widest text-white focus:border-primary outline-none transition-all"
               />
             </div>

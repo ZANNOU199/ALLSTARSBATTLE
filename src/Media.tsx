@@ -4,9 +4,14 @@ import { Play, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { cmsService } from './services/cmsService';
 import { MediaItem } from './types';
 
-const Media = () => {
+interface MediaProps {
+  selectedYear?: number;
+  onYearChange?: (year: number) => void;
+}
+
+const Media = ({ selectedYear: initialYear = 2026, onYearChange }: MediaProps) => {
   const [activeTab, setActiveTab] = useState('photos');
-  const [selectedYear, setSelectedYear] = useState(2026);
+  const [selectedYear, setSelectedYear] = useState(initialYear);
   const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
   const [showGalleryModal, setShowGalleryModal] = useState(false);
   const [galleryPage, setGalleryPage] = useState(0);
@@ -18,6 +23,10 @@ const Media = () => {
     const data = cmsService.getData();
     setMediaItems(data.media || []);
   }, []);
+
+  useEffect(() => {
+    setSelectedYear(initialYear);
+  }, [initialYear]);
 
   useEffect(() => {
     const handleResize = () => {

@@ -4,9 +4,12 @@ import { cmsService } from './services/cmsService';
 import { 
   ChevronDown, 
   ArrowRight,
+  Arrow,
+  ArrowLeft,
   Globe,
   PlayCircle,
-  Share2
+  Share2,
+  Eye
 } from 'lucide-react';
 
 const Judges = () => {
@@ -14,11 +17,14 @@ const Judges = () => {
   const [judgesData, setJudgesData] = useState<any[]>([]);
   const [staffData, setStaffData] = useState<any[]>([]);
   const [djsMcsData, setDjsMcsData] = useState<any[]>([]);
+  const [selectedJudge, setSelectedJudge] = useState<any>(null);
+  const [selectedArtist, setSelectedArtist] = useState<any>(null);
 
   useEffect(() => {
     const data = cmsService.getData();
     
     setJudgesData(data.participants.filter(p => p.category === 'judge').map(p => ({
+      id: p.id,
       name: p.name,
       country: p.country,
       countryCode: p.countryCode,
@@ -27,10 +33,13 @@ const Judges = () => {
       image: p.photo
     })));
 
-    setDjsMcsData(data.participants.filter(p => p.category === 'dj' || p.category === 'mc').map(p => ({
+    setDjsMcsData(data.participants.filter(p => (p.category === 'dj' || p.category === 'mc')).map(p => ({
+      id: p.id,
       name: p.name,
       origin: p.country,
       countryCode: p.countryCode,
+      role: p.category === 'dj' ? 'DJ' : 'MC',
+      desc: p.bio,
       img: p.photo
     })));
 
@@ -51,9 +60,133 @@ const Judges = () => {
     ]);
   }, []);
 
+  React.useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [selectedJudge, selectedArtist]);
+
   const toggleStaff = (name: string) => {
     setExpandedStaff(expandedStaff === name ? null : name);
   };
+
+  // Judge Detail View
+  if (selectedJudge) {
+    return (
+      <div className="bg-background-dark min-h-screen pt-32 pb-20">
+        <div className="max-w-7xl mx-auto px-6">
+          <button 
+            onClick={() => setSelectedJudge(null)}
+            className="flex items-center gap-2 text-primary hover:text-white transition-colors mb-12 uppercase font-black tracking-widest text-xs"
+          >
+            <ArrowLeft className="w-4 h-4" /> Retour à la liste des juges
+          </button>
+
+          <div className="grid lg:grid-cols-2 gap-16 items-start">
+            <motion.div 
+              initial={{ opacity: 0, x: -50 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="relative aspect-[3/4] rounded-2xl overflow-hidden border border-white/10 shadow-2xl"
+            >
+              <img 
+                src={selectedJudge.image} 
+                alt={selectedJudge.name} 
+                className="w-full h-full object-cover"
+                referrerPolicy="no-referrer"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-background-dark via-transparent to-transparent opacity-60"></div>
+              <div className="absolute bottom-8 left-8">
+                <div className="flex items-center gap-3 mb-2">
+                  <img 
+                    src={`https://flagcdn.com/w40/${selectedJudge.countryCode}.png`}
+                    alt={selectedJudge.country}
+                    className="w-6 h-auto rounded-sm"
+                  />
+                  <span className="text-white font-bold uppercase tracking-widest text-sm">{selectedJudge.country}</span>
+                </div>
+                <h1 className="text-6xl md:text-8xl font-heading text-white uppercase leading-none">{selectedJudge.name}</h1>
+              </div>
+            </motion.div>
+
+            <motion.div 
+              initial={{ opacity: 0, x: 50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.2 }}
+              className="space-y-10"
+            >
+              <div>
+                <h3 className="text-primary font-black uppercase tracking-[0.3em] text-xs mb-6 border-b border-primary/20 pb-2 inline-block">Biographie</h3>
+                <p className="text-slate-300 text-lg leading-relaxed font-light">
+                  {selectedJudge.desc}
+                </p>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Artist (DJ/MC) Detail View
+  if (selectedArtist) {
+    return (
+      <div className="bg-background-dark min-h-screen pt-32 pb-20">
+        <div className="max-w-7xl mx-auto px-6">
+          <button 
+            onClick={() => setSelectedArtist(null)}
+            className="flex items-center gap-2 text-primary hover:text-white transition-colors mb-12 uppercase font-black tracking-widest text-xs"
+          >
+            <ArrowLeft className="w-4 h-4" /> Retour à la liste des artistes
+          </button>
+
+          <div className="grid lg:grid-cols-2 gap-16 items-start">
+            <motion.div 
+              initial={{ opacity: 0, x: -50 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="relative aspect-[3/4] rounded-2xl overflow-hidden border border-white/10 shadow-2xl"
+            >
+              <img 
+                src={selectedArtist.img} 
+                alt={selectedArtist.name} 
+                className="w-full h-full object-cover"
+                referrerPolicy="no-referrer"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-background-dark via-transparent to-transparent opacity-60"></div>
+              <div className="absolute bottom-8 left-8">
+                <div className="flex items-center gap-3 mb-2">
+                  <img 
+                    src={`https://flagcdn.com/w40/${selectedArtist.countryCode}.png`}
+                    alt={selectedArtist.origin}
+                    className="w-6 h-auto rounded-sm"
+                  />
+                  <span className="text-white font-bold uppercase tracking-widest text-sm">{selectedArtist.origin}</span>
+                </div>
+                <h1 className="text-6xl md:text-8xl font-heading text-white uppercase leading-none">{selectedArtist.name}</h1>
+              </div>
+            </motion.div>
+
+            <motion.div 
+              initial={{ opacity: 0, x: 50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.2 }}
+              className="space-y-10"
+            >
+              <div className="bg-surface-dark border border-white/5 p-6 rounded-xl">
+                <span className="text-slate-500 text-[10px] font-black uppercase tracking-widest block mb-2">Rôle</span>
+                <span className="text-white font-bold uppercase tracking-widest text-2xl text-primary">{selectedArtist.role}</span>
+              </div>
+
+              <div>
+                <h3 className="text-primary font-black uppercase tracking-[0.3em] text-xs mb-6 border-b border-primary/20 pb-2 inline-block">Biographie</h3>
+                <p className="text-slate-300 text-lg leading-relaxed font-light">
+                  {selectedArtist.desc}
+                </p>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="bg-background-dark text-slate-100 font-display antialiased">
       {/* Hero Section */}
@@ -100,14 +233,22 @@ const Judges = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
           {judgesData.map((judge, index) => (
             <motion.div 
-              key={judge.name}
+              key={judge.id || judge.name}
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
               viewport={{ once: true }}
-              className="group bg-surface-dark p-2 border border-white/10 relative overflow-hidden hover:border-primary/50 transition-all duration-500"
+              onClick={() => setSelectedJudge(judge)}
+              className="group bg-surface-dark p-2 border border-white/10 relative overflow-hidden hover:border-primary/50 transition-all duration-500 cursor-pointer"
             >
               <div className="aspect-[3/4] overflow-hidden mb-4 relative">
+                {/* Hover Overlay */}
+                <div className="absolute inset-0 z-20 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center justify-center">
+                  <div className="bg-background-dark/80 p-4 rounded-full transform scale-50 group-hover:scale-100 transition-transform duration-500">
+                    <Eye className="text-primary w-6 h-6" />
+                  </div>
+                </div>
+
                 <img 
                   src={judge.image} 
                   alt={judge.name} 
@@ -127,7 +268,7 @@ const Judges = () => {
               <div className="px-2 pb-4">
                 <h3 className="font-heading text-3xl text-white group-hover:text-primary transition-colors leading-none mb-1">{judge.name}</h3>
                 <p className="text-accent-red text-[10px] font-black tracking-widest uppercase mb-3">{judge.role}</p>
-                <p className="text-slate-400 text-xs font-light leading-relaxed">
+                <p className="text-slate-400 text-xs font-light leading-relaxed line-clamp-2">
                   {judge.desc}
                 </p>
               </div>
@@ -146,12 +287,26 @@ const Judges = () => {
           
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {djsMcsData.map((artist) => (
-              <div key={artist.name} className="flex gap-4 p-4 border border-white/5 bg-background-dark group hover:border-primary/40 transition-all duration-300">
-                <div className="size-20 bg-primary/10 overflow-hidden flex-shrink-0">
-                  <img src={artist.img} alt={artist.name} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all" referrerPolicy="no-referrer" />
+              <div 
+                key={artist.id || artist.name} 
+                onClick={() => setSelectedArtist(artist)}
+                className="flex gap-4 p-4 border border-white/5 bg-background-dark group hover:border-primary/40 transition-all duration-300 cursor-pointer"
+              >
+                <div className="size-20 bg-primary/10 overflow-hidden flex-shrink-0 relative">
+                  {/* Hover Overlay */}
+                  <div className="absolute inset-0 z-20 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center justify-center">
+                    <Eye className="text-primary w-5 h-5" />
+                  </div>
+
+                  <img 
+                    src={artist.img} 
+                    alt={artist.name} 
+                    className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all" 
+                    referrerPolicy="no-referrer" 
+                  />
                 </div>
                 <div className="flex flex-col justify-center">
-                  <h4 className="font-heading text-2xl text-white leading-none mb-1">{artist.name}</h4>
+                  <h4 className="font-heading text-2xl text-white leading-none mb-1 group-hover:text-primary transition-colors">{artist.name}</h4>
                   <div className="flex items-center gap-2">
                     <img 
                       src={`https://flagcdn.com/w40/${artist.countryCode}.png`}

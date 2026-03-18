@@ -43,7 +43,7 @@ export default function Participants() {
       <header className="flex justify-between items-end">
         <div>
           <h2 className="text-3xl font-black tracking-tighter">Participants & Jury</h2>
-          <p className="text-zinc-500 mt-1">Gérez les danseurs, juges, DJs et MCs de l'événement.</p>
+          <p className="text-zinc-500 mt-1">Gérez les B-Boys, B-Girls, Crews, juges, DJs et MCs de l'événement.</p>
         </div>
         <button 
           onClick={() => { setIsEditing(true); setCurrent({ socials: {} }); }}
@@ -76,10 +76,12 @@ export default function Participants() {
                 className="w-full bg-zinc-900 border border-white/10 rounded-xl px-4 py-3 focus:border-primary outline-none transition-colors"
               >
                 <option value="">Sélectionner une catégorie</option>
-                <option value="Dancer">Danseur (All Star)</option>
-                <option value="Judge">Juge</option>
-                <option value="DJ">DJ</option>
-                <option value="MC">MC</option>
+                <option value="b-boy">B-Boy</option>
+                <option value="b-girl">B-Girl</option>
+                <option value="crew">Crew</option>
+                <option value="judge">Juge</option>
+                <option value="dj">DJ</option>
+                <option value="mc">MC</option>
               </select>
             </div>
             <div className="space-y-2">

@@ -26,7 +26,7 @@ export interface Participant {
     twitter?: string;
     youtube?: string;
   };
-  category: 'dancer' | 'judge' | 'dj' | 'mc';
+  category: 'b-boy' | 'b-girl' | 'crew' | 'judge' | 'dj' | 'mc';
 }
 
 export interface Activity {
@@ -106,6 +106,8 @@ export interface Legend {
   name: string;
   bio: string;
   photo: string;
+  title?: string; // e.g., "B-Boy Champion 2023"
+  category?: 'b-boy' | 'b-girl' | 'crew';
 }
 
 export interface Partner {
@@ -182,6 +184,16 @@ export interface GlobalConfig {
   eventDate: string;
 }
 
+export interface ThemeConfig {
+  primary: string;
+  accent: string;
+  accentRed: string;
+  background: string;
+  surface: string;
+  text: string;
+  mutedText: string;
+}
+
 export interface MediaItem {
   id: string;
   year: number;
@@ -238,4 +250,7 @@ export interface CMSData {
   };
   media: MediaItem[];
   globalConfig: GlobalConfig;
+  theme: ThemeConfig;
 }
+
+export type CMSState = CMSData;

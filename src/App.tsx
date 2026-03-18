@@ -9,6 +9,7 @@ import Program from './Program';
 import News from './News';
 import * as LucideIcons from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { useThemeApply } from './hooks/useThemeApply';
 
 // Extraire les icônes nécessaires
 const { Menu, X, ChevronsDown, ChevronDown, Verified, Star, Instagram, Facebook, Twitter, Youtube, Calendar, MapPin, ArrowRight, GlassWater, Megaphone, Globe, Mail, Trophy, User } = LucideIcons as any;
@@ -331,6 +332,9 @@ import { cmsService } from './services/cmsService';
 import { GlobalConfig, MediaItem } from './types';
 
 export default function App() {
+  // Apply theme colors from CMS
+  useThemeApply();
+
   const [currentPage, setCurrentPage] = useState<'home' | 'competition' | 'dancers' | 'judges' | 'media' | 'history' | 'tickets' | 'program' | 'news' | 'artistic' | 'contact' | 'partners' | 'admin'>('home');
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
   const [selectedArticleId, setSelectedArticleId] = useState<string | undefined>(undefined);
@@ -343,6 +347,7 @@ export default function App() {
   const [bracketData, setBracketData] = useState<any>(null);
   const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
   const [partnerData, setPartnerData] = useState<any>(null);
+  const [selectedMediaYear, setSelectedMediaYear] = useState<number>(2026);
 
   useEffect(() => {
     const data = cmsService.getData();
@@ -395,6 +400,7 @@ export default function App() {
 
   const navigateTo = (page: 'home' | 'competition' | 'dancers' | 'judges' | 'media' | 'history' | 'tickets' | 'program' | 'news' | 'artistic' | 'contact' | 'partners' | 'admin', anchor?: string, articleId?: string) => (e: React.MouseEvent) => {
     e.preventDefault();
+    window.scrollTo(0, 0);
     setCurrentPage(page);
     setSelectedArticleId(articleId);
     setIsMenuOpen(false);
@@ -407,6 +413,14 @@ export default function App() {
         }
       }, 100);
     }
+  };
+
+  const navigateToMediaYear = (year: number) => (e: React.MouseEvent) => {
+    e.preventDefault();
+    setSelectedMediaYear(year);
+    window.scrollTo(0, 0);
+    setCurrentPage('media');
+    setIsMenuOpen(false);
   };
   const [scrolled, setScrolled] = useState(false);
   const [bracketScale, setBracketScale] = useState(1);
@@ -719,7 +733,7 @@ export default function App() {
             <p className="text-slate-400 leading-relaxed mb-8 text-lg">
               {config?.competition.description || 'L\'élite mondiale du breaking et du hip-hop se réunit sur les terres du Togo pour la plus grande battle d\'Afrique. 3 jours de compétition intense, de workshops et de culture urbaine. Le vainqueur n\'emporte pas seulement le titre, il entre dans l\'histoire.'}
             </p>
-            <a href="#competition" onClick={navigateTo('home', '#competition')} className="inline-flex items-center gap-2 text-primary font-bold tracking-widest uppercase hover:underline cursor-pointer">
+            <a href="#program" onClick={navigateTo('program')} className="inline-flex items-center gap-2 text-primary font-bold tracking-widest uppercase hover:underline cursor-pointer">
               Détails du tournoi <ArrowRight className="w-4 h-4" />
             </a>
           </div>
@@ -738,7 +752,7 @@ export default function App() {
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {participants
-              .filter(p => p.category === 'dancer')
+              .filter(p => ['b-boy', 'b-girl', 'crew'].includes(p.category))
               .slice(0, 4)
               .map((dancer) => (
                 <DancerCard 
@@ -1109,7 +1123,7 @@ export default function App() {
   ) : currentPage === 'judges' ? (
     <Judges />
   ) : currentPage === 'history' ? (
-    <History />
+    <History onViewGallery={navigateToMediaYear} />
   ) : currentPage === 'tickets' ? (
     <Tickets />
   ) : currentPage === 'program' ? (
@@ -1137,7 +1151,7 @@ export default function App() {
       setCurrentPage('home');
     }} />
   ) : (
-    <Media />
+    <Media selectedYear={selectedMediaYear} onYearChange={setSelectedMediaYear} />
   )}
 
   {/* FOOTER */}

@@ -2,6 +2,18 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 @import "tailwindcss";
 
+/* Theme CSS Variables - Updated by useThemeApply hook */
+:root {
+  --color-primary: #d35f17;
+  --color-primary-light: #f47d31;
+  --color-accent: #f4d125;
+  --color-accent-red: #dc2626;
+  --color-background-dark: #0a0807;
+  --color-surface-dark: #1a1a1a;
+  --color-text: #ffffff;
+  --color-muted-text: #94a3b8;
+}
+
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-display: "Space Grotesk", sans-serif;
@@ -23,11 +35,14 @@
 }
 
 @theme {
-  --color-primary: #d35f17;
-  --color-primary-light: #f47d31;
-  --color-accent-red: #e11d48;
-  --color-background-dark: #0a0807;
-  --color-surface-dark: #16110e;
+  --color-primary: var(--color-primary, #d35f17);
+  --color-primary-light: var(--color-primary-light, #f47d31);
+  --color-accent: var(--color-accent, #f4d125);
+  --color-accent-red: var(--color-accent-red, #dc2626);
+  --color-background-dark: var(--color-background-dark, #0a0807);
+  --color-surface-dark: var(--color-surface-dark, #1a1a1a);
+  --color-text: var(--color-text, #ffffff);
+  --color-muted-text: var(--color-muted-text, #94a3b8);
   
   --font-display: "Space Grotesk", sans-serif;
   --font-heading: "Bebas Neue", cursive;

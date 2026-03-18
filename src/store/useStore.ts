@@ -22,11 +22,12 @@ const INITIAL_STATE: CMSState = {
       id: '1',
       name: 'B-Boy Lilou',
       country: 'France',
+      countryCode: 'fr',
       specialty: 'Breaking',
       bio: 'Double champion du Red Bull BC One.',
       photo: 'https://picsum.photos/seed/lilou/400/400',
-      socials: { instagram: '@lilou_officiel' },
-      category: 'Judge'
+      socialLinks: { instagram: '@lilou_officiel' },
+      category: 'judge'
     }
   ],
   program: [
@@ -71,17 +72,60 @@ const INITIAL_STATE: CMSState = {
     {
       id: '1',
       year: '2024',
+      title: 'ÉDITION 2024 - FINALE MÉMORABLE',
       champion: 'B-Boy Dany Dann',
-      description: 'Une finale mémorable.',
-      image: 'https://picsum.photos/seed/hist1/400/300'
+      description: 'Une finale mémorable avec des performances exceptionnelles des meilleurs danseurs du continent.',
+      image: 'https://picsum.photos/seed/hist1/800/450'
+    },
+    {
+      id: '2',
+      year: '2023',
+      title: 'ÉDITION 2023 - L\'ENVOL AFRICAIN',
+      champion: 'B-Boy Karim',
+      description: 'La montée en puissance des talents africains sur la scène internationale du breaking.',
+      image: 'https://picsum.photos/seed/hist2/800/450'
+    },
+    {
+      id: '3',
+      year: '2022',
+      title: 'ÉDITION 2022 - RENAISSANCE',
+      champion: 'B-Girl Aïssa',
+      description: 'Retour après la pandémie avec une édition record en nombre de participants.',
+      image: 'https://picsum.photos/seed/hist3/800/450'
     }
   ],
   legends: [
     {
       id: '1',
       name: 'Storm',
-      description: 'Pionnier du breaking européen.',
-      photo: 'https://picsum.photos/seed/storm/400/400'
+      bio: 'Pionnier du breaking européen.',
+      photo: 'https://picsum.photos/seed/storm/400/400',
+      title: 'B-Boy Champion 2015',
+      category: 'bboy'
+    },
+    {
+      id: '2',
+      name: 'Roxrite',
+      bio: 'Légende du Red Bull BC One.',
+      photo: 'https://picsum.photos/seed/roxrite/400/400',
+      title: 'B-Boy Champion 2017',
+      category: 'bboy'
+    },
+    {
+      id: '3',
+      name: 'Shorty Mack',
+      bio: 'Pionnière féminine de la danse urbaine.',
+      photo: 'https://picsum.photos/seed/shortymack/400/400',
+      title: 'B-Girl Champion 2016',
+      category: 'bgirl'
+    },
+    {
+      id: '4',
+      name: 'Airlab Crew',
+      bio: 'Crew légendaire de formation et compétition.',
+      photo: 'https://picsum.photos/seed/airlab/400/400',
+      title: 'Crew Champion 2014',
+      category: 'crew'
     }
   ],
   partners: [

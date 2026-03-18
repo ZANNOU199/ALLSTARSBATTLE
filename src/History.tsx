@@ -3,16 +3,27 @@ import { motion, AnimatePresence } from 'motion/react';
 import { cmsService } from './services/cmsService';
 import { 
   ArrowRight, 
-  ChevronDown
+  ChevronDown,
+  Trophy,
+  Users,
+  Globe,
+  Zap
 } from 'lucide-react';
 
 import { TimelineEvent, Legend } from './types';
 
-const History = () => {
+interface HistoryProps {
+  onViewGallery?: (year: number) => (e: React.MouseEvent) => void;
+}
+
+const History = ({ onViewGallery }: HistoryProps) => {
   const [showAll, setShowAll] = useState(false);
+  const [selectedYear, setSelectedYear] = useState<string | null>(null);
   const [timelineEvents, setTimelineEvents] = useState<any[]>([]);
   const [olderEvents, setOlderEvents] = useState<any[]>([]);
   const [legends, setLegends] = useState<Legend[]>([]);
+  const [filteredLegends, setFilteredLegends] = useState<any[]>([]);
+  const [legendFilter, setLegendFilter] = useState<'all' | 'bboy' | 'bgirl' | 'crew'>('all');
 
   useEffect(() => {
     const data = cmsService.getData();
@@ -33,12 +44,32 @@ const History = () => {
     setTimelineEvents(formattedEvents.slice(0, 5));
     setOlderEvents(formattedEvents.slice(5));
 
-    setLegends(data.history.legends.map(l => ({
+    const legsData = data.history.legends.map(l => ({
+      id: l.id,
       name: l.name,
+      title: l.title || 'Champion',
       origin: l.bio,
-      image: l.photo
-    })));
+      image: l.photo,
+      category: l.category || 'bboy'
+    }));
+    setLegends(legsData);
+    setFilteredLegends(legsData);
   }, []);
+
+  const handleLegendFilter = (filter: 'all' | 'bboy' | 'bgirl' | 'crew') => {
+    setLegendFilter(filter);
+    if (filter === 'all') {
+      setFilteredLegends(legends);
+    } else {
+      const categoryMap: Record<string, string> = {
+        bboy: 'bboy',
+        bgirl: 'bgirl',
+        crew: 'crew'
+      };
+      const targetCategory = categoryMap[filter];
+      setFilteredLegends(legends.filter(leg => leg.category === targetCategory));
+    }
+  };
 
   return (
     <div className="bg-background-dark text-slate-100 font-display antialiased">
@@ -65,7 +96,7 @@ const History = () => {
             animate={{ opacity: 1, scale: 1 }}
             className="font-heading text-4xl sm:text-5xl md:text-7xl text-white tracking-tighter leading-none mb-6 uppercase"
           >
-            L'HÉRITAGE <span className="text-primary italic">DU BREAK</span>
+            L'HISTOIRE <span className="text-primary italic">DE ALLSTARBATTLE</span>
           </motion.h1>
           <motion.p 
             initial={{ opacity: 0 }}
@@ -92,6 +123,37 @@ const History = () => {
             </button>
             <button className="btn-luxury-secondary w-full sm:w-auto !px-10 !py-4">REWATCH FINALS</button>
           </motion.div>
+        </div>
+      </section>
+
+      {/* Global Stats Section */}
+      <section className="bg-surface-dark/50 border-b border-white/5 py-16 lg:py-24">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-6 md:gap-8">
+            {[
+              { icon: Zap, value: '13', label: 'ANNÉES' },
+              { icon: Trophy, value: '12', label: 'ÉDITIONS' },
+              { icon: Globe, value: '45+', label: 'PAYS' },
+              { icon: Users, value: '500+', label: 'PARTICIPANTS' },
+              { icon: Trophy, value: '10M', label: 'FCFA DE PRIX' }
+            ].map((stat, index) => {
+              const Icon = stat.icon;
+              return (
+                <motion.div 
+                  key={stat.label}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: index * 0.1 }}
+                  viewport={{ once: true }}
+                  className="text-center"
+                >
+                  <Icon className="w-8 h-8 lg:w-10 lg:h-10 mx-auto mb-4 text-primary" />
+                  <p className="font-heading text-4xl md:text-5xl text-white mb-2">{stat.value}</p>
+                  <p className="text-slate-400 font-bold text-xs tracking-[0.2em] uppercase">{stat.label}</p>
+                </motion.div>
+              );
+            })}
+          </div>
         </div>
       </section>
 
@@ -148,7 +210,9 @@ const History = () => {
                     <p className="text-slate-400 font-light mb-6 lg:mb-8 leading-relaxed text-sm lg:text-base">
                       {event.desc}
                     </p>
-                    <button className="flex items-center gap-3 text-primary font-bold text-xs tracking-[0.2em] uppercase group/btn">
+                    <button 
+                      onClick={onViewGallery ? onViewGallery(parseInt(event.year)) : undefined}
+                      className="flex items-center gap-3 text-primary font-bold text-xs tracking-[0.2em] uppercase group/btn">
                       VIEW GALLERY <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-2 transition-transform" />
                     </button>
                   </div>
@@ -219,7 +283,9 @@ const History = () => {
                           <p className="text-slate-400 font-light mb-6 lg:mb-8 leading-relaxed text-sm lg:text-base">
                             {event.desc}
                           </p>
-                          <button className="flex items-center gap-3 text-primary font-bold text-xs tracking-[0.2em] uppercase group/btn">
+                          <button 
+                            onClick={onViewGallery ? onViewGallery(parseInt(event.year)) : undefined}
+                            className="flex items-center gap-3 text-primary font-bold text-xs tracking-[0.2em] uppercase group/btn">
                             VIEW GALLERY <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-2 transition-transform" />
                           </button>
                         </div>
@@ -234,41 +300,82 @@ const History = () => {
       </section>
 
       {/* Wall of Fame */}
-      <section className="py-32 bg-surface-dark/30 border-y border-white/5 grainy-bg">
+      <section id="wall-of-fame" className="py-32 bg-surface-dark/30 border-y border-white/5 grainy-bg">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-20">
             <h2 className="font-heading text-6xl md:text-8xl text-white mb-4 uppercase tracking-tight">WALL OF FAME</h2>
             <p className="text-slate-500 font-bold tracking-[0.4em] uppercase text-xs">The Legends Who Defined ASBI</p>
             <div className="w-24 h-1 bg-primary mx-auto mt-8"></div>
           </div>
-          
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {legends.map((legend, index) => (
-              <motion.div 
-                key={legend.name}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-                viewport={{ once: true }}
-                className="group relative overflow-hidden rounded-xl bg-background-dark border border-white/5 hover:border-primary/30 transition-all duration-500"
+
+          {/* Filter Buttons */}
+          <div className="flex flex-wrap justify-center gap-4 mb-16">
+            {[
+              { id: 'all', label: 'TOUS LES CHAMPIONS' },
+              { id: 'bboy', label: 'B-BOY' },
+              { id: 'bgirl', label: 'B-GIRL' },
+              { id: 'crew', label: 'CREW' }
+            ].map(filter => (
+              <motion.button 
+                key={filter.id}
+                onClick={() => handleLegendFilter(filter.id as any)}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className={`px-6 py-3 rounded-full font-bold text-xs tracking-[0.2em] uppercase transition-all duration-300 ${
+                  legendFilter === filter.id
+                    ? 'bg-primary text-background-dark border border-primary shadow-lg shadow-primary/50'
+                    : 'border border-primary/30 text-primary hover:border-primary/60'
+                }`}
               >
-                <div className="aspect-[3/4] overflow-hidden">
-                  <img 
-                    className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-110" 
-                    src={legend.image} 
-                    alt={legend.name}
-                  />
-                </div>
-                <div className="absolute inset-0 bg-gradient-to-t from-background-dark via-transparent to-transparent opacity-80"></div>
-                <div className="absolute bottom-0 p-8 w-full transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
-                  <p className="text-primary font-heading text-4xl mb-1">{legend.name}</p>
-                  <p className="text-slate-400 text-[10px] font-bold tracking-widest uppercase opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                    {legend.origin}
-                  </p>
-                </div>
-              </motion.div>
+                {filter.label}
+              </motion.button>
             ))}
           </div>
+
+          {/* Legends Grid */}
+          <AnimatePresence mode="wait">
+            <motion.div 
+              key={legendFilter}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8"
+            >
+              {filteredLegends.map((legend, index) => (
+                <motion.div 
+                  key={legend.name}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.05 }}
+                  className="group relative overflow-hidden rounded-xl bg-background-dark border border-white/5 hover:border-primary/30 transition-all duration-500 cursor-pointer"
+                >
+                  <div className="aspect-[3/4] overflow-hidden">
+                    <img 
+                      className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-110" 
+                      src={legend.image} 
+                      alt={legend.name}
+                    />
+                  </div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-background-dark via-transparent to-transparent opacity-80"></div>
+                  <div className="absolute bottom-0 p-8 w-full">
+                    <p className="text-primary font-heading text-3xl mb-2 line-clamp-2">{legend.name}</p>
+                    <p className="text-accent-red font-bold text-[9px] tracking-widest uppercase mb-3 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                      {legend.title}
+                    </p>
+                    <p className="text-slate-400 text-[11px] font-light leading-relaxed opacity-0 group-hover:opacity-100 transition-opacity duration-500 line-clamp-3">
+                      {legend.origin}
+                    </p>
+                  </div>
+                </motion.div>
+              ))}
+            </motion.div>
+          </AnimatePresence>
+
+          {filteredLegends.length === 0 && (
+            <div className="text-center py-20">
+              <p className="text-slate-500 font-bold tracking-[0.2em] uppercase">No legends found in this category</p>
+            </div>
+          )}
         </div>
       </section>
     </div>

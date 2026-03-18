@@ -59,9 +59,6 @@ export default function ParticipantsJury({ data, setData }: { data: CMSData, set
         ]);
       }
     };
-    fetchCountries();
-  }, []);
-
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -91,7 +88,7 @@ export default function ParticipantsJury({ data, setData }: { data: CMSData, set
       bio: formData.bio || '',
       photo: formData.photo || 'https://picsum.photos/seed/person/400/600',
       socialLinks: formData.socialLinks || {},
-      category: formData.category || 'b-boy'
+      category: formData.category || 'dancer'
     };
     setData(prev => ({ ...prev, participants: [...prev.participants, newParticipant] }));
     setIsAdding(false);
@@ -132,10 +129,10 @@ export default function ParticipantsJury({ data, setData }: { data: CMSData, set
     if (currentPage > totalPages) setCurrentPage(totalPages);
   }, [totalPages, currentPage]);
 
-  const category = (formData.category || 'b-boy') as Participant['category'];
-  const showCountry = category === 'b-boy' || category === 'b-girl' || category === 'crew' || category === 'judge' || category === 'dj' || category === 'mc';
-  const showSpecialty = category === 'b-boy' || category === 'b-girl';
-  const specialtyLabel = category === 'b-boy' || category === 'b-girl' ? 'Spécialité (Style)'
+  const category = (formData.category || 'dancer') as Participant['category'];
+  const showCountry = category === 'dancer' || category === 'judge' || category === 'dj' || category === 'mc';
+  const showSpecialty = category !== 'judge';
+  const specialtyLabel = category === 'dancer' ? 'Spécialité (Style)'
     : category === 'dj' ? 'Genre / Set'
     : category === 'mc' ? 'Voix'
     : '';
@@ -154,8 +151,6 @@ export default function ParticipantsJury({ data, setData }: { data: CMSData, set
     setShowCountryDropdown(false);
   };
 
-
-
   const handleCategoryChange = (newCategory: Participant['category']) => {
     setFormData({
       ...formData,
@@ -168,7 +163,7 @@ export default function ParticipantsJury({ data, setData }: { data: CMSData, set
     <div className="space-y-8">
       <div className="flex justify-between items-center">
         <div className="flex gap-4 flex-wrap">
-          {['all', 'b-boy', 'b-girl', 'crew', 'judge', 'dj', 'mc'].map(cat => (
+          {['all', 'dancer', 'judge', 'dj', 'mc'].map(cat => (
             <button
               key={cat}
               onClick={() => {
@@ -179,7 +174,7 @@ export default function ParticipantsJury({ data, setData }: { data: CMSData, set
                 filter === cat ? 'bg-primary text-background-dark' : 'bg-white/5 text-slate-400 hover:text-white'
               }`}
             >
-              {cat === 'all' ? 'Tous' : cat === 'b-boy' ? 'B-Boy' : cat === 'b-girl' ? 'B-Girl' : cat === 'crew' ? 'Crew' : cat === 'judge' ? 'Juges' : cat.toUpperCase()}
+              {cat === 'all' ? 'Tous' : cat === 'dancer' ? 'Danseurs' : cat === 'judge' ? 'Juges' : cat.toUpperCase()}
             </button>
           ))}
         </div>
@@ -211,13 +206,11 @@ export default function ParticipantsJury({ data, setData }: { data: CMSData, set
             <div className="space-y-2">
               <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Catégorie</label>
               <select 
-                value={formData.category || 'b-boy'} 
+                value={formData.category || 'dancer'} 
                 onChange={e => handleCategoryChange(e.target.value as Participant['category'])}
                 className="w-full bg-white/5 border border-white/10 rounded-xl p-3 focus:border-primary outline-none transition-all appearance-none"
               >
-                <option value="b-boy">B-Boy</option>
-                <option value="b-girl">B-Girl</option>
-                <option value="crew">Crew</option>
+                <option value="dancer">Danseur (All Star)</option>
                 <option value="judge">Juge</option>
                 <option value="dj">DJ</option>
                 <option value="mc">MC</option>
@@ -328,9 +321,7 @@ export default function ParticipantsJury({ data, setData }: { data: CMSData, set
               {(participant.category === 'dancer' || participant.category === 'judge') && (
                 <p className="flex items-center gap-2"><Globe size={12} /> {participant.country}</p>
               )}
-              {participant.specialty && (
-                <p className="flex items-center gap-2"><User size={12} /> {participant.specialty}</p>
-              )}
+              <p className="flex items-center gap-2"><User size={12} /> {participant.specialty}</p>
             </div>
           </div>
         ))}

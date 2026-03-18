@@ -17,7 +17,7 @@ interface Participant {
   id: string;
   name: string;
   country: string;
-  category: 'dancer' | 'judge' | 'dj' | 'mc';
+  category: 'b-boy' | 'b-girl' | 'crew' | 'judge' | 'dj' | 'mc';
   specialty: string;
   image: string;
   bio: string;
@@ -38,7 +38,7 @@ const ParticipantsAdmin = () => {
   const [formData, setFormData] = useState<Partial<Participant>>({
     name: '',
     country: '',
-    category: 'dancer',
+    category: 'b-boy',
     specialty: '',
     image: '',
     bio: '',
@@ -58,7 +58,7 @@ const ParticipantsAdmin = () => {
           id: '1',
           name: 'B-Boy Victor',
           country: 'USA',
-          category: 'dancer',
+          category: 'b-boy',
           specialty: 'Power Moves',
           image: 'https://picsum.photos/seed/victor/800/600',
           bio: 'Champion du monde Red Bull BC One.',
@@ -88,7 +88,7 @@ const ParticipantsAdmin = () => {
       setFormData({
         name: '',
         country: '',
-        category: 'dancer',
+        category: 'b-boy',
         specialty: '',
         image: '',
         bio: '',
@@ -120,6 +120,8 @@ const ParticipantsAdmin = () => {
     }
   };
 
+  const showSpecialty = formData.category !== 'crew';
+
   const filteredParticipants = participants.filter(p => {
     const matchesSearch = p.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
                           p.country.toLowerCase().includes(searchTerm.toLowerCase());
@@ -132,7 +134,7 @@ const ParticipantsAdmin = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-heading text-white uppercase tracking-tight">Participants & Jury</h1>
-          <p className="text-slate-500 text-xs uppercase tracking-widest mt-1">Gérez les danseurs, juges, DJs et MCs</p>
+          <p className="text-slate-500 text-xs uppercase tracking-widest mt-1">Gérez les B-Boys, B-Girls, Crews, juges, DJs et MCs</p>
         </div>
         <button 
           onClick={() => handleOpenModal()}
@@ -154,7 +156,7 @@ const ParticipantsAdmin = () => {
           />
         </div>
         <div className="flex gap-2 overflow-x-auto pb-2 md:pb-0">
-          {['all', 'dancer', 'judge', 'dj', 'mc'].map((cat) => (
+          {['all', 'b-boy', 'b-girl', 'crew', 'judge', 'dj', 'mc'].map((cat) => (
             <button
               key={cat}
               onClick={() => setFilterCategory(cat)}
@@ -164,7 +166,7 @@ const ParticipantsAdmin = () => {
                   : 'bg-white/5 text-slate-400 hover:bg-white/10'
               }`}
             >
-              {cat === 'all' ? 'Tous' : cat === 'dancer' ? 'Danseurs' : cat === 'judge' ? 'Juges' : cat.toUpperCase()}
+              {cat === 'all' ? 'Tous' : cat === 'b-boy' ? 'B-Boy' : cat === 'b-girl' ? 'B-Girl' : cat === 'crew' ? 'Crew' : cat === 'judge' ? 'Juges' : cat.toUpperCase()}
             </button>
           ))}
         </div>
@@ -230,16 +232,20 @@ const ParticipantsAdmin = () => {
                   <div className="space-y-2">
                     <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Catégorie</label>
                     <select className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:border-primary outline-none" value={formData.category} onChange={(e) => setFormData({...formData, category: e.target.value as any})}>
-                      <option value="dancer">Danseur</option>
+                      <option value="b-boy">B-Boy</option>
+                      <option value="b-girl">B-Girl</option>
+                      <option value="crew">Crew</option>
                       <option value="judge">Juge</option>
                       <option value="dj">DJ</option>
                       <option value="mc">MC</option>
                     </select>
                   </div>
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Spécialité</label>
-                    <input required type="text" className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:border-primary outline-none" value={formData.specialty} onChange={(e) => setFormData({...formData, specialty: e.target.value})} />
-                  </div>
+                  {showSpecialty && (
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Spécialité</label>
+                      <input required type="text" className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:border-primary outline-none" value={formData.specialty} onChange={(e) => setFormData({...formData, specialty: e.target.value})} />
+                    </div>
+                  )}
                 </div>
                 <div className="space-y-2">
                   <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">URL Image</label>
