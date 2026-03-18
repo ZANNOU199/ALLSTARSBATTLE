@@ -19,7 +19,8 @@ import {
   ChevronRight,
   Menu,
   X,
-  Palette
+  Palette,
+  Mail
 } from 'lucide-react';
 import { cmsService } from '../services/cmsService';
 import { CMSData } from '../types';
@@ -39,6 +40,7 @@ import MediaArchives from './modules/MediaArchives';
 import GlobalConfigSEO from './modules/GlobalConfigSEO';
 import HomepageContent from './modules/HomepageContent';
 import ThemeSettings from './modules/ThemeSettings';
+import ContactCMS from './modules/ContactCMS';
 
 type ModuleId = 
   | 'dashboard' 
@@ -51,6 +53,7 @@ type ModuleId =
   | 'history' 
   | 'partners' 
   | 'media'
+  | 'contact'
   | 'config'
   | 'homepage'
   | 'theme';
@@ -74,6 +77,7 @@ export default function AdminDashboard({ onLogout }: { onLogout: () => void }) {
     { id: 'competition', label: 'Compétition & Brackets', icon: Trophy },
     { id: 'ticketing', label: 'Billetterie & FAQ', icon: Ticket },
     { id: 'history', label: 'Histoire & Légendes', icon: History },
+    { id: 'contact', label: 'Page Contact', icon: Mail },
     { id: 'media', label: 'Galerie & Archives Média', icon: ImageIcon },
     { id: 'partners', label: 'Partenaires', icon: Handshake },
     { id: 'config', label: 'Configuration & SEO', icon: Settings },
@@ -91,6 +95,7 @@ export default function AdminDashboard({ onLogout }: { onLogout: () => void }) {
       case 'competition': return <CompetitionBrackets data={data} setData={setData} />;
       case 'ticketing': return <TicketingFAQ data={data} setData={setData} />;
       case 'history': return <HistoryLegends data={data} setData={setData} />;
+      case 'contact': return <ContactCMS data={data} setData={setData} />;
       case 'media': return <MediaArchives data={data} setData={setData} />;
       case 'partners': return <PartnersMedia data={data} setData={setData} />;
       case 'config': return <GlobalConfigSEO data={data} setData={setData} />;

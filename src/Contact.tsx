@@ -21,11 +21,24 @@ interface ContactProps {
 const Contact = ({ onNavigateToFAQ }: ContactProps) => {
   const [config, setConfig] = useState<GlobalConfig | null>(null);
   const [faqs, setFaqs] = useState<FAQType[]>([]);
+  const [contactData, setContactData] = useState<any>(null);
 
   useEffect(() => {
     const data = cmsService.getData();
     setConfig(data.globalConfig);
     setFaqs(data.ticketing.faqs.slice(0, 3));
+    setContactData(data.contact);
+  }, []);
+
+  // Listen for real-time updates from admin panel
+  useEffect(() => {
+    const handleCmsUpdate = () => {
+      const data = cmsService.getData();
+      setConfig(data.globalConfig);
+      setContactData(data.contact);
+    };
+    window.addEventListener('cmsDataChanged', handleCmsUpdate);
+    return () => window.removeEventListener('cmsDataChanged', handleCmsUpdate);
   }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -34,7 +47,7 @@ const Contact = ({ onNavigateToFAQ }: ContactProps) => {
     alert("Message envoyé ! Notre équipe vous répondra sous 24h.");
   };
 
-  if (!config) return null;
+  if (!config || !contactData) return null;
 
   return (
     <div className="bg-background-dark text-slate-100 font-sans selection:bg-primary selection:text-background-dark">
@@ -61,7 +74,7 @@ const Contact = ({ onNavigateToFAQ }: ContactProps) => {
             transition={{ delay: 0.2 }}
             className="text-4xl sm:text-6xl md:text-8xl font-heading text-white uppercase tracking-tighter italic leading-[0.9]"
           >
-            Besoin <span className="text-primary">d'aide ?</span>
+            {contactData.hero.title} <span className="text-primary">{contactData.hero.titleHighlight}</span>
           </motion.h1>
           <motion.p 
             initial={{ opacity: 0 }}
@@ -69,7 +82,7 @@ const Contact = ({ onNavigateToFAQ }: ContactProps) => {
             transition={{ delay: 0.4 }}
             className="text-slate-300 text-base md:text-xl mt-6 max-w-xl font-light italic leading-relaxed"
           >
-            L'équipe All Stars Battle International est là pour vous accompagner. Retrouvez nos réponses ou contactez-nous directement.
+            {contactData.hero.description}
           </motion.p>
         </div>
       </section>
@@ -163,7 +176,7 @@ const Contact = ({ onNavigateToFAQ }: ContactProps) => {
             className="bg-surface-dark p-10 rounded-sm border border-white/10 space-y-10 shadow-2xl relative overflow-hidden"
           >
             <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 blur-3xl -z-10"></div>
-            <h3 className="text-2xl font-heading text-white uppercase tracking-tight">Coordonnées</h3>
+            <h3 className="text-2xl font-heading text-white uppercase tracking-tight">{contactData.sections.coordinatesTitle}</h3>
             <div className="space-y-8">
               <div className="flex gap-6">
                 <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
@@ -180,7 +193,7 @@ const Contact = ({ onNavigateToFAQ }: ContactProps) => {
                 </div>
                 <div>
                   <p className="text-white font-bold uppercase tracking-wider mb-1">{config.contact.phone}</p>
-                  <p className="text-slate-400 text-sm font-light italic">Lun-Ven, 09h00 - 18h00</p>
+                  <p className="text-slate-400 text-sm font-light italic">{contactData.sections.hoursLabel}: {contactData.sections.hoursValue}</p>
                 </div>
               </div>
               <div className="flex gap-6">
@@ -189,14 +202,14 @@ const Contact = ({ onNavigateToFAQ }: ContactProps) => {
                 </div>
                 <div>
                   <p className="text-white font-bold uppercase tracking-wider mb-1">{config.contact.email}</p>
-                  <p className="text-slate-400 text-sm font-light italic">Réponse sous 24h</p>
+                  <p className="text-slate-400 text-sm font-light italic">{contactData.sections.responseTime}</p>
                 </div>
               </div>
             </div>
 
             {/* Social Links */}
             <div className="pt-10 border-t border-white/5">
-              <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500 mb-6">Suivez le mouvement</p>
+              <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500 mb-6">{contactData.sections.socialLabel}</p>
               <div className="flex gap-4">
                 <a href={config.socials.facebook} target="_blank" rel="noopener noreferrer" className="w-12 h-12 rounded-sm bg-background-dark border border-white/10 flex items-center justify-center hover:border-primary hover:text-primary transition-all text-white group">
                   <Facebook className="w-5 h-5 group-hover:scale-110 transition-transform" />
@@ -218,7 +231,7 @@ const Contact = ({ onNavigateToFAQ }: ContactProps) => {
             viewport={{ once: true }}
             className="space-y-8"
           >
-            <h3 className="text-3xl font-heading uppercase italic tracking-tighter text-white">Foire Aux Questions</h3>
+            <h3 className="text-3xl font-heading uppercase italic tracking-tighter text-white">{contactData.sections.faqTitle}</h3>
             <div className="space-y-4">
               {faqs.map((faq, idx) => (
                 <FAQItem 

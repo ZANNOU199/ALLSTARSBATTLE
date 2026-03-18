@@ -94,6 +94,24 @@ const INITIAL_STATE: CMSState = {
       image: 'https://picsum.photos/seed/hist3/800/450'
     }
   ],
+  hero: {
+    sinceYear: '2013',
+    totalEditions: '12',
+    title: 'L\'HISTOIRE',
+    titleHighlight: 'DE ALLSTARBATTLE',
+    description: 'Tracing the evolution of urban-luxury breakdance from Genesis to the Global Stage.'
+  },
+  stats: {
+    years: '13',
+    editions: '12',
+    countries: '45+',
+    participants: '500+',
+    prize: '10M'
+  },
+  wallOfFame: {
+    title: 'WALL OF FAME',
+    subtitle: 'The Legends Who Defined ASBI'
+  },
   legends: [
     {
       id: '1',
@@ -101,7 +119,9 @@ const INITIAL_STATE: CMSState = {
       bio: 'Pionnier du breaking européen.',
       photo: 'https://picsum.photos/seed/storm/400/400',
       title: 'B-Boy Champion 2015',
-      category: 'bboy'
+      category: 'bboy',
+      year: 2015,
+      type: 'champion-1v1'
     },
     {
       id: '2',
@@ -109,7 +129,9 @@ const INITIAL_STATE: CMSState = {
       bio: 'Légende du Red Bull BC One.',
       photo: 'https://picsum.photos/seed/roxrite/400/400',
       title: 'B-Boy Champion 2017',
-      category: 'bboy'
+      category: 'bboy',
+      year: 2017,
+      type: 'champion-1v1'
     },
     {
       id: '3',
@@ -117,7 +139,9 @@ const INITIAL_STATE: CMSState = {
       bio: 'Pionnière féminine de la danse urbaine.',
       photo: 'https://picsum.photos/seed/shortymack/400/400',
       title: 'B-Girl Champion 2016',
-      category: 'bgirl'
+      category: 'bgirl',
+      year: 2016,
+      type: 'champion-1v1'
     },
     {
       id: '4',
@@ -125,7 +149,9 @@ const INITIAL_STATE: CMSState = {
       bio: 'Crew légendaire de formation et compétition.',
       photo: 'https://picsum.photos/seed/airlab/400/400',
       title: 'Crew Champion 2014',
-      category: 'crew'
+      category: 'crew',
+      year: 2014,
+      type: 'crew-vs-crew'
     }
   ],
   partners: [

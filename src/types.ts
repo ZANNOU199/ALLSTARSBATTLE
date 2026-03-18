@@ -107,7 +107,9 @@ export interface Legend {
   bio: string;
   photo: string;
   title?: string; // e.g., "B-Boy Champion 2023"
-  category?: 'b-boy' | 'b-girl' | 'crew';
+  category?: 'bboy' | 'bgirl' | 'crew';
+  year?: number | string; // Year of championship
+  type?: 'champion-1v1' | 'footwork' | 'powermoves' | 'last-chance' | 'crew-vs-crew' | '2v2'; // Type of competition
 }
 
 export interface Partner {
@@ -238,6 +240,39 @@ export interface CMSData {
   history: {
     timeline: TimelineEvent[];
     legends: Legend[];
+    hero?: {
+      sinceYear: string;
+      totalEditions: string;
+      title: string;
+      titleHighlight: string;
+      description: string;
+    };
+    stats?: {
+      years: string;
+      editions: string;
+      countries: string;
+      participants: string;
+      prize: string;
+    };
+    wallOfFame?: {
+      title: string;
+      subtitle: string;
+    };
+  };
+  contact: {
+    hero: {
+      title: string;
+      titleHighlight: string;
+      description: string;
+    };
+    sections: {
+      coordinatesTitle: string;
+      hoursLabel: string;
+      hoursValue: string;
+      responseTime: string;
+      socialLabel: string;
+      faqTitle: string;
+    };
   };
   partners: {
     logos: Partner[];

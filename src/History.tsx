@@ -19,14 +19,46 @@ interface HistoryProps {
 const History = ({ onViewGallery }: HistoryProps) => {
   const [showAll, setShowAll] = useState(false);
   const [selectedYear, setSelectedYear] = useState<string | null>(null);
+  const [wallOfFameYear, setWallOfFameYear] = useState<number | null>(null);
+  const [wallOfFamePage, setWallOfFamePage] = useState(0);
   const [timelineEvents, setTimelineEvents] = useState<any[]>([]);
   const [olderEvents, setOlderEvents] = useState<any[]>([]);
   const [legends, setLegends] = useState<Legend[]>([]);
   const [filteredLegends, setFilteredLegends] = useState<any[]>([]);
   const [legendFilter, setLegendFilter] = useState<'all' | 'bboy' | 'bgirl' | 'crew'>('all');
+  const [availableYears, setAvailableYears] = useState<number[]>([]);
+  const [heroConfig, setHeroConfig] = useState({
+    sinceYear: '2013',
+    totalEditions: '12',
+    title: 'L\'HISTOIRE',
+    titleHighlight: 'DE ALLSTARBATTLE',
+    description: 'Tracing the evolution of urban-luxury breakdance from Genesis to the Global Stage.'
+  });
+  const [statsConfig, setStatsConfig] = useState({
+    years: '13',
+    editions: '12',
+    countries: '45+',
+    participants: '500+',
+    prize: '10M'
+  });
+  const [wallOfFameConfig, setWallOfFameConfig] = useState({
+    title: 'WALL OF FAME',
+    subtitle: 'The Legends Who Defined ASBI'
+  });
 
   useEffect(() => {
     const data = cmsService.getData();
+    
+    // Load hero and stats config from store
+    if (data.history?.hero) {
+      setHeroConfig(data.history.hero);
+    }
+    if (data.history?.stats) {
+      setStatsConfig(data.history.stats);
+    }
+    if (data.history?.wallOfFame) {
+      setWallOfFameConfig(data.history.wallOfFame);
+    }
     
     // Sort events by year descending
     const sortedEvents = [...data.history.timeline].sort((a, b) => parseInt(b.year) - parseInt(a.year));
@@ -50,25 +82,109 @@ const History = ({ onViewGallery }: HistoryProps) => {
       title: l.title || 'Champion',
       origin: l.bio,
       image: l.photo,
-      category: l.category || 'bboy'
+      category: l.category || 'bboy',
+      year: l.year || new Date().getFullYear(),
+      type: l.type
     }));
     setLegends(legsData);
-    setFilteredLegends(legsData);
+    
+    // Extract unique years and sort descending
+    const uniqueYears = [...new Set(legsData.map(l => l.year as number))].sort((a, b) => b - a);
+    setAvailableYears(uniqueYears);
+    
+    // Initialize with "ALL YEARS" (null)
+    setWallOfFameYear(null);
+    filterLegendsByYear(legsData, null, 'all');
+  }, []);
+
+  // Listen for real-time updates from admin panel
+  useEffect(() => {
+    const handleCmsUpdate = () => {
+      const data = cmsService.getData();
+      
+      if (data.history?.hero) {
+        setHeroConfig(data.history.hero);
+      }
+      if (data.history?.stats) {
+        setStatsConfig(data.history.stats);
+      }
+      if (data.history?.wallOfFame) {
+        setWallOfFameConfig(data.history.wallOfFame);
+      }
+      
+      const sortedEvents = [...data.history.timeline].sort((a, b) => parseInt(b.year) - parseInt(a.year));
+      const formattedEvents = sortedEvents.map((event: TimelineEvent, index) => ({
+        year: event.year,
+        title: event.title,
+        champion: event.champion,
+        desc: event.description,
+        image: event.image || `https://picsum.photos/seed/${event.year}/800/450`,
+        current: index === 0,
+        side: index % 2 === 0 ? 'left' : 'right'
+      }));
+
+      setTimelineEvents(formattedEvents.slice(0, 5));
+      setOlderEvents(formattedEvents.slice(5));
+
+      const legsData = data.history.legends.map(l => ({
+        id: l.id,
+        name: l.name,
+        title: l.title || 'Champion',
+        origin: l.bio,
+        image: l.photo,
+        category: l.category || 'bboy',
+        year: l.year || new Date().getFullYear(),
+        type: l.type
+      }));
+      setLegends(legsData);
+      
+      // Extract unique years and sort descending
+      const uniqueYears = [...new Set(legsData.map(l => l.year as number))].sort((a, b) => b - a);
+      setAvailableYears(uniqueYears);
+      
+      // Re-filter with current selections
+      if (uniqueYears.length > 0) {
+        filterLegendsByYear(legsData, wallOfFameYear, legendFilter);
+      }
+    };
+
+    window.addEventListener('cmsDataChanged', handleCmsUpdate);
+    return () => window.removeEventListener('cmsDataChanged', handleCmsUpdate);
   }, []);
 
   const handleLegendFilter = (filter: 'all' | 'bboy' | 'bgirl' | 'crew') => {
     setLegendFilter(filter);
-    if (filter === 'all') {
-      setFilteredLegends(legends);
-    } else {
+    setWallOfFamePage(0);
+    filterLegendsByYear(legends, wallOfFameYear, filter);
+  };
+
+  const filterLegendsByYear = (legsData: any[], year: number | null, categoryFilter: 'all' | 'bboy' | 'bgirl' | 'crew') => {
+    let filtered = legsData;
+
+    // Filter by year
+    if (year) {
+      filtered = filtered.filter(leg => leg.year === year);
+    }
+
+    // Filter by category
+    if (categoryFilter !== 'all') {
       const categoryMap: Record<string, string> = {
         bboy: 'bboy',
         bgirl: 'bgirl',
         crew: 'crew'
       };
-      const targetCategory = categoryMap[filter];
-      setFilteredLegends(legends.filter(leg => leg.category === targetCategory));
+      const targetCategory = categoryMap[categoryFilter];
+      filtered = filtered.filter(leg => leg.category === targetCategory);
     }
+
+    setFilteredLegends(filtered);
+  };
+
+  const handleYearChange = (year: number) => {
+    const yearValue = year === 0 ? null : year;
+    setWallOfFameYear(yearValue);
+    setWallOfFamePage(0);
+    filterLegendsByYear(legends, yearValue, legendFilter);
   };
 
   return (
@@ -89,14 +205,14 @@ const History = ({ onViewGallery }: HistoryProps) => {
             animate={{ opacity: 1, y: 0 }}
             className="text-accent-red font-bold tracking-[0.4em] text-xs sm:text-sm mb-4 block"
           >
-            DEPUIS 2013 • 12 ÉDITIONS
+            DEPUIS {heroConfig.sinceYear} • {heroConfig.totalEditions} ÉDITIONS
           </motion.span>
           <motion.h1 
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             className="font-heading text-4xl sm:text-5xl md:text-7xl text-white tracking-tighter leading-none mb-6 uppercase"
           >
-            L'HISTOIRE <span className="text-primary italic">DE ALLSTARBATTLE</span>
+            {heroConfig.title} <span className="text-primary italic">{heroConfig.titleHighlight}</span>
           </motion.h1>
           <motion.p 
             initial={{ opacity: 0 }}
@@ -104,7 +220,7 @@ const History = ({ onViewGallery }: HistoryProps) => {
             transition={{ delay: 0.3 }}
             className="max-w-2xl mx-auto text-slate-400 text-base sm:text-lg uppercase tracking-[0.2em] font-light px-4"
           >
-            Tracing the evolution of urban-luxury breakdance from Genesis to the Global Stage.
+            {heroConfig.description}
           </motion.p>
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
@@ -131,11 +247,11 @@ const History = ({ onViewGallery }: HistoryProps) => {
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-2 md:grid-cols-5 gap-6 md:gap-8">
             {[
-              { icon: Zap, value: '13', label: 'ANNÉES' },
-              { icon: Trophy, value: '12', label: 'ÉDITIONS' },
-              { icon: Globe, value: '45+', label: 'PAYS' },
-              { icon: Users, value: '500+', label: 'PARTICIPANTS' },
-              { icon: Trophy, value: '10M', label: 'FCFA DE PRIX' }
+              { icon: Zap, value: statsConfig.years, label: 'ANNÉES' },
+              { icon: Trophy, value: statsConfig.editions, label: 'ÉDITIONS' },
+              { icon: Globe, value: statsConfig.countries, label: 'PAYS' },
+              { icon: Users, value: statsConfig.participants, label: 'PARTICIPANTS' },
+              { icon: Trophy, value: statsConfig.prize, label: 'FCFA DE PRIX' }
             ].map((stat, index) => {
               const Icon = stat.icon;
               return (
@@ -303,9 +419,30 @@ const History = ({ onViewGallery }: HistoryProps) => {
       <section id="wall-of-fame" className="py-32 bg-surface-dark/30 border-y border-white/5 grainy-bg">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-20">
-            <h2 className="font-heading text-6xl md:text-8xl text-white mb-4 uppercase tracking-tight">WALL OF FAME</h2>
-            <p className="text-slate-500 font-bold tracking-[0.4em] uppercase text-xs">The Legends Who Defined ASBI</p>
+            <h2 className="font-heading text-6xl md:text-8xl text-white mb-4 uppercase tracking-tight">{wallOfFameConfig.title}</h2>
+            <p className="text-slate-500 font-bold tracking-[0.4em] uppercase text-xs">{wallOfFameConfig.subtitle}</p>
             <div className="w-24 h-1 bg-primary mx-auto mt-8"></div>
+          </div>
+
+          {/* Year Filter Select */}
+          <div className="flex justify-center mb-12">
+            <div className="relative">
+              <select 
+                value={wallOfFameYear || ''}
+                onChange={(e) => handleYearChange(e.target.value ? parseInt(e.target.value) : 0)}
+                className="px-6 py-3 rounded-full bg-surface-dark border border-primary/50 text-white font-bold text-xs tracking-[0.1em] uppercase appearance-none cursor-pointer hover:border-primary/80 transition-all duration-300 pr-10"
+              >
+                <option value="">ALL YEARS</option>
+                {availableYears.map(year => (
+                  <option key={year} value={year}>{year}</option>
+                ))}
+              </select>
+              <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
+                <svg className="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                </svg>
+              </div>
+            </div>
           </div>
 
           {/* Filter Buttons */}
@@ -334,43 +471,95 @@ const History = ({ onViewGallery }: HistoryProps) => {
 
           {/* Legends Grid */}
           <AnimatePresence mode="wait">
-            <motion.div 
-              key={legendFilter}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8"
-            >
-              {filteredLegends.map((legend, index) => (
-                <motion.div 
-                  key={legend.name}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.05 }}
-                  className="group relative overflow-hidden rounded-xl bg-background-dark border border-white/5 hover:border-primary/30 transition-all duration-500 cursor-pointer"
-                >
-                  <div className="aspect-[3/4] overflow-hidden">
-                    <img 
-                      className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-110" 
-                      src={legend.image} 
-                      alt={legend.name}
-                    />
-                  </div>
-                  <div className="absolute inset-0 bg-gradient-to-t from-background-dark via-transparent to-transparent opacity-80"></div>
-                  <div className="absolute bottom-0 p-8 w-full">
-                    <p className="text-primary font-heading text-3xl mb-2 line-clamp-2">{legend.name}</p>
-                    <p className="text-accent-red font-bold text-[9px] tracking-widest uppercase mb-3 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                      {legend.title}
-                    </p>
-                    <p className="text-slate-400 text-[11px] font-light leading-relaxed opacity-0 group-hover:opacity-100 transition-opacity duration-500 line-clamp-3">
-                      {legend.origin}
-                    </p>
-                  </div>
-                </motion.div>
-              ))}
-            </motion.div>
+            {(() => {
+              const itemsPerPage = 4; // 2x2 grid on mobile (grid-cols-2), more on larger screens
+              const totalPages = Math.ceil(filteredLegends.length / itemsPerPage);
+              const startIndex = wallOfFamePage * itemsPerPage;
+              const endIndex = startIndex + itemsPerPage;
+              const paginatedLegends = filteredLegends.slice(startIndex, endIndex);
+              
+              return (
+                <>
+                  <motion.div 
+                    key={`${legendFilter}-${wallOfFameYear}`}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 lg:gap-8 mb-12"
+                  >
+                    {paginatedLegends.map((legend, index) => (
+                      <motion.div 
+                        key={legend.name}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: index * 0.05 }}
+                        className="group relative overflow-hidden rounded-xl bg-background-dark border border-white/5 hover:border-primary/30 transition-all duration-500 cursor-pointer"
+                      >
+                        <div className="aspect-[3/4] overflow-hidden">
+                          <img 
+                            className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-110" 
+                            src={legend.image} 
+                            alt={legend.name}
+                          />
+                        </div>
+                        <div className="absolute inset-0 bg-gradient-to-t from-background-dark via-transparent to-transparent opacity-80"></div>
+                        <div className="absolute bottom-0 p-4 md:p-6 lg:p-8 w-full">
+                          <p className="text-primary font-heading text-lg md:text-2xl lg:text-3xl mb-2 line-clamp-2">{legend.name}</p>
+                          <p className="text-accent-red font-bold text-[9px] tracking-widest uppercase mb-3 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                            {legend.title}
+                          </p>
+                          <p className="text-slate-400 text-[11px] font-light leading-relaxed opacity-0 group-hover:opacity-100 transition-opacity duration-500 line-clamp-3">
+                            {legend.origin}
+                          </p>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </motion.div>
+
+                  {/* Pagination Controls */}
+                  {totalPages > 1 && (
+                    <div className="flex items-center justify-center gap-8 mb-8">
+                      <motion.button 
+                        onClick={() => setWallOfFamePage(Math.max(0, wallOfFamePage - 1))}
+                        disabled={wallOfFamePage === 0}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        className={`px-6 py-3 rounded-full font-bold text-xs tracking-[0.2em] uppercase transition-all duration-300 ${
+                          wallOfFamePage === 0
+                            ? 'opacity-50 cursor-not-allowed border border-primary/20 text-primary/50'
+                            : 'border border-primary/50 text-primary hover:border-primary bg-primary/10'
+                        }`}
+                      >
+                        ← PREVIOUS
+                      </motion.button>
+                      
+                      <div className="text-center">
+                        <p className="text-primary font-bold text-sm tracking-[0.1em]">
+                          PAGE {wallOfFamePage + 1} OF {totalPages}
+                        </p>
+                      </div>
+                      
+                      <motion.button 
+                        onClick={() => setWallOfFamePage(Math.min(totalPages - 1, wallOfFamePage + 1))}
+                        disabled={wallOfFamePage === totalPages - 1}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        className={`px-6 py-3 rounded-full font-bold text-xs tracking-[0.2em] uppercase transition-all duration-300 ${
+                          wallOfFamePage === totalPages - 1
+                            ? 'opacity-50 cursor-not-allowed border border-primary/20 text-primary/50'
+                            : 'border border-primary/50 text-primary hover:border-primary bg-primary/10'
+                        }`}
+                      >
+                        NEXT →
+                      </motion.button>
+                    </div>
+                  )}
+                </>
+              );
+            })()}
           </AnimatePresence>
 
+          {/* No Results Message */}
           {filteredLegends.length === 0 && (
             <div className="text-center py-20">
               <p className="text-slate-500 font-bold tracking-[0.2em] uppercase">No legends found in this category</p>

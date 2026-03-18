@@ -158,6 +158,21 @@ const initialData: CMSData = {
       { id: '1', name: 'Storm', bio: 'Légende du breaking européen.', photo: 'https://picsum.photos/seed/legend1/400/600' }
     ]
   },
+  contact: {
+    hero: {
+      title: 'Besoin ',
+      titleHighlight: 'd\'aide ?',
+      description: 'L\'équipe All Stars Battle International est là pour vous accompagner. Retrouvez nos réponses ou contactez-nous directement.'
+    },
+    sections: {
+      coordinatesTitle: 'Coordonnées',
+      hoursLabel: 'Horaires',
+      hoursValue: 'Lun-Ven, 09h00 - 18h00',
+      responseTime: 'Réponse sous 24h',
+      socialLabel: 'Suivez le mouvement',
+      faqTitle: 'Foire Aux Questions'
+    }
+  },
   partners: {
     logos: [
       { id: '1', name: 'Partenaire Institutionnel 1', logo: 'https://picsum.photos/seed/instit1/200/200', category: 'Institutional' },
@@ -351,6 +366,16 @@ export const cmsService = {
             cta: {
               ...initialData.partners.cta,
               ...parsed.partners?.cta
+            }
+          },
+          contact: {
+            hero: {
+              ...initialData.contact.hero,
+              ...parsed.contact?.hero
+            },
+            sections: {
+              ...initialData.contact.sections,
+              ...parsed.contact?.sections
             }
           },
           theme: {
