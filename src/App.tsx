@@ -1039,6 +1039,22 @@ export default function App() {
                 </div>
               </div>
             )}
+
+            {/* Media & Broadcasting */}
+            {partnerData?.logos && partnerData.logos.filter((p: any) => p.category === 'Media').length > 0 && (
+              <div>
+                <h3 className="text-slate-500 font-bold tracking-[0.3em] uppercase text-[10px] text-center mb-12 border-b border-white/5 pb-4">Media & Broadcasting</h3>
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6 items-center">
+                  {partnerData.logos
+                    .filter((p: any) => p.category === 'Media')
+                    .map((media: any, idx: number) => (
+                      <div key={media.id || idx} className="bg-white/5 border border-white/10 hover:border-accent-red/40 p-6 flex items-center justify-center grayscale contrast-125 opacity-70 hover:opacity-100 hover:grayscale-0 transition-all duration-500">
+                        <img src={media.logo} alt={media.name} className="max-h-12 w-auto object-contain" referrerPolicy="no-referrer" />
+                      </div>
+                    ))}
+                </div>
+              </div>
+            )}
           </div>
           
           <div className="mt-20 text-center">
