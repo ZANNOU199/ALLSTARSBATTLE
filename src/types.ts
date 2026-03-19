@@ -1,50 +1,4 @@
 
-// Site Assets - Images et Vidéos du site
-export interface BackgroundImage {
-  id: string;
-  name: string;
-  section: string; // e.g., "hero", "competition", "dancers", "hompage-feature"
-  url: string;
-  width?: number;
-  height?: number;
-  size?: string; // File size in KB/MB
-  uploadedAt?: string;
-  alt: string;
-}
-
-export interface IllustrativeImage {
-  id: string;
-  name: string;
-  section: string; // e.g., "about", "services", "features"
-  url: string;
-  width?: number;
-  height?: number;
-  size?: string; // File size in KB/MB
-  uploadedAt?: string;
-  alt: string;
-  caption?: string;
-}
-
-export interface SiteVideo {
-  id: string;
-  name: string;
-  section: string; // e.g., "hero-background", "testimonial"
-  url: string;
-  thumbnail?: string;
-  width?: number;
-  height?: number;
-  duration?: string; // e.g., "2:30"
-  size?: string; // File size in KB/MB
-  uploadedAt?: string;
-  alt: string;
-}
-
-export interface SiteAssets {
-  backgroundImages: BackgroundImage[];
-  illustrativeImages: IllustrativeImage[];
-  videos: SiteVideo[];
-}
-
 export interface Company {
   id: string;
   name: string;
@@ -254,6 +208,43 @@ export interface MediaItem {
   tag?: string;
 }
 
+export interface PageBackground {
+  imageUrl: string;
+  videoUrl?: string;
+  width: number;
+  height: number;
+  lastModified: string;
+}
+
+export interface PageBackgrounds {
+  hero: PageBackground;
+  artisticScene: PageBackground;
+  dancers: PageBackground;
+  media: PageBackground;
+  contact: PageBackground;
+}
+
+export interface ImageAsset {
+  url: string;
+  size: string;
+  width: number;
+  height: number;
+  type: string;
+}
+
+export interface VideoAsset {
+  url: string;
+  size: string;
+  duration?: string;
+  type: string;
+}
+
+export interface SiteAssets {
+  backgrounds: { [key: string]: ImageAsset };
+  illustrations: { [key: string]: ImageAsset };
+  videos: { [key: string]: VideoAsset };
+}
+
 export interface CMSData {
   companies: Company[];
   participants: Participant[];
@@ -330,9 +321,10 @@ export interface CMSData {
     };
   };
   media: MediaItem[];
-  siteAssets: SiteAssets;
   globalConfig: GlobalConfig;
   theme: ThemeConfig;
+  pageBackgrounds: PageBackgrounds;
+  siteAssets: SiteAssets;
   participate: {
     hero: {
       title: string;

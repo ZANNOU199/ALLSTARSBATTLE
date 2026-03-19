@@ -7,9 +7,10 @@ import { MediaItem } from './types';
 interface MediaProps {
   selectedYear?: number;
   onYearChange?: (year: number) => void;
+  pageBackgrounds?: any;
 }
 
-const Media = ({ selectedYear: initialYear = 2026, onYearChange }: MediaProps) => {
+const Media = ({ selectedYear: initialYear = 2026, onYearChange, pageBackgrounds }: MediaProps) => {
   const [activeTab, setActiveTab] = useState('photos');
   const [selectedYear, setSelectedYear] = useState(initialYear);
   const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
@@ -88,7 +89,7 @@ const Media = ({ selectedYear: initialYear = 2026, onYearChange }: MediaProps) =
         <div className="absolute inset-0 bg-gradient-to-t from-background-dark via-transparent to-transparent z-10"></div>
         <div 
           className="absolute inset-0 opacity-40 bg-cover bg-center" 
-          style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuD_lpERPa9NunQSXwBDnHkdYXWkWpPCZMYYseIzSoRmKm4vZyvNzQzNYYxesAdYo7uITZV1CGIzvOMNgq2zMbsZ0YM5r5bob_CqY5vvtRF0LHXklp0FBEiBzsRQd8MGQcOqRDEQ-nteRAphfCZguHeVY2srcWophQCcWOiCsWBRV8CPIhO-xFulocGbbn-79wPdP2NYI99Sctefrm22L4q-PFYaPO5yxBe-dX1VBTFJadgPPA_4MUtIr7zkWToK5Qzec3jUGGRGqKqj')" }}
+          style={{ backgroundImage: `url('${pageBackgrounds?.media.imageUrl || 'https://lh3.googleusercontent.com/aida-public/AB6AXuD_lpERPa9NunQSXwBDnHkdYXWkWpPCZMYYseIzSoRmKm4vZyvNzQzNYYxesAdYo7uITZV1CGIzvOMNgq2zMbsZ0YM5r5bob_CqY5vvtRF0LHXklp0FBEiBzsRQd8MGQcOqRDEQ-nteRAphfCZguHeVY2srcWophQCcWOiCsWBRV8CPIhO-xFulocGbbn-79wPdP2NYI99Sctefrm22L4q-PFYaPO5yxBe-dX1VBTFJadgPPA_4MUtIr7zkWToK5Qzec3jUGGRGqKqj'}')` }}
         ></div>
         <div className="relative z-20 text-center px-4 max-w-5xl">
           <motion.h1 

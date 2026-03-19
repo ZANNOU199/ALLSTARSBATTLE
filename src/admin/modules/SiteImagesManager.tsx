@@ -1,364 +1,190 @@
 import React, { useState } from 'react';
 import { CMSData } from '../../types';
-import { ChevronDown, Plus, Trash2, Edit2, Image as ImageIcon, Film } from 'lucide-react';
+import { Plus, Trash2, Edit, Save, X, Image as ImageIcon } from 'lucide-react';
 
-interface SiteImagesManagerProps {
-  data: CMSData;
-  setData: (data: CMSData) => void;
-}
-
-type AssetTab = 'background' | 'illustrative' | 'videos';
-
-export const SiteImagesManager: React.FC<SiteImagesManagerProps> = ({ data, setData }) => {
-  const [activeTab, setActiveTab] = useState<AssetTab>('background');
-  const [expandedId, setExpandedId] = useState<string | null>(null);
+export default function SiteImagesManager({ data, setData }: { data: CMSData, setData: React.Dispatch<React.SetStateAction<CMSData>> }) {
+  const [activeTab, setActiveTab] = useState<'backgrounds' | 'illustrations' | 'videos'>('backgrounds');
+  const [isAdding, setIsAdding] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [editFormData, setEditFormData] = useState<any>(null);
+  const [formData, setFormData] = useState<any>({});
 
-  const handleDeleteImage = (id: string, type: AssetTab) => {
-    const newData = { ...data };
-    if (type === 'background') {
-      newData.siteAssets.backgroundImages = newData.siteAssets.backgroundImages.filter(img => img.id !== id);
-    } else if (type === 'illustrative') {
-      newData.siteAssets.illustrativeImages = newData.siteAssets.illustrativeImages.filter(img => img.id !== id);
-    } else if (type === 'videos') {
-      newData.siteAssets.videos = newData.siteAssets.videos.filter(video => video.id !== id);
-    }
-    setData(newData);
-  };
+  const handleAddAsset = () => {
+    if (!formData.url) return;
 
-  const handleEditImage = (item: any, type: AssetTab) => {
-    setEditingId(item.id);
-    setEditFormData({ ...item });
-  };
+    const newAsset = {
+      url: formData.url,
+      size: formData.size || '0 MB',
+      width: parseInt(formData.width) || 1920,
+      height: parseInt(formData.height) || 1080,
+      type: formData.type || 'image'
+    };
 
-  const handleSaveEdit = (type: AssetTab) => {
-    const newData = { ...data };
-    if (type === 'background') {
-      const index = newData.siteAssets.backgroundImages.findIndex(img => img.id === editingId);
-      if (index !== -1) {
-        newData.siteAssets.backgroundImages[index] = editFormData;
+    setData(prev => ({
+      ...prev,
+      siteAssets: {
+        ...prev.siteAssets,
+        [activeTab]: {
+          ...prev.siteAssets[activeTab as 'backgrounds' | 'illustrations' | 'videos'],
+          [Date.now().toString()]: newAsset
+        }
       }
-    } else if (type === 'illustrative') {
-      const index = newData.siteAssets.illustrativeImages.findIndex(img => img.id === editingId);
-      if (index !== -1) {
-        newData.siteAssets.illustrativeImages[index] = editFormData;
+    }));
+
+    setIsAdding(false);
+    setFormData({});
+  };
+
+  const handleDeleteAsset = (assetId: string) => {
+    setData(prev => ({
+      ...prev,
+      siteAssets: {
+        ...prev.siteAssets,
+        [activeTab]: Object.fromEntries(
+          Object.entries(prev.siteAssets[activeTab as 'backgrounds' | 'illustrations' | 'videos']).filter(
+            ([key]) => key !== assetId
+          )
+        )
       }
-    } else if (type === 'videos') {
-      const index = newData.siteAssets.videos.findIndex(video => video.id === editingId);
-      if (index !== -1) {
-        newData.siteAssets.videos[index] = editFormData;
-      }
-    }
-    setData(newData);
-    setEditingId(null);
-    setEditFormData(null);
+    }));
   };
 
-  const handleAddNew = (type: AssetTab) => {
-    const newData = { ...data };
-    const newId = Date.now().toString();
-    
-    if (type === 'background') {
-      newData.siteAssets.backgroundImages.push({
-        id: newId,
-        name: 'Nouvelle Image Arrière-plan',
-        section: 'hero',
-        url: '',
-        width: 2560,
-        height: 1440,
-        size: '0 MB',
-        uploadedAt: new Date().toISOString().split('T')[0],
-        alt: ''
-      });
-    } else if (type === 'illustrative') {
-      newData.siteAssets.illustrativeImages.push({
-        id: newId,
-        name: 'Nouvelle Image Illustrative',
-        section: 'about',
-        url: '',
-        width: 1200,
-        height: 800,
-        size: '0 MB',
-        uploadedAt: new Date().toISOString().split('T')[0],
-        alt: '',
-        caption: ''
-      });
-    } else if (type === 'videos') {
-      newData.siteAssets.videos.push({
-        id: newId,
-        name: 'Nouvelle Vidéo',
-        section: 'hero',
-        url: '',
-        thumbnail: '',
-        width: 1920,
-        height: 1080,
-        duration: '0:00',
-        size: '0 MB',
-        uploadedAt: new Date().toISOString().split('T')[0],
-        alt: ''
-      });
-    }
-    setData(newData);
-  };
-
-  const renderImageCard = (item: any, type: AssetTab) => {
-    const isEditing = editingId === item.id;
-
-    if (isEditing) {
-      return (
-        <div key={item.id} className="bg-white rounded-lg border border-gray-200 p-4">
-          <div className="space-y-3">
-            <input
-              type="text"
-              placeholder="Nom"
-              value={editFormData.name}
-              onChange={(e) => setEditFormData({ ...editFormData, name: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-            />
-            <input
-              type="text"
-              placeholder="Section"
-              value={editFormData.section}
-              onChange={(e) => setEditFormData({ ...editFormData, section: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-            />
-            <input
-              type="text"
-              placeholder="URL"
-              value={editFormData.url}
-              onChange={(e) => setEditFormData({ ...editFormData, url: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-            />
-            <div className="grid grid-cols-2 gap-2">
-              <input
-                type="number"
-                placeholder="Largeur"
-                value={editFormData.width}
-                onChange={(e) => setEditFormData({ ...editFormData, width: parseInt(e.target.value) })}
-                className="px-3 py-2 border border-gray-300 rounded-lg"
-              />
-              <input
-                type="number"
-                placeholder="Hauteur"
-                value={editFormData.height}
-                onChange={(e) => setEditFormData({ ...editFormData, height: parseInt(e.target.value) })}
-                className="px-3 py-2 border border-gray-300 rounded-lg"
-              />
-            </div>
-            <input
-              type="text"
-              placeholder="Taille du fichier"
-              value={editFormData.size}
-              onChange={(e) => setEditFormData({ ...editFormData, size: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-            />
-            <input
-              type="text"
-              placeholder="Texte alternatif"
-              value={editFormData.alt}
-              onChange={(e) => setEditFormData({ ...editFormData, alt: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-            />
-            {type === 'illustrative' && (
-              <input
-                type="text"
-                placeholder="Légende"
-                value={editFormData.caption || ''}
-                onChange={(e) => setEditFormData({ ...editFormData, caption: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-              />
-            )}
-            {type === 'videos' && (
-              <>
-                <input
-                  type="text"
-                  placeholder="URL de la miniature"
-                  value={editFormData.thumbnail || ''}
-                  onChange={(e) => setEditFormData({ ...editFormData, thumbnail: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-                />
-                <input
-                  type="text"
-                  placeholder="Durée (MM:SS)"
-                  value={editFormData.duration || ''}
-                  onChange={(e) => setEditFormData({ ...editFormData, duration: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-                />
-              </>
-            )}
-            <div className="flex gap-2 pt-2">
-              <button
-                onClick={() => handleSaveEdit(type)}
-                className="flex-1 bg-green-600 text-white py-2 rounded-lg hover:bg-green-700"
-              >
-                Enregistrer
-              </button>
-              <button
-                onClick={() => {
-                  setEditingId(null);
-                  setEditFormData(null);
-                }}
-                className="flex-1 bg-gray-300 text-gray-700 py-2 rounded-lg hover:bg-gray-400"
-              >
-                Annuler
-              </button>
-            </div>
-          </div>
-        </div>
-      );
-    }
-
-    return (
-      <div key={item.id} className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow">
-        <div className="h-48 bg-gray-100 overflow-hidden relative">
-          {item.url ? (
-            <img
-              src={item.url}
-              alt={item.alt}
-              className="w-full h-full object-cover"
-              onError={(e) => {
-                (e.target as HTMLImageElement).src = 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22200%22%3E%3Crect fill=%22%23f3f4f6%22 width=%22200%22 height=%22200%22/%3E%3C/svg%3E';
-              }}
-            />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center">
-              <div className="text-center">
-                {type === 'videos' ? (
-                  <Film className="w-12 h-12 text-gray-400 mx-auto mb-2" />
-                ) : (
-                  <ImageIcon className="w-12 h-12 text-gray-400 mx-auto mb-2" />
-                )}
-                <p className="text-gray-500 text-sm">Pas d'image</p>
-              </div>
-            </div>
-          )}
-        </div>
-        <div className="p-4">
-          <h3 className="font-semibold text-gray-900 mb-2">{item.name}</h3>
-          <div className="space-y-2 text-sm text-gray-600">
-            <p>
-              <strong>Section:</strong> {item.section}
-            </p>
-            <p>
-              <strong>Dimensions:</strong> {item.width}x{item.height}px
-            </p>
-            <p>
-              <strong>Taille:</strong> {item.size}
-            </p>
-            {item.caption && (
-              <p>
-                <strong>Légende:</strong> {item.caption}
-              </p>
-            )}
-            {item.duration && (
-              <p>
-                <strong>Durée:</strong> {item.duration}
-              </p>
-            )}
-            <p>
-              <strong>Alt:</strong> {item.alt}
-            </p>
-          </div>
-          <div className="flex gap-2 mt-4 pt-4 border-t border-gray-200">
-            <button
-              onClick={() => handleEditImage(item, type)}
-              className="flex-1 flex items-center justify-center gap-1 bg-blue-50 text-blue-700 py-2 rounded hover:bg-blue-100"
-            >
-              <Edit2 className="w-4 h-4" />
-              Éditer
-            </button>
-            <button
-              onClick={() => handleDeleteImage(item.id, type)}
-              className="flex-1 flex items-center justify-center gap-1 bg-red-50 text-red-700 py-2 rounded hover:bg-red-100"
-            >
-              <Trash2 className="w-4 h-4" />
-              Supprimer
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-  const renderTabContent = () => {
-    let items: any[] = [];
-    let tabName = '';
-
-    if (activeTab === 'background') {
-      items = data.siteAssets.backgroundImages;
-      tabName = 'Images Arrière-plan';
-    } else if (activeTab === 'illustrative') {
-      items = data.siteAssets.illustrativeImages;
-      tabName = 'Images Illustratives';
-    } else {
-      items = data.siteAssets.videos;
-      tabName = 'Vidéos';
-    }
-
-    return (
-      <div className="space-y-4">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold text-gray-900">{tabName}</h2>
-          <button
-            onClick={() => handleAddNew(activeTab)}
-            className="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700"
-          >
-            <Plus className="w-5 h-5" />
-            Ajouter
-          </button>
-        </div>
-
-        {items.length === 0 ? (
-          <div className="bg-white rounded-lg border border-gray-200 p-12 text-center">
-            <p className="text-gray-500">Aucun élément pour cette catégorie</p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {items.map((item) => renderImageCard(item, activeTab))}
-          </div>
-        )}
-      </div>
-    );
-  };
+  const currentAssets = data.siteAssets[activeTab as 'backgrounds' | 'illustrations' | 'videos'] || {};
 
   return (
-    <div className="p-6 bg-gray-50 rounded-lg">
-      <h1 className="text-3xl font-bold text-gray-900 mb-8">Gestion des Images du Site</h1>
-
-      {/* Tabs Navigation */}
-      <div className="flex gap-2 mb-8 border-b border-gray-200">
-        {(
-          [
-            { id: 'background', label: 'Images Arrière-plan', icon: ImageIcon },
-            { id: 'illustrative', label: 'Images Illustratives', icon: ImageIcon },
-            { id: 'videos', label: 'Vidéos', icon: Film }
-          ] as const
-        ).map((tab) => {
-          const Icon = tab.icon;
-          return (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-2 px-4 py-3 font-medium border-b-2 transition-colors ${
-                activeTab === tab.id
-                  ? 'border-blue-600 text-blue-600'
-                  : 'border-transparent text-gray-600 hover:text-gray-900'
-              }`}
-            >
-              <Icon className="w-5 h-5" />
-              {tab.label}
-            </button>
-          );
-        })}
+    <div className="space-y-8">
+      <div className="bg-gradient-to-r from-primary/20 to-accent-red/20 border border-white/10 rounded-2xl p-8">
+        <h3 className="text-2xl font-heading text-primary mb-2">📦 Assets du Site</h3>
+        <p className="text-slate-400 text-sm">Gérez les images et vidéos organisées par catégories</p>
       </div>
 
-      {/* Tab Content */}
-      <div className="bg-white rounded-lg p-6">
-        {renderTabContent()}
+      <div className="flex gap-4 border-b border-white/5 pb-4">
+        <button 
+          onClick={() => { setActiveTab('backgrounds'); setIsAdding(false); }}
+          className={`px-6 py-2 text-xs font-bold uppercase tracking-widest transition-all ${activeTab === 'backgrounds' ? 'text-primary border-b-2 border-primary' : 'text-slate-500 hover:text-white'}`}
+        >
+          🖼️ Backgrounds
+        </button>
+        <button 
+          onClick={() => { setActiveTab('illustrations'); setIsAdding(false); }}
+          className={`px-6 py-2 text-xs font-bold uppercase tracking-widest transition-all ${activeTab === 'illustrations' ? 'text-primary border-b-2 border-primary' : 'text-slate-500 hover:text-white'}`}
+        >
+          🎨 Illustrations
+        </button>
+        <button 
+          onClick={() => { setActiveTab('videos'); setIsAdding(false); }}
+          className={`px-6 py-2 text-xs font-bold uppercase tracking-widest transition-all ${activeTab === 'videos' ? 'text-primary border-b-2 border-primary' : 'text-slate-500 hover:text-white'}`}
+        >
+          🎬 Vidéos
+        </button>
+      </div>
+
+      <div className="flex justify-between items-center">
+        <h4 className="font-heading text-lg">
+          {activeTab === 'backgrounds' && '🖼️ Images de Fond'}
+          {activeTab === 'illustrations' && '🎨 Illustrations'}
+          {activeTab === 'videos' && '🎬 Vidéos'}
+        </h4>
+        <button 
+          onClick={() => setIsAdding(!isAdding)} 
+          className="flex items-center gap-2 px-4 py-2 bg-primary text-background-dark font-bold rounded-xl"
+        >
+          <Plus size={18} /> Ajouter
+        </button>
+      </div>
+
+      {isAdding && (
+        <div className="bg-[#111] border border-white/10 p-8 rounded-2xl space-y-6">
+          <h5 className="text-lg font-heading text-white">Ajouter un nouvel Asset</h5>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">URL</label>
+              <input 
+                type="text" 
+                value={formData.url || ''} 
+                onChange={e => setFormData({ ...formData, url: e.target.value })}
+                placeholder="https://example.com/image.jpg"
+                className="w-full bg-white/5 border border-white/10 rounded-xl p-3 focus:border-primary outline-none transition-all"
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Taille (ex: 2.5 MB)</label>
+              <input 
+                type="text" 
+                value={formData.size || ''} 
+                onChange={e => setFormData({ ...formData, size: e.target.value })}
+                placeholder="2.5 MB"
+                className="w-full bg-white/5 border border-white/10 rounded-xl p-3 focus:border-primary outline-none transition-all"
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Largeur (px)</label>
+              <input 
+                type="number" 
+                value={formData.width || 1920} 
+                onChange={e => setFormData({ ...formData, width: e.target.value })}
+                className="w-full bg-white/5 border border-white/10 rounded-xl p-3 focus:border-primary outline-none transition-all"
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Hauteur (px)</label>
+              <input 
+                type="number" 
+                value={formData.height || 1080} 
+                onChange={e => setFormData({ ...formData, height: e.target.value })}
+                className="w-full bg-white/5 border border-white/10 rounded-xl p-3 focus:border-primary outline-none transition-all"
+              />
+            </div>
+          </div>
+          <div className="flex justify-end gap-4">
+            <button 
+              onClick={() => { setIsAdding(false); setFormData({}); }}
+              className="px-6 py-2 text-xs font-bold uppercase tracking-widest text-slate-500"
+            >
+              Annuler
+            </button>
+            <button 
+              onClick={handleAddAsset}
+              className="px-6 py-2 bg-primary text-background-dark rounded-xl font-bold text-xs uppercase tracking-widest"
+            >
+              Ajouter
+            </button>
+          </div>
+        </div>
+      )}
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {Object.entries(currentAssets).map(([id, asset]: [string, any]) => (
+          <div key={id} className="bg-[#111] border border-white/5 p-6 rounded-2xl">
+            {asset.url && (
+              <div className="relative w-full h-40 bg-black rounded-xl overflow-hidden mb-4">
+                {activeTab === 'videos' ? (
+                  <video src={asset.url} className="w-full h-full object-cover" />
+                ) : (
+                  <img src={asset.url} alt="asset" className="w-full h-full object-cover" onError={(e) => {
+                    (e.target as HTMLImageElement).src = 'https://via.placeholder.com/400x200?text=Image+not+available';
+                  }} />
+                )}
+              </div>
+            )}
+            <div className="space-y-2 mb-4">
+              <div className="flex justify-between text-xs">
+                <span className="text-slate-500">Taille:</span>
+                <span className="text-white font-mono">{asset.size}</span>
+              </div>
+              <div className="flex justify-between text-xs">
+                <span className="text-slate-500">Résolution:</span>
+                <span className="text-white font-mono">{asset.width} × {asset.height}px</span>
+              </div>
+            </div>
+            <button 
+              onClick={() => handleDeleteAsset(id)}
+              className="w-full px-4 py-2 bg-accent-red/20 text-accent-red rounded-xl font-bold text-xs"
+            >
+              <Trash2 size={14} className="inline mr-2" /> Supprimer
+            </button>
+          </div>
+        ))}
       </div>
     </div>
   );
-};
-
-export default SiteImagesManager;
+}

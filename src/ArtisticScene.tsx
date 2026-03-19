@@ -16,9 +16,10 @@ import {
 interface ArtisticSceneProps {
   onNavigateToProgram?: () => void;
   onNavigateToTickets?: () => void;
+  pageBackgrounds?: any;
 }
 
-const ArtisticScene = ({ onNavigateToProgram, onNavigateToTickets }: ArtisticSceneProps) => {
+const ArtisticScene = ({ onNavigateToProgram, onNavigateToTickets, pageBackgrounds }: ArtisticSceneProps) => {
   const [showSynopsis, setShowSynopsis] = useState(false);
   const [companies, setCompanies] = useState<Company[]>([]);
   const [selectedCompany, setSelectedCompany] = useState<Company | null>(null);
@@ -211,7 +212,7 @@ const ArtisticScene = ({ onNavigateToProgram, onNavigateToTickets }: ArtisticSce
                   animate={{ scale: 1 }}
                   transition={{ duration: 2, ease: "easeOut" }}
                   className="w-full h-full bg-cover bg-center" 
-                  style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuDI8WzswOB2uB-qOUd3Dhqa2Gey4xBH5kW3ybyesbj6_bKDCQ_mjQ4CwUY2vZbNoSSvM5ZDbNeO1MSNK-Bd7Ix63DSV7_5LDRL6w--ll1y58Rdick4pZ2QZuRJi54_67fcUXStbiwjkbUWK8xPKmsBfRy60UjDgHqbJwI36UuE7X8kqoictCds8CvEf140Fen70QaQvGeyMZMwzXlFgcmVDIQp4tMMPzlFc8p5QW235-Ipf_43sYfneElm3Iu3zia4hRmSa6NQnbIII')" }}
+                  style={{ backgroundImage: `url('${pageBackgrounds?.artisticScene.imageUrl || 'https://lh3.googleusercontent.com/aida-public/AB6AXuDI8WzswOB2uB-qOUd3Dhqa2Gey4xBH5kW3ybyesbj6_bKDCQ_mjQ4CwUY2vZbNoSSvM5ZDbNeO1MSNK-Bd7Ix63DSV7_5LDRL6w--ll1y58Rdick4pZ2QZuRJi54_67fcUXStbiwjkbUWK8xPKmsBfRy60UjDgHqbJwI36UuE7X8kqoictCds8CvEf140Fen70QaQvGeyMZMwzXlFgcmVDIQp4tMMPzlFc8p5QW235-Ipf_43sYfneElm3Iu3zia4hRmSa6NQnbIII'}')` }}
                 ></motion.div>
               </div>
               

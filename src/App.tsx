@@ -342,6 +342,7 @@ export default function App() {
   const [selectedArticleId, setSelectedArticleId] = useState<string | undefined>(undefined);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [config, setConfig] = useState<GlobalConfig | null>(null);
+  const [pageBackgrounds, setPageBackgrounds] = useState<any>(null);
   const [stats, setStats] = useState<any[]>([]);
   const [recentNews, setRecentNews] = useState<any[]>([]);
   const [participants, setParticipants] = useState<any[]>([]);
@@ -355,6 +356,7 @@ export default function App() {
   useEffect(() => {
     const data = cmsService.getData();
     setConfig(data.globalConfig);
+    setPageBackgrounds(data.pageBackgrounds);
     setStats(data.globalConfig.homepageStats);
     setRecentNews(data.blog.articles.slice(0, 3));
     setParticipants(data.participants);
@@ -370,6 +372,7 @@ export default function App() {
     if (currentPage !== 'admin') {
       const data = cmsService.getData();
       setConfig(data.globalConfig);
+      setPageBackgrounds(data.pageBackgrounds);
       setBracketData(data.competition.brackets);
       setMediaItems(data.media || []);
       setPartnerData(data.partners);
@@ -617,21 +620,22 @@ export default function App() {
         <div className="absolute inset-0 z-0">
           {/* Video for Tablet & PC */}
           <video 
+            key={pageBackgrounds?.hero.videoUrl}
             autoPlay 
             loop 
             muted 
             playsInline 
             preload="auto"
-            poster="https://images.unsplash.com/photo-1547153760-18fc86324498?auto=format&fit=crop&q=80&w=1920"
+            poster={pageBackgrounds?.hero.imageUrl || "https://images.unsplash.com/photo-1547153760-18fc86324498?auto=format&fit=crop&q=80&w=1920"}
             className="hidden md:block w-full h-full object-cover opacity-50 scale-105"
           >
-            <source src="https://vjs.zencdn.net/v/oceans.mp4" type="video/mp4" />
+            <source src={pageBackgrounds?.hero.videoUrl || "https://vjs.zencdn.net/v/oceans.mp4"} type="video/mp4" />
           </video>
           
           {/* Photo for Mobile */}
           <div 
             className="md:hidden w-full h-full bg-cover bg-center opacity-60 scale-110"
-            style={{ backgroundImage: 'url("https://images.unsplash.com/photo-1547153760-18fc86324498?auto=format&fit=crop&q=60&w=800")' }}
+            style={{ backgroundImage: `url("${pageBackgrounds?.hero.imageUrl || 'https://images.unsplash.com/photo-1547153760-18fc86324498?auto=format&fit=crop&q=60&w=800'}")` }}
           ></div>
           
           <div className="absolute inset-0 bg-gradient-to-b from-background-dark/70 via-background-dark/20 to-background-dark/80"></div>
@@ -1133,7 +1137,7 @@ export default function App() {
   ) : currentPage === 'competition' ? (
     <Competition />
   ) : currentPage === 'dancers' ? (
-    <Dancers onViewPerformances={() => setCurrentPage('media')} />
+    <Dancers onViewPerformances={() => setCurrentPage('media')} pageBackgrounds={pageBackgrounds} />
   ) : currentPage === 'judges' ? (
     <Judges />
   ) : currentPage === 'history' ? (
@@ -1147,10 +1151,11 @@ export default function App() {
   ) : currentPage === 'artistic' ? (
     <ArtisticScene 
       onNavigateToProgram={() => setCurrentPage('program')} 
-      onNavigateToTickets={() => setCurrentPage('tickets')} 
+      onNavigateToTickets={() => setCurrentPage('tickets')}
+      pageBackgrounds={pageBackgrounds}
     />
   ) : currentPage === 'contact' ? (
-    <Contact onNavigateToFAQ={() => setCurrentPage('faq')} />
+    <Contact onNavigateToFAQ={() => setCurrentPage('faq')} pageBackgrounds={pageBackgrounds} />
   ) : currentPage === 'participate' ? (
     <Participate onBack={() => setCurrentPage('home')} data={participateData} />
   ) : currentPage === 'partners' ? (
@@ -1163,7 +1168,7 @@ export default function App() {
   ) : currentPage === 'faq' ? (
     <FAQ onNavigateBack={() => setCurrentPage('home')} />
   ) : (
-    <Media selectedYear={selectedMediaYear} onYearChange={setSelectedMediaYear} />
+    <Media selectedYear={selectedMediaYear} onYearChange={setSelectedMediaYear} pageBackgrounds={pageBackgrounds} />
   )}
 
   {/* FOOTER */}

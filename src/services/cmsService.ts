@@ -256,133 +256,6 @@ const initialData: CMSData = {
       thumbnail: ''
     }
   ],
-  siteAssets: {
-    backgroundImages: [
-      {
-        id: '1',
-        name: 'Hero Homepage',
-        section: 'hero',
-        url: 'https://images.unsplash.com/photo-1566576912321-d01dcc01d4b0?auto=format&fit=crop&q=80&w=2560&h=1440',
-        width: 2560,
-        height: 1440,
-        size: '2.8 MB',
-        uploadedAt: '2026-01-15',
-        alt: 'Hero background with breaking dancers'
-      },
-      {
-        id: '2',
-        name: 'Competition Section',
-        section: 'competition',
-        url: 'https://images.unsplash.com/photo-1516322318423-f06f70259b0c?auto=format&fit=crop&q=80&w=2560&h=1440',
-        width: 2560,
-        height: 1440,
-        size: '3.1 MB',
-        uploadedAt: '2026-01-20',
-        alt: 'Competition arena background'
-      },
-      {
-        id: '3',
-        name: 'Dancers Section',
-        section: 'dancers',
-        url: 'https://images.unsplash.com/photo-1510578773206-a38aa66472e8?auto=format&fit=crop&q=80&w=2560&h=1440',
-        width: 2560,
-        height: 1440,
-        size: '2.6 MB',
-        uploadedAt: '2026-01-22',
-        alt: 'Featured dancers background'
-      },
-      {
-        id: '4',
-        name: 'Partners Section',
-        section: 'partners',
-        url: 'https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&q=80&w=2560&h=1440',
-        width: 2560,
-        height: 1440,
-        size: '2.9 MB',
-        uploadedAt: '2026-01-25',
-        alt: 'Partners and sponsors background'
-      }
-    ],
-    illustrativeImages: [
-      {
-        id: '1',
-        name: 'About Section Image',
-        section: 'about',
-        url: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format&fit=crop&q=80&w=1200&h=800',
-        width: 1200,
-        height: 800,
-        size: '1.2 MB',
-        uploadedAt: '2026-01-18',
-        alt: 'About section illustration',
-        caption: 'The spirit of All Stars Battle'
-      },
-      {
-        id: '2',
-        name: 'VIP Experience Icon',
-        section: 'vip',
-        url: 'https://images.unsplash.com/photo-1549887534-f2cb8b07ef5e?auto=format&fit=crop&q=80&w=800&h=600',
-        width: 800,
-        height: 600,
-        size: '0.8 MB',
-        uploadedAt: '2026-01-20',
-        alt: 'VIP experience illustration',
-        caption: 'Premium access to the action'
-      },
-      {
-        id: '3',
-        name: 'Press Media Image',
-        section: 'press',
-        url: 'https://images.unsplash.com/photo-1557821552-17105176677c?auto=format&fit=crop&q=80&w=1200&h=800',
-        width: 1200,
-        height: 800,
-        size: '1.4 MB',
-        uploadedAt: '2026-01-23',
-        alt: 'Press and media coverage',
-        caption: 'Featured in major publications'
-      }
-    ],
-    videos: [
-      {
-        id: '1',
-        name: 'Hero Background Video',
-        section: 'hero',
-        url: 'https://vjs.zencdn.net/v/oceans.mp4',
-        thumbnail: 'https://images.unsplash.com/photo-1566576912321-d01dcc01d4b0?auto=format&fit=crop&q=80&w=400&h=225',
-        width: 1920,
-        height: 1080,
-        duration: '0:45',
-        size: '45.2 MB',
-        uploadedAt: '2026-01-15',
-        alt: 'Hero video background'
-      },
-      {
-        id: '2',
-        name: 'Trailer 2026',
-        section: 'promo',
-        url: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
-        thumbnail: 'https://images.unsplash.com/photo-1516322318423-f06f70259b0c?auto=format&fit=crop&q=80&w=400&h=225',
-        width: 1280,
-        height: 720,
-        duration: '2:15',
-        size: '52.1 MB',
-        uploadedAt: '2026-01-20',
-        alt: 'Official event trailer'
-      },
-      {
-        id: '3',
-        name: 'Highlights Compilation',
-        section: 'archive',
-        url: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
-        thumbnail: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format&fit=crop&q=80&w=400&h=225',
-        width: 1280,
-        height: 720,
-        duration: '5:30',
-        size: '78.5 MB',
-        uploadedAt: '2026-01-22',
-        alt: 'Event highlights compilation'
-      }
-    ]
-  },
   globalConfig: {
     contact: {
       email: 'contact@asbi.com',
@@ -497,6 +370,114 @@ const initialData: CMSData = {
       title: '✨ Inscription Réussie !',
       subtitle: 'Merci de votre intérêt pour l\'All Star Battle International ! Notre équipe vous contactera bientôt pour confirmer votre participation.'
     }
+  },
+  pageBackgrounds: {
+    hero: {
+      imageUrl: 'https://images.unsplash.com/photo-1547153760-18fc86324498?auto=format&fit=crop&q=80&w=1920',
+      videoUrl: 'https://vjs.zencdn.net/v/oceans.mp4',
+      width: 1920,
+      height: 1080,
+      lastModified: new Date().toISOString()
+    },
+    artisticScene: {
+      imageUrl: 'https://picsum.photos/seed/artistic-bg/1920/1080',
+      width: 1920,
+      height: 1080,
+      lastModified: new Date().toISOString()
+    },
+    dancers: {
+      imageUrl: 'https://picsum.photos/seed/dancers-bg/1920/1080',
+      width: 1920,
+      height: 1080,
+      lastModified: new Date().toISOString()
+    },
+    media: {
+      imageUrl: 'https://picsum.photos/seed/media-bg/1920/1080',
+      width: 1920,
+      height: 1080,
+      lastModified: new Date().toISOString()
+    },
+    contact: {
+      imageUrl: 'https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?auto=format&fit=crop&q=80&w=2000',
+      width: 1920,
+      height: 1080,
+      lastModified: new Date().toISOString()
+    }
+  },
+  siteAssets: {
+    backgrounds: {
+      'hero-bg': {
+        url: 'https://picsum.photos/seed/hero-background/1920/1080',
+        size: '2.3 MB',
+        width: 1920,
+        height: 1080,
+        type: 'image'
+      },
+      'competition-bg': {
+        url: 'https://picsum.photos/seed/competition-bg/1920/1080',
+        size: '1.8 MB',
+        width: 1920,
+        height: 1080,
+        type: 'image'
+      },
+      'dancers-bg': {
+        url: 'https://picsum.photos/seed/dancers-background/1920/1080',
+        size: '2.1 MB',
+        width: 1920,
+        height: 1080,
+        type: 'image'
+      },
+      'partners-bg': {
+        url: 'https://picsum.photos/seed/partners-bg/1920/1080',
+        size: '1.9 MB',
+        width: 1920,
+        height: 1080,
+        type: 'image'
+      }
+    },
+    illustrations: {
+      'about-section': {
+        url: 'https://picsum.photos/seed/about-illustration/800/600',
+        size: '0.8 MB',
+        width: 800,
+        height: 600,
+        type: 'image'
+      },
+      'vip-section': {
+        url: 'https://picsum.photos/seed/vip-illustration/800/600',
+        size: '0.9 MB',
+        width: 800,
+        height: 600,
+        type: 'image'
+      },
+      'press-section': {
+        url: 'https://picsum.photos/seed/press-illustration/800/600',
+        size: '0.7 MB',
+        width: 800,
+        height: 600,
+        type: 'image'
+      }
+    },
+    videos: {
+      'hero-video': {
+        url: 'https://videos.pexels.com/video-files/3209828/3209828-sd_960_540_25fps.mp4',
+        size: '5.2 MB',
+        duration: '30s',
+        type: 'video'
+      },
+      'promo-video': {
+        url: 'https://videos.pexels.com/video-files/3209828/3209828-sd_960_540_25fps.mp4',
+        size: '3.8 MB',
+        duration: '15s',
+        type: 'video'
+      },
+      'archive-video': {
+        url: 'https://videos.pexels.com/video-files/3209828/3209828-sd_960_540_25fps.mp4',
+        size: '4.5 MB',
+        duration: '45s',
+        type: 'video'
+      }
+    }
   }
 };
 
@@ -540,6 +521,15 @@ export const cmsService = {
           theme: {
             ...initialData.theme,
             ...parsed.theme
+          },
+          pageBackgrounds: {
+            ...initialData.pageBackgrounds,
+            ...parsed.pageBackgrounds
+          },
+          siteAssets: {
+            backgrounds: { ...initialData.siteAssets.backgrounds, ...parsed.siteAssets?.backgrounds },
+            illustrations: { ...initialData.siteAssets.illustrations, ...parsed.siteAssets?.illustrations },
+            videos: { ...initialData.siteAssets.videos, ...parsed.siteAssets?.videos }
           }
         };
         

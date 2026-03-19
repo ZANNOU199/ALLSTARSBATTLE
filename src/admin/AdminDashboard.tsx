@@ -38,12 +38,13 @@ import TicketingFAQ from './modules/TicketingFAQ';
 import HistoryLegends from './modules/HistoryLegends';
 import PartnersMedia from './modules/PartnersMedia';
 import MediaArchives from './modules/MediaArchives';
-import SiteImagesManager from './modules/SiteImagesManager';
 import GlobalConfigSEO from './modules/GlobalConfigSEO';
 import HomepageContent from './modules/HomepageContent';
 import ThemeSettings from './modules/ThemeSettings';
 import ContactCMS from './modules/ContactCMS';
 import ParticipateAdmin from './modules/ParticipateAdmin';
+import BackgroundImages from './modules/BackgroundImages';
+import SiteImagesManager from './modules/SiteImagesManager';
 
 type ModuleId = 
   | 'dashboard' 
@@ -56,12 +57,13 @@ type ModuleId =
   | 'history' 
   | 'partners' 
   | 'media'
-  | 'images'
   | 'contact'
   | 'config'
   | 'homepage'
   | 'theme'
-  | 'participate';
+  | 'participate'
+  | 'backgrounds'
+  | 'siteAssets';
 
 export default function AdminDashboard({ onLogout }: { onLogout: () => void }) {
   const [activeModule, setActiveModule] = useState<ModuleId>('dashboard');
@@ -75,6 +77,8 @@ export default function AdminDashboard({ onLogout }: { onLogout: () => void }) {
   const menuItems = [
     { id: 'dashboard', label: 'Tableau de Bord', icon: LayoutDashboard },
     { id: 'homepage', label: 'Contenu Accueil (Page)', icon: Palette },
+    { id: 'backgrounds', label: 'Images de Fond', icon: ImageIcon },
+    { id: 'siteAssets', label: 'Assets du Site', icon: ImageIcon },
     { id: 'scene', label: 'Scène Artistique', icon: Palette },
     { id: 'participate', label: 'Page Participer', icon: UserCheck },
     { id: 'participants', label: 'Participants & Jury', icon: Users },
@@ -85,7 +89,6 @@ export default function AdminDashboard({ onLogout }: { onLogout: () => void }) {
     { id: 'history', label: 'Histoire & Légendes', icon: History },
     { id: 'contact', label: 'Page Contact', icon: Mail },
     { id: 'media', label: 'Galerie & Archives Média', icon: ImageIcon },
-    { id: 'images', label: 'Images du Site', icon: ImageIcon },
     { id: 'partners', label: 'Partenaires', icon: Handshake },
     { id: 'config', label: 'Configuration & SEO', icon: Settings },
     { id: 'theme', label: 'Paramètres du Thème', icon: Palette },
@@ -95,6 +98,8 @@ export default function AdminDashboard({ onLogout }: { onLogout: () => void }) {
     switch (activeModule) {
       case 'dashboard': return <DashboardOverview data={data} onNavigate={(module) => setActiveModule(module as ModuleId)} />;
       case 'homepage': return <HomepageContent data={data} setData={setData} />;
+      case 'backgrounds': return <BackgroundImages data={data} setData={setData} />;
+      case 'siteAssets': return <SiteImagesManager data={data} setData={setData} />;
       case 'scene': return <SceneArtistique data={data} setData={setData} />;
       case 'participate': return <ParticipateAdmin data={data} setData={setData} />;
       case 'participants': return <ParticipantsJury data={data} setData={setData} />;
@@ -105,7 +110,6 @@ export default function AdminDashboard({ onLogout }: { onLogout: () => void }) {
       case 'history': return <HistoryLegends data={data} setData={setData} />;
       case 'contact': return <ContactCMS data={data} setData={setData} />;
       case 'media': return <MediaArchives data={data} setData={setData} />;
-      case 'images': return <SiteImagesManager data={data} setData={setData} />;
       case 'partners': return <PartnersMedia data={data} setData={setData} />;
       case 'config': return <GlobalConfigSEO data={data} setData={setData} />;
       case 'theme': return <ThemeSettings data={data} setData={setData} />;

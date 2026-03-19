@@ -16,9 +16,10 @@ import { GlobalConfig, FAQItem as FAQType } from './types';
 
 interface ContactProps {
   onNavigateToFAQ?: () => void;
+  pageBackgrounds?: any;
 }
 
-const Contact = ({ onNavigateToFAQ }: ContactProps) => {
+const Contact = ({ onNavigateToFAQ, pageBackgrounds }: ContactProps) => {
   const [config, setConfig] = useState<GlobalConfig | null>(null);
   const [faqs, setFaqs] = useState<FAQType[]>([]);
   const [contactData, setContactData] = useState<any>(null);
@@ -57,7 +58,7 @@ const Contact = ({ onNavigateToFAQ }: ContactProps) => {
           <div className="absolute inset-0 bg-gradient-to-t from-background-dark via-background-dark/60 to-transparent z-10"></div>
           <div 
             className="w-full h-full bg-cover bg-center" 
-            style={{ backgroundImage: "url('https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?auto=format&fit=crop&q=80&w=2000')" }}
+            style={{ backgroundImage: `url('${pageBackgrounds?.contact.imageUrl || 'https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?auto=format&fit=crop&q=80&w=2000'}')` }}
           ></div>
         </div>
         <div className="relative z-20 max-w-4xl">

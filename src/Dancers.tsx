@@ -15,9 +15,10 @@ const dancersData = []; // Removed hardcoded data
 
 interface DancersProps {
   onViewPerformances?: () => void;
+  pageBackgrounds?: any;
 }
 
-const Dancers = ({ onViewPerformances }: DancersProps) => {
+const Dancers = ({ onViewPerformances, pageBackgrounds }: DancersProps) => {
   const [filter, setFilter] = useState('All');
   const [showAll, setShowAll] = useState(false);
   const [selectedDancer, setSelectedDancer] = useState<any>(null);
