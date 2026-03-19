@@ -12,6 +12,21 @@ export interface Company {
   performanceTime: string;
 }
 
+export interface FeaturedPiece {
+  id: string;
+  title: string;
+  image: string;
+  duration: string;
+  choreographer: string;
+  music: string;
+  description: string;
+  fullSynopsis: string;
+  intentionQuote?: string;
+  intentionAuthor?: string;
+  performers?: string;
+  technology?: string;
+}
+
 export interface Participant {
   id: string;
   name: string;
@@ -247,6 +262,7 @@ export interface SiteAssets {
 
 export interface CMSData {
   companies: Company[];
+  featuredPiece?: FeaturedPiece;
   participants: Participant[];
   program: ProgramDay[];
   categories: string[];

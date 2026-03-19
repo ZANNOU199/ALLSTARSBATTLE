@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
-import { CMSData, Company } from '../../types';
-import { Plus, Trash2, Edit, Save, X, Image as ImageIcon } from 'lucide-react';
+import { CMSData, Company, FeaturedPiece } from '../../types';
+import { Plus, Trash2, Edit, Save, X, Image as ImageIcon, Sparkles } from 'lucide-react';
 
 export default function SceneArtistique({ data, setData }: { data: CMSData, setData: React.Dispatch<React.SetStateAction<CMSData>> }) {
   const [isAdding, setIsAdding] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [editingFeaturedPiece, setEditingFeaturedPiece] = useState(false);
   const [formData, setFormData] = useState<Partial<Company>>({});
+  const [featuredFormData, setFeaturedFormData] = useState<Partial<FeaturedPiece>>({});
 
   const handleAdd = () => {
     const newCompany: Company = {
@@ -34,6 +36,18 @@ export default function SceneArtistique({ data, setData }: { data: CMSData, setD
     setFormData({});
   };
 
+  const handleUpdateFeaturedPiece = () => {
+    setData(prev => ({
+      ...prev,
+      featuredPiece: {
+        ...prev.featuredPiece,
+        ...featuredFormData
+      } as FeaturedPiece
+    }));
+    setEditingFeaturedPiece(false);
+    setFeaturedFormData({});
+  };
+
   const handleDelete = (id: string) => {
     if (confirm('Êtes-vous sûr de vouloir supprimer cette compagnie ?')) {
       setData(prev => ({ ...prev, companies: prev.companies.filter(c => c.id !== id) }));
@@ -45,152 +59,344 @@ export default function SceneArtistique({ data, setData }: { data: CMSData, setD
     setFormData(company);
   };
 
+  const startEditFeaturedPiece = () => {
+    setEditingFeaturedPiece(true);
+    setFeaturedFormData(data.featuredPiece || {});
+  };
+
   return (
     <div className="space-y-8">
-      <div className="flex justify-between items-center">
-        <h3 className="text-xl font-heading">Gestion des Compagnies</h3>
-        <button 
-          onClick={() => setIsAdding(true)}
-          className="flex items-center gap-2 px-4 py-2 bg-primary text-background-dark font-bold rounded-xl hover:shadow-[0_0_20px_rgba(211,95,23,0.4)] transition-all"
-        >
-          <Plus size={18} /> Ajouter une Compagnie
-        </button>
+      {/* SECTION MISE EN LUMIÈRE */}
+      <div className="bg-gradient-to-r from-primary/20 to-accent-red/20 border border-white/10 rounded-2xl p-8">
+        <div className="flex justify-between items-center mb-6">
+          <div className="flex items-center gap-3">
+            <Sparkles className="w-6 h-6 text-primary" />
+            <h3 className="text-xl font-heading text-white">Mise en Lumière (Pièce Vedette)</h3>
+          </div>
+          <button 
+            onClick={startEditFeaturedPiece}
+            className="flex items-center gap-2 px-4 py-2 bg-primary text-background-dark font-bold rounded-xl hover:shadow-[0_0_20px_rgba(211,95,23,0.4)] transition-all"
+          >
+            <Edit size={18} /> Modifier
+          </button>
+        </div>
+
+        {editingFeaturedPiece && (
+          <div className="bg-[#111] border border-white/10 p-8 rounded-2xl space-y-6">
+            <h4 className="font-heading text-lg text-white">Éditer la Pièce Vedette</h4>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Titre</label>
+                <input 
+                  type="text" 
+                  value={featuredFormData.title || ''} 
+                  onChange={e => setFeaturedFormData({ ...featuredFormData, title: e.target.value })}
+                  className="w-full bg-white/5 border border-white/10 rounded-xl p-3 focus:border-primary outline-none transition-all"
+                  placeholder="Ex: L'ÉVEIL DES OMBRES"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Durée</label>
+                <input 
+                  type="text" 
+                  value={featuredFormData.duration || ''} 
+                  onChange={e => setFeaturedFormData({ ...featuredFormData, duration: e.target.value })}
+                  className="w-full bg-white/5 border border-white/10 rounded-xl p-3 focus:border-primary outline-none transition-all"
+                  placeholder="Ex: 45 MIN"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Chorégraphe</label>
+                <input 
+                  type="text" 
+                  value={featuredFormData.choreographer || ''} 
+                  onChange={e => setFeaturedFormData({ ...featuredFormData, choreographer: e.target.value })}
+                  className="w-full bg-white/5 border border-white/10 rounded-xl p-3 focus:border-primary outline-none transition-all"
+                  placeholder="Ex: K. AFRIKA"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Musique</label>
+                <input 
+                  type="text" 
+                  value={featuredFormData.music || ''} 
+                  onChange={e => setFeaturedFormData({ ...featuredFormData, music: e.target.value })}
+                  className="w-full bg-white/5 border border-white/10 rounded-xl p-3 focus:border-primary outline-none transition-all"
+                  placeholder="Ex: LIVE DJ SET"
+                />
+              </div>
+              <div className="space-y-2 md:col-span-2">
+                <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Image (URL)</label>
+                <input 
+                  type="text" 
+                  value={featuredFormData.image || ''} 
+                  onChange={e => setFeaturedFormData({ ...featuredFormData, image: e.target.value })}
+                  className="w-full bg-white/5 border border-white/10 rounded-xl p-3 focus:border-primary outline-none transition-all"
+                />
+              </div>
+              <div className="space-y-2 md:col-span-2">
+                <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Description Courte</label>
+                <textarea 
+                  rows={3}
+                  value={featuredFormData.description || ''} 
+                  onChange={e => setFeaturedFormData({ ...featuredFormData, description: e.target.value })}
+                  className="w-full bg-white/5 border border-white/10 rounded-xl p-3 focus:border-primary outline-none transition-all resize-none"
+                  placeholder="Description affichée sur la page"
+                />
+              </div>
+              <div className="space-y-2 md:col-span-2">
+                <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Synopsis Complet</label>
+                <textarea 
+                  rows={5}
+                  value={featuredFormData.fullSynopsis || ''} 
+                  onChange={e => setFeaturedFormData({ ...featuredFormData, fullSynopsis: e.target.value })}
+                  className="w-full bg-white/5 border border-white/10 rounded-xl p-3 focus:border-primary outline-none transition-all resize-none"
+                  placeholder="Synopsis détaillé affiché quand on clique sur 'Synopsis complet'"
+                />
+              </div>
+              <div className="space-y-2 md:col-span-2">
+                <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Note d'intention (Citation)</label>
+                <textarea 
+                  rows={3}
+                  value={featuredFormData.intentionQuote || ''} 
+                  onChange={e => setFeaturedFormData({ ...featuredFormData, intentionQuote: e.target.value })}
+                  className="w-full bg-white/5 border border-white/10 rounded-xl p-3 focus:border-primary outline-none transition-all resize-none"
+                  placeholder="La citation du chorégraphe sur sa vision de la pièce"
+                />
+              </div>
+              <div className="space-y-2 md:col-span-2">
+                <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Auteur de la citation</label>
+                <input 
+                  type="text" 
+                  value={featuredFormData.intentionAuthor || ''} 
+                  onChange={e => setFeaturedFormData({ ...featuredFormData, intentionAuthor: e.target.value })}
+                  className="w-full bg-white/5 border border-white/10 rounded-xl p-3 focus:border-primary outline-none transition-all"
+                  placeholder="Ex: K. Afrika, Chorégraphe"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Interprètes</label>
+                <input 
+                  type="text" 
+                  value={featuredFormData.performers || ''} 
+                  onChange={e => setFeaturedFormData({ ...featuredFormData, performers: e.target.value })}
+                  className="w-full bg-white/5 border border-white/10 rounded-xl p-3 focus:border-primary outline-none transition-all"
+                  placeholder="Ex: 8 B-Boys & B-Girls"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Technologie</label>
+                <input 
+                  type="text" 
+                  value={featuredFormData.technology || ''} 
+                  onChange={e => setFeaturedFormData({ ...featuredFormData, technology: e.target.value })}
+                  className="w-full bg-white/5 border border-white/10 rounded-xl p-3 focus:border-primary outline-none transition-all"
+                  placeholder="Ex: Motion Capture Live"
+                />
+              </div>
+            </div>
+
+            {featuredFormData.image && (
+              <div className="space-y-2">
+                <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Aperçu</label>
+                <img src={featuredFormData.image} alt="Preview" className="w-full h-48 object-cover rounded-xl border border-white/10" />
+              </div>
+            )}
+
+            <div className="flex justify-end gap-4 pt-4">
+              <button 
+                onClick={() => setEditingFeaturedPiece(false)}
+                className="px-6 py-2 border border-white/10 rounded-xl hover:bg-white/5 transition-all text-xs font-bold uppercase tracking-widest"
+              >
+                Annuler
+              </button>
+              <button 
+                onClick={handleUpdateFeaturedPiece}
+                className="px-6 py-2 bg-primary text-background-dark rounded-xl font-bold transition-all text-xs font-bold uppercase tracking-widest flex items-center gap-2"
+              >
+                <Save size={16} /> Enregistrer
+              </button>
+            </div>
+          </div>
+        )}
+
+        {!editingFeaturedPiece && data.featuredPiece && (
+          <div className="bg-[#111] border border-white/5 p-6 rounded-xl">
+            <div className="flex gap-6">
+              <div className="w-32 h-32 rounded-lg overflow-hidden shrink-0 border border-white/10">
+                <img src={data.featuredPiece.image} alt={data.featuredPiece.title} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+              </div>
+              <div className="flex-1">
+                <h4 className="text-2xl font-heading text-white mb-2">{data.featuredPiece.title}</h4>
+                <div className="flex flex-wrap gap-6 mb-4">
+                  <div>
+                    <p className="text-[9px] font-bold uppercase tracking-widest text-slate-500">Durée</p>
+                    <p className="text-white font-bold">{data.featuredPiece.duration}</p>
+                  </div>
+                  <div>
+                    <p className="text-[9px] font-bold uppercase tracking-widest text-slate-500">Chorégraphe</p>
+                    <p className="text-white font-bold">{data.featuredPiece.choreographer}</p>
+                  </div>
+                  <div>
+                    <p className="text-[9px] font-bold uppercase tracking-widest text-slate-500">Musique</p>
+                    <p className="text-white font-bold">{data.featuredPiece.music}</p>
+                  </div>
+                </div>
+                <p className="text-slate-400 text-sm italic">{data.featuredPiece.description}</p>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
-      {(isAdding || editingId) && (
-        <div className="bg-[#111] border border-white/10 p-8 rounded-2xl space-y-6">
-          <div className="flex justify-between items-center">
-            <h4 className="font-heading text-lg">{isAdding ? 'Nouvelle Compagnie' : 'Modifier Compagnie'}</h4>
-            <button onClick={() => { setIsAdding(false); setEditingId(null); }} className="text-slate-500 hover:text-white"><X size={20} /></button>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-2">
-              <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Nom de la Compagnie</label>
-              <input 
-                type="text" 
-                value={formData.name || ''} 
-                onChange={e => setFormData({ ...formData, name: e.target.value })}
-                className="w-full bg-white/5 border border-white/10 rounded-xl p-3 focus:border-primary outline-none transition-all"
-              />
-            </div>
-            <div className="space-y-2">
-              <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Chorégraphe</label>
-              <input 
-                type="text" 
-                value={formData.choreographer || ''} 
-                onChange={e => setFormData({ ...formData, choreographer: e.target.value })}
-                className="w-full bg-white/5 border border-white/10 rounded-xl p-3 focus:border-primary outline-none transition-all"
-              />
-            </div>
-            <div className="space-y-2">
-              <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Titre de la Pièce</label>
-              <input 
-                type="text" 
-                value={formData.pieceTitle || ''} 
-                onChange={e => setFormData({ ...formData, pieceTitle: e.target.value })}
-                className="w-full bg-white/5 border border-white/10 rounded-xl p-3 focus:border-primary outline-none transition-all"
-              />
-            </div>
-            <div className="space-y-2">
-              <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Image Principale (URL)</label>
-              <input 
-                type="text" 
-                value={formData.mainImage || ''} 
-                onChange={e => setFormData({ ...formData, mainImage: e.target.value })}
-                className="w-full bg-white/5 border border-white/10 rounded-xl p-3 focus:border-primary outline-none transition-all"
-              />
-            </div>
-            <div className="space-y-2 md:col-span-2">
-              <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Description Longue</label>
-              <textarea 
-                rows={4}
-                value={formData.description || ''} 
-                onChange={e => setFormData({ ...formData, description: e.target.value })}
-                className="w-full bg-white/5 border border-white/10 rounded-xl p-3 focus:border-primary outline-none transition-all resize-none"
-              />
-            </div>
-            <div className="space-y-2 md:col-span-2">
-              <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Biographie</label>
-              <textarea 
-                rows={3}
-                value={formData.bio || ''} 
-                onChange={e => setFormData({ ...formData, bio: e.target.value })}
-                className="w-full bg-white/5 border border-white/10 rounded-xl p-3 focus:border-primary outline-none transition-all resize-none"
-              />
-            </div>
-            <div className="space-y-2">
-              <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Date de Passage</label>
-              <input 
-                type="date" 
-                value={formData.performanceDate || ''} 
-                onChange={e => setFormData({ ...formData, performanceDate: e.target.value })}
-                className="w-full bg-white/5 border border-white/10 rounded-xl p-3 focus:border-primary outline-none transition-all"
-              />
-            </div>
-            <div className="space-y-2">
-              <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Heure de Passage</label>
-              <input 
-                type="time" 
-                value={formData.performanceTime || ''} 
-                onChange={e => setFormData({ ...formData, performanceTime: e.target.value })}
-                className="w-full bg-white/5 border border-white/10 rounded-xl p-3 focus:border-primary outline-none transition-all"
-              />
-            </div>
-          </div>
-
-          <div className="flex justify-end gap-4 pt-4">
-            <button 
-              onClick={() => { setIsAdding(false); setEditingId(null); }}
-              className="px-6 py-2 border border-white/10 rounded-xl hover:bg-white/5 transition-all text-xs font-bold uppercase tracking-widest"
-            >
-              Annuler
-            </button>
-            <button 
-              onClick={isAdding ? handleAdd : handleUpdate}
-              className="px-6 py-2 bg-primary text-background-dark rounded-xl font-bold transition-all text-xs font-bold uppercase tracking-widest flex items-center gap-2"
-            >
-              <Save size={16} /> Enregistrer
-            </button>
-          </div>
+      {/* SECTION COMPAGNIES */}
+      <div>
+        <div className="flex justify-between items-center mb-6">
+          <h3 className="text-xl font-heading">Gestion des Compagnies</h3>
+          <button 
+            onClick={() => setIsAdding(true)}
+            className="flex items-center gap-2 px-4 py-2 bg-primary text-background-dark font-bold rounded-xl hover:shadow-[0_0_20px_rgba(211,95,23,0.4)] transition-all"
+          >
+            <Plus size={18} /> Ajouter une Compagnie
+          </button>
         </div>
-      )}
 
-      <div className="grid grid-cols-1 gap-4">
-        {data.companies.map(company => (
-          <div key={company.id} className="bg-[#111] border border-white/5 p-6 rounded-2xl flex items-center gap-6 group hover:border-white/10 transition-all">
-            <div className="w-24 h-24 rounded-xl overflow-hidden bg-zinc-800 shrink-0">
-              <img src={company.mainImage} alt={company.name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+        {(isAdding || editingId) && (
+          <div className="bg-[#111] border border-white/10 p-8 rounded-2xl space-y-6 mb-6">
+            <div className="flex justify-between items-center">
+              <h4 className="font-heading text-lg">{isAdding ? 'Nouvelle Compagnie' : 'Modifier Compagnie'}</h4>
+              <button onClick={() => { setIsAdding(false); setEditingId(null); }} className="text-slate-500 hover:text-white"><X size={20} /></button>
             </div>
-            <div className="flex-1">
-              <div className="flex justify-between items-start">
-                <div>
-                  <h4 className="text-lg font-bold">{company.name}</h4>
-                  <p className="text-primary text-xs font-bold uppercase tracking-widest">{company.pieceTitle}</p>
-                </div>
-                <div className="flex gap-2">
-                  <button 
-                    onClick={() => startEdit(company)}
-                    className="p-2 hover:bg-white/5 rounded-lg text-slate-400 hover:text-white transition-all"
-                  >
-                    <Edit size={18} />
-                  </button>
-                  <button 
-                    onClick={() => handleDelete(company.id)}
-                    className="p-2 hover:bg-white/5 rounded-lg text-slate-400 hover:text-accent-red transition-all"
-                  >
-                    <Trash2 size={18} />
-                  </button>
-                </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Nom de la Compagnie</label>
+                <input 
+                  type="text" 
+                  value={formData.name || ''} 
+                  onChange={e => setFormData({ ...formData, name: e.target.value })}
+                  className="w-full bg-white/5 border border-white/10 rounded-xl p-3 focus:border-primary outline-none transition-all"
+                />
               </div>
-              <div className="mt-4 flex gap-6 text-[10px] font-bold uppercase tracking-widest text-slate-500">
-                <span className="flex items-center gap-2"><Edit size={12} /> {company.choreographer}</span>
-                <span className="flex items-center gap-2"><ImageIcon size={12} /> {company.gallery.length} Photos</span>
-                <span className="flex items-center gap-2 text-primary">{company.performanceDate} à {company.performanceTime}</span>
+              <div className="space-y-2">
+                <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Chorégraphe</label>
+                <input 
+                  type="text" 
+                  value={formData.choreographer || ''} 
+                  onChange={e => setFormData({ ...formData, choreographer: e.target.value })}
+                  className="w-full bg-white/5 border border-white/10 rounded-xl p-3 focus:border-primary outline-none transition-all"
+                />
               </div>
+              <div className="space-y-2">
+                <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Titre de la Pièce</label>
+                <input 
+                  type="text" 
+                  value={formData.pieceTitle || ''} 
+                  onChange={e => setFormData({ ...formData, pieceTitle: e.target.value })}
+                  className="w-full bg-white/5 border border-white/10 rounded-xl p-3 focus:border-primary outline-none transition-all"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Image Principale (URL)</label>
+                <input 
+                  type="text" 
+                  value={formData.mainImage || ''} 
+                  onChange={e => setFormData({ ...formData, mainImage: e.target.value })}
+                  className="w-full bg-white/5 border border-white/10 rounded-xl p-3 focus:border-primary outline-none transition-all"
+                />
+              </div>
+              <div className="space-y-2 md:col-span-2">
+                <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Description Longue</label>
+                <textarea 
+                  rows={4}
+                  value={formData.description || ''} 
+                  onChange={e => setFormData({ ...formData, description: e.target.value })}
+                  className="w-full bg-white/5 border border-white/10 rounded-xl p-3 focus:border-primary outline-none transition-all resize-none"
+                />
+              </div>
+              <div className="space-y-2 md:col-span-2">
+                <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Biographie</label>
+                <textarea 
+                  rows={3}
+                  value={formData.bio || ''} 
+                  onChange={e => setFormData({ ...formData, bio: e.target.value })}
+                  className="w-full bg-white/5 border border-white/10 rounded-xl p-3 focus:border-primary outline-none transition-all resize-none"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Date de Passage</label>
+                <input 
+                  type="date" 
+                  value={formData.performanceDate || ''} 
+                  onChange={e => setFormData({ ...formData, performanceDate: e.target.value })}
+                  className="w-full bg-white/5 border border-white/10 rounded-xl p-3 focus:border-primary outline-none transition-all"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Heure de Passage</label>
+                <input 
+                  type="time" 
+                  value={formData.performanceTime || ''} 
+                  onChange={e => setFormData({ ...formData, performanceTime: e.target.value })}
+                  className="w-full bg-white/5 border border-white/10 rounded-xl p-3 focus:border-primary outline-none transition-all"
+                />
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-4 pt-4">
+              <button 
+                onClick={() => { setIsAdding(false); setEditingId(null); }}
+                className="px-6 py-2 border border-white/10 rounded-xl hover:bg-white/5 transition-all text-xs font-bold uppercase tracking-widest"
+              >
+                Annuler
+              </button>
+              <button 
+                onClick={isAdding ? handleAdd : handleUpdate}
+                className="px-6 py-2 bg-primary text-background-dark rounded-xl font-bold transition-all text-xs font-bold uppercase tracking-widest flex items-center gap-2"
+              >
+                <Save size={16} /> Enregistrer
+              </button>
             </div>
           </div>
-        ))}
+        )}
+
+        <div className="grid grid-cols-1 gap-4">
+          {data.companies.map(company => (
+            <div key={company.id} className="bg-[#111] border border-white/5 p-6 rounded-2xl flex items-center gap-6 group hover:border-white/10 transition-all">
+              <div className="w-24 h-24 rounded-xl overflow-hidden bg-zinc-800 shrink-0">
+                <img src={company.mainImage} alt={company.name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+              </div>
+              <div className="flex-1">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h4 className="text-lg font-bold">{company.name}</h4>
+                    <p className="text-primary text-xs font-bold uppercase tracking-widest">{company.pieceTitle}</p>
+                  </div>
+                  <div className="flex gap-2">
+                    <button 
+                      onClick={() => startEdit(company)}
+                      className="p-2 hover:bg-white/5 rounded-lg text-slate-400 hover:text-white transition-all"
+                    >
+                      <Edit size={18} />
+                    </button>
+                    <button 
+                      onClick={() => handleDelete(company.id)}
+                      className="p-2 hover:bg-white/5 rounded-lg text-slate-400 hover:text-accent-red transition-all"
+                    >
+                      <Trash2 size={18} />
+                    </button>
+                  </div>
+                </div>
+                <div className="mt-4 flex gap-6 text-[10px] font-bold uppercase tracking-widest text-slate-500">
+                  <span className="flex items-center gap-2"><Edit size={12} /> {company.choreographer}</span>
+                  <span className="flex items-center gap-2"><ImageIcon size={12} /> {company.gallery.length} Photos</span>
+                  <span className="flex items-center gap-2 text-primary">{company.performanceDate} à {company.performanceTime}</span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

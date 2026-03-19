@@ -343,6 +343,7 @@ export default function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [config, setConfig] = useState<GlobalConfig | null>(null);
   const [pageBackgrounds, setPageBackgrounds] = useState<any>(null);
+  const [featuredPiece, setFeaturedPiece] = useState<any>(null);
   const [stats, setStats] = useState<any[]>([]);
   const [recentNews, setRecentNews] = useState<any[]>([]);
   const [participants, setParticipants] = useState<any[]>([]);
@@ -357,6 +358,7 @@ export default function App() {
     const data = cmsService.getData();
     setConfig(data.globalConfig);
     setPageBackgrounds(data.pageBackgrounds);
+    setFeaturedPiece(data.featuredPiece);
     setStats(data.globalConfig.homepageStats);
     setRecentNews(data.blog.articles.slice(0, 3));
     setParticipants(data.participants);
@@ -373,6 +375,7 @@ export default function App() {
       const data = cmsService.getData();
       setConfig(data.globalConfig);
       setPageBackgrounds(data.pageBackgrounds);
+      setFeaturedPiece(data.featuredPiece);
       setBracketData(data.competition.brackets);
       setMediaItems(data.media || []);
       setPartnerData(data.partners);
@@ -1153,6 +1156,7 @@ export default function App() {
       onNavigateToProgram={() => setCurrentPage('program')} 
       onNavigateToTickets={() => setCurrentPage('tickets')}
       pageBackgrounds={pageBackgrounds}
+      featuredPiece={featuredPiece}
     />
   ) : currentPage === 'contact' ? (
     <Contact onNavigateToFAQ={() => setCurrentPage('faq')} pageBackgrounds={pageBackgrounds} />

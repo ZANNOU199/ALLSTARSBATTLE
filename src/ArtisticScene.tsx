@@ -17,9 +17,10 @@ interface ArtisticSceneProps {
   onNavigateToProgram?: () => void;
   onNavigateToTickets?: () => void;
   pageBackgrounds?: any;
+  featuredPiece?: any;
 }
 
-const ArtisticScene = ({ onNavigateToProgram, onNavigateToTickets, pageBackgrounds }: ArtisticSceneProps) => {
+const ArtisticScene = ({ onNavigateToProgram, onNavigateToTickets, pageBackgrounds, featuredPiece }: ArtisticSceneProps) => {
   const [showSynopsis, setShowSynopsis] = useState(false);
   const [companies, setCompanies] = useState<Company[]>([]);
   const [selectedCompany, setSelectedCompany] = useState<Company | null>(null);
@@ -358,8 +359,8 @@ const ArtisticScene = ({ onNavigateToProgram, onNavigateToTickets, pageBackgroun
                     <div className="relative overflow-hidden aspect-video rounded-sm shadow-2xl group">
                       <img 
                         className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000 scale-105 group-hover:scale-100" 
-                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuDFFVjlS0aV2aTZ_NOUWSPOLFwvZDL53_dHLHupDNuVMhBZlkX7CnONhZG-SOJnA70FigEjAj6fHlw1dX_QNjvlouaXTV7FpZAXArqfjERLDvl6Cy48tFNGGL6rFGW1y4K1v_8gLWpXw9U-t6RhMPGVxdPc9kfXz5lgGmOZsIdsyqxJ8XtocNNGz91LRaDnMusjC2cud0R5XhBaE_0Ifh_vQJNugwvgwOBYr3hxh492ZauvzD8RKjUl3QeOwy71EzcXE5PeEQ3CspOm" 
-                        alt="L'éveil des ombres"
+                        src={featuredPiece?.image || "https://lh3.googleusercontent.com/aida-public/AB6AXuDFFVjlS0aV2aTZ_NOUWSPOLFwvZDL53_dHLHupDNuVMhBZlkX7CnONhZG-SOJnA70FigEjAj6fHlw1dX_QNjvlouaXTV7FpZAXArqfjERLDvl6Cy48tFNGGL6rFGW1y4K1v_8gLWpXw9U-t6RhMPGVxdPc9kfXz5lgGmOZsIdsyqxJ8XtocNNGz91LRaDnMusjC2cud0R5XhBaE_0Ifh_vQJNugwvgwOBYr3hxh492ZauvzD8RKjUl3QeOwy71EzcXE5PeEQ3CspOm"} 
+                        alt={featuredPiece?.title || "L'éveil des ombres"}
                         referrerPolicy="no-referrer"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-background-dark/80 via-transparent to-transparent"></div>
@@ -381,27 +382,33 @@ const ArtisticScene = ({ onNavigateToProgram, onNavigateToTickets, pageBackgroun
                     <div>
                       <span className="text-primary font-display text-lg md:text-xl tracking-[0.4em] uppercase block mb-4">Mise en lumière</span>
                       <h2 className="text-5xl sm:text-7xl md:text-8xl font-heading text-white leading-[0.9] uppercase">
-                        L'ÉVEIL DES <span className="text-accent-pink italic">OMBRES</span>
+                        {featuredPiece?.title ? (
+                          featuredPiece.title.split(' ').slice(0, -1).join(' ') + ' ' + (
+                            <span className="text-accent-pink italic">{featuredPiece.title.split(' ').slice(-1)}</span>
+                          )
+                        ) : (
+                          <>L'ÉVEIL DES <span className="text-accent-pink italic">OMBRES</span></>
+                        )}
                       </h2>
                     </div>
 
                     <div className="flex flex-wrap gap-8 md:gap-12">
                       <div className="space-y-1">
                         <p className="text-slate-500 text-[9px] uppercase tracking-[0.2em] font-black">Durée</p>
-                        <p className="text-white font-heading text-2xl md:text-3xl uppercase">45 MIN</p>
+                        <p className="text-white font-heading text-2xl md:text-3xl uppercase">{featuredPiece?.duration || "45 MIN"}</p>
                       </div>
                       <div className="space-y-1">
                         <p className="text-slate-500 text-[9px] uppercase tracking-[0.2em] font-black">Chorégraphe</p>
-                        <p className="text-white font-heading text-2xl md:text-3xl uppercase">K. AFRIKA</p>
+                        <p className="text-white font-heading text-2xl md:text-3xl uppercase">{featuredPiece?.choreographer || "K. AFRIKA"}</p>
                       </div>
                       <div className="space-y-1">
                         <p className="text-slate-500 text-[9px] uppercase tracking-[0.2em] font-black">Musique</p>
-                        <p className="text-white font-heading text-2xl md:text-3xl uppercase">LIVE DJ SET</p>
+                        <p className="text-white font-heading text-2xl md:text-3xl uppercase">{featuredPiece?.music || "LIVE DJ SET"}</p>
                       </div>
                     </div>
 
                     <p className="text-slate-400 text-base md:text-lg leading-relaxed font-light italic">
-                      Une exploration viscérale du lien entre le corps et son environnement numérique. Cette pièce fusionne le breakdance académique avec des projections interactives en temps réel, créant une illusion de mouvement où l'ombre devient l'acteur principal.
+                      {featuredPiece?.description || "Une exploration viscérale du lien entre le corps et son environnement numérique. Cette pièce fusionne le breakdance académique avec des projections interactives en temps réel, créant une illusion de mouvement où l'ombre devient l'acteur principal."}
                     </p>
 
                     <button 
@@ -555,13 +562,15 @@ const ArtisticScene = ({ onNavigateToProgram, onNavigateToTickets, pageBackgroun
               <div className="space-y-8">
                 <div>
                   <span className="text-primary font-display text-xl tracking-[0.3em] uppercase block mb-2">Synopsis Complet</span>
-                  <h2 className="text-5xl md:text-7xl font-heading text-white uppercase leading-none">L'ÉVEIL DES <span className="text-accent-pink italic">OMBRES</span></h2>
+                  <h2 className="text-5xl md:text-7xl font-heading text-white uppercase leading-none">
+                    {featuredPiece?.title || "L'ÉVEIL DES OMBRES"}
+                  </h2>
                 </div>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
                   <div className="space-y-6">
                     <p className="text-slate-300 text-lg leading-relaxed font-light italic">
-                      "L'Éveil des Ombres" est une œuvre chorégraphique révolutionnaire qui explore la dualité entre l'existence physique et l'identité numérique.
+                      {featuredPiece?.fullSynopsis || '"L\'Éveil des Ombres" est une œuvre chorégraphique révolutionnaire qui explore la dualité entre l\'existence physique et l\'identité numérique.'}
                     </p>
                     <p className="text-slate-400 leading-relaxed">
                       Dans un monde saturé d'écrans et de données, que reste-t-il de notre essence corporelle ? La pièce commence dans une obscurité totale, où seul le souffle des danseurs est audible. Progressivement, des particules de lumière projetées commencent à interagir avec leurs mouvements.
@@ -575,20 +584,20 @@ const ArtisticScene = ({ onNavigateToProgram, onNavigateToTickets, pageBackgroun
                     <div className="bg-white/5 p-6 border-l-4 border-primary">
                       <h4 className="text-white font-heading text-xl uppercase mb-4">Note d'intention</h4>
                       <p className="text-slate-400 text-sm italic leading-relaxed">
-                        "Je voulais créer un espace où la technologie ne se contente pas d'illustrer la danse, mais devient un partenaire de jeu imprévisible. L'ombre n'est plus une absence de lumière, mais une présence numérique qui nous force à redéfinir notre propre réalité physique."
+                        "{featuredPiece?.intentionQuote || 'Je voulais créer un espace où la technologie ne se contente pas d\'illustrer la danse, mais devient un partenaire de jeu imprévisible. L\'ombre n\'est plus une absence de lumière, mais une présence numérique qui nous force à redéfinir notre propre réalité physique.'}"
                         <br/>
-                        <span className="text-primary block mt-2">— K. Afrika, Chorégraphe</span>
+                        <span className="text-primary block mt-2">— {featuredPiece?.intentionAuthor || 'K. Afrika, Chorégraphe'}</span>
                       </p>
                     </div>
                     
                     <div className="grid grid-cols-2 gap-6">
                       <div>
                         <p className="text-slate-500 text-[10px] uppercase font-black mb-1">Interprètes</p>
-                        <p className="text-white font-bold text-sm">8 B-Boys & B-Girls</p>
+                        <p className="text-white font-bold text-sm">{featuredPiece?.performers || '8 B-Boys & B-Girls'}</p>
                       </div>
                       <div>
                         <p className="text-slate-500 text-[10px] uppercase font-black mb-1">Technologie</p>
-                        <p className="text-white font-bold text-sm">Motion Capture Live</p>
+                        <p className="text-white font-bold text-sm">{featuredPiece?.technology || 'Motion Capture Live'}</p>
                       </div>
                     </div>
                   </div>

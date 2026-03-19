@@ -17,6 +17,20 @@ const initialData: CMSData = {
       performanceTime: '18:00'
     }
   ],
+  featuredPiece: {
+    id: '1',
+    title: "L'ÉVEIL DES OMBRES",
+    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDFFVjlS0aV2aTZ_NOUWSPOLFwvZDL53_dHLHupDNuVMhBZlkX7CnONhZG-SOJnA70FigEjAj6fHlw1dX_QNjvlouaXTV7FpZAXArqfjERLDvl6Cy48tFNGGL6rFGW1y4K1v_8gLWpXw9U-t6RhMPGVxdPc9kfXz5lgGmOZsIdsyqxJ8XtocNNGz91LRaDnMusjC2cud0R5XhBaE_0Ifh_vQJNugwvgwOBYr3hxh492ZauvzD8RKjUl3QeOwy71EzcXE5PeEQ3CspOm',
+    duration: '45 MIN',
+    choreographer: 'K. AFRIKA',
+    music: 'LIVE DJ SET',
+    description: 'Une exploration viscérale du lien entre le corps et son environnement numérique. Cette pièce fusionne le breakdance académique avec des projections interactives en temps réel, créant une illusion de mouvement où l\'ombre devient l\'acteur principal.',
+    fullSynopsis: '"L\'Éveil des Ombres" est une œuvre chorégraphique révolutionnaire qui explore la dualité entre l\'existence physique et l\'identité numérique. Dans ce monde contemporain où la projection surpasse souvent la réalité, cette création reimagine ce que signifie vraiment être présent. Le corps devient le médium d\'une conversation silencieuse entre l\'ombre et la lumière, entre le connu et l\'invisible. Chaque mouvement raconte une histoire de transformation, de renaissance, et de l\'acceptation de nos multiples identités dans la ère digitale.',
+    intentionQuote: 'Je voulais créer un espace où la technologie ne se contente pas d\'illustrer la danse, mais devient un partenaire de jeu imprévisible. L\'ombre n\'est plus une absence de lumière, mais une présence numérique qui nous force à redéfinir notre propre réalité physique.',
+    intentionAuthor: 'K. Afrika, Chorégraphe',
+    performers: '8 B-Boys & B-Girls',
+    technology: 'Motion Capture Live'
+  },
   participants: [
     {
       id: '1',
@@ -491,6 +505,11 @@ export const cmsService = {
         const merged = {
           ...initialData,
           ...parsed,
+          companies: parsed.companies || initialData.companies,
+          featuredPiece: {
+            ...initialData.featuredPiece,
+            ...parsed.featuredPiece
+          },
           globalConfig: {
             ...initialData.globalConfig,
             ...parsed.globalConfig,

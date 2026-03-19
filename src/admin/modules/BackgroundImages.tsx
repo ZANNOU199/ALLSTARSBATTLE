@@ -1,10 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import { CMSData, PageBackground } from '../../types';
-import { Plus, Trash2, Edit, Save, X, Image as ImageIcon, Video } from 'lucide-react';
+import { Plus, Trash2, Edit, Save, X, Image as ImageIcon, Video, Check } from 'lucide-react';
 
 export default function BackgroundImages({ data, setData }: { data: CMSData, setData: React.Dispatch<React.SetStateAction<CMSData>> }) {
   const [editingPage, setEditingPage] = useState<keyof typeof data.pageBackgrounds | null>(null);
   const [formData, setFormData] = useState<Partial<PageBackground>>({});
+  const [saved, setSaved] = useState(false);
+  const formRef = useRef<HTMLDivElement>(null);
 
   const pageLabels = {
     hero: '🏠 Hero (Accueil)',
@@ -25,6 +28,10 @@ export default function BackgroundImages({ data, setData }: { data: CMSData, set
   const handleEdit = (pageKey: keyof typeof data.pageBackgrounds) => {
     setEditingPage(pageKey);
     setFormData({ ...data.pageBackgrounds[pageKey] });
+    // Scroller vers le formulaire
+    setTimeout(() => {
+      formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
   };
 
   const handleSave = () => {
@@ -46,8 +53,12 @@ export default function BackgroundImages({ data, setData }: { data: CMSData, set
       }
     }));
 
-    setEditingPage(null);
-    setFormData({});
+    setSaved(true);
+    setTimeout(() => {
+      setSaved(false);
+      setEditingPage(null);
+      setFormData({});
+    }, 1500);
   };
 
   const handleCancel = () => {
@@ -64,103 +75,133 @@ export default function BackgroundImages({ data, setData }: { data: CMSData, set
         <p className="text-slate-400 text-sm">Gérez toutes les images de background de vos pages principales</p>
       </div>
 
-      {editingPage && (
-        <div className="bg-[#111] border border-white/10 p-8 rounded-2xl space-y-6">
-          <div className="flex justify-between items-center mb-6">
-            <h4 className="text-lg font-heading text-white">
-              Modifier: {pageLabels[editingPage as keyof typeof pageLabels]}
-            </h4>
-            <button 
-              onClick={handleCancel}
-              className="p-2 text-slate-500 hover:text-accent-red transition-colors"
-            >
-              <X size={24} />
-            </button>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-2">
-              <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">URL Image de Fond</label>
-              <input 
-                type="text" 
-                value={formData.imageUrl || ''} 
-                onChange={e => setFormData({ ...formData, imageUrl: e.target.value })}
-                placeholder="https://example.com/image.jpg"
-                className="w-full bg-white/5 border border-white/10 rounded-xl p-3 focus:border-primary outline-none transition-all text-white"
-              />
-              <p className="text-[10px] text-slate-500">Format: URL complète de l'image</p>
+      <AnimatePresence mode="wait">
+        {editingPage && (
+          <motion.div 
+            ref={formRef}
+            key="form"
+            initial={{ opacity: 0, y: -30, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -30, scale: 0.95 }}
+            transition={{ duration: 0.3 }}
+            className="bg-gradient-to-br from-[#1a1a1a] to-[#0f0f0f] border-2 border-primary/50 shadow-2xl shadow-primary/20 p-8 rounded-2xl space-y-6"
+          >
+            <div className="flex justify-between items-center mb-6">
+              <div className="flex items-center gap-4">
+                <div className="relative">
+                  <div className="absolute inset-0 bg-primary/20 rounded-full blur-lg animate-pulse"></div>
+                  <h4 className="text-lg font-heading text-white relative">
+                    Modifier: {pageLabels[editingPage as keyof typeof pageLabels]}
+                  </h4>
+                </div>
+                <span className="px-2 py-1 bg-primary text-background-dark text-[10px] font-bold uppercase rounded-full animate-pulse">
+                  EN ÉDITION
+                </span>
+              </div>
+              <button 
+                onClick={handleCancel}
+                className="p-2 text-slate-500 hover:text-accent-red transition-colors hover:bg-white/5 rounded-lg"
+              >
+                <X size={24} />
+              </button>
             </div>
 
-            {editingPage === 'hero' && (
+            {saved && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="p-4 bg-green-900/30 border border-green-600/50 rounded-xl flex items-center gap-3 text-green-300"
+              >
+                <Check size={20} />
+                <span className="font-semibold">Image mise à jour avec succès!</span>
+              </motion.div>
+            )}
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 flex items-center gap-2">
-                  <Video size={14} /> URL Vidéo (Hero uniquement)
-                </label>
+                <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">URL Image de Fond</label>
                 <input 
                   type="text" 
-                  value={formData.videoUrl || ''} 
-                  onChange={e => setFormData({ ...formData, videoUrl: e.target.value })}
-                  placeholder="https://example.com/video.mp4"
+                  value={formData.imageUrl || ''} 
+                  onChange={e => setFormData({ ...formData, imageUrl: e.target.value })}
+                  placeholder="https://example.com/image.jpg"
                   className="w-full bg-white/5 border border-white/10 rounded-xl p-3 focus:border-primary outline-none transition-all text-white"
                 />
-                <p className="text-[10px] text-slate-500">Vidéo de fond pour la section héros</p>
+                <p className="text-[10px] text-slate-500">Format: URL complète de l'image</p>
               </div>
-            )}
-          </div>
 
-          <div className="grid grid-cols-2 gap-6">
-            <div className="space-y-2">
-              <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Largeur (px)</label>
-              <input 
-                type="number" 
-                value={formData.width || 1920} 
-                onChange={e => setFormData({ ...formData, width: parseInt(e.target.value) })}
-                className="w-full bg-white/5 border border-white/10 rounded-xl p-3 focus:border-primary outline-none transition-all text-white"
-              />
+              {editingPage === 'hero' && (
+                <div className="space-y-2">
+                  <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 flex items-center gap-2">
+                    <Video size={14} /> URL Vidéo (Hero uniquement)
+                  </label>
+                  <input 
+                    type="text" 
+                    value={formData.videoUrl || ''} 
+                    onChange={e => setFormData({ ...formData, videoUrl: e.target.value })}
+                    placeholder="https://example.com/video.mp4"
+                    className="w-full bg-white/5 border border-white/10 rounded-xl p-3 focus:border-primary outline-none transition-all text-white"
+                  />
+                  <p className="text-[10px] text-slate-500">Vidéo de fond pour la section héros</p>
+                </div>
+              )}
             </div>
-            <div className="space-y-2">
-              <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Hauteur (px)</label>
-              <input 
-                type="number" 
-                value={formData.height || 1080} 
-                onChange={e => setFormData({ ...formData, height: parseInt(e.target.value) })}
-                className="w-full bg-white/5 border border-white/10 rounded-xl p-3 focus:border-primary outline-none transition-all text-white"
-              />
-            </div>
-          </div>
 
-          {formData.imageUrl && (
-            <div className="space-y-2">
-              <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Aperçu</label>
-              <div className="relative w-full bg-black rounded-xl overflow-hidden border border-white/10">
-                <img 
-                  src={formData.imageUrl} 
-                  alt="Preview" 
-                  className="w-full h-48 object-cover"
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).src = 'https://via.placeholder.com/800x400?text=Image+non+disponible';
-                  }}
+            <div className="grid grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Largeur (px)</label>
+                <input 
+                  type="number" 
+                  value={formData.width || 1920} 
+                  onChange={e => setFormData({ ...formData, width: parseInt(e.target.value) })}
+                  className="w-full bg-white/5 border border-white/10 rounded-xl p-3 focus:border-primary outline-none transition-all text-white"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Hauteur (px)</label>
+                <input 
+                  type="number" 
+                  value={formData.height || 1080} 
+                  onChange={e => setFormData({ ...formData, height: parseInt(e.target.value) })}
+                  className="w-full bg-white/5 border border-white/10 rounded-xl p-3 focus:border-primary outline-none transition-all text-white"
                 />
               </div>
             </div>
-          )}
 
-          <div className="flex justify-end gap-4">
-            <button 
-              onClick={handleCancel}
-              className="px-6 py-2 text-xs font-bold uppercase tracking-widest text-slate-500 hover:text-white transition-colors"
-            >
-              Annuler
-            </button>
-            <button 
-              onClick={handleSave}
-              className="flex items-center gap-2 px-6 py-2 bg-primary text-background-dark rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-primary/90 transition-colors"
-            >
-              <Save size={16} /> Enregistrer
-            </button>
-          </div>
-        </div>
-      )}
+            {formData.imageUrl && (
+              <div className="space-y-2">
+                <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Aperçu</label>
+                <div className="relative w-full bg-black rounded-xl overflow-hidden border border-white/10 shadow-lg">
+                  <img 
+                    src={formData.imageUrl} 
+                    alt="Preview" 
+                    className="w-full h-48 object-cover"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = 'https://via.placeholder.com/800x400?text=Image+non+disponible';
+                    }}
+                  />
+                </div>
+              </div>
+            )}
+
+            <div className="flex justify-end gap-4">
+              <button 
+                onClick={handleCancel}
+                className="px-6 py-2 text-xs font-bold uppercase tracking-widest text-slate-500 hover:text-white transition-colors hover:bg-white/5 rounded-lg"
+              >
+                Annuler
+              </button>
+              <button 
+                onClick={handleSave}
+                className="flex items-center gap-2 px-6 py-2 bg-gradient-to-r from-primary to-orange-600 text-background-dark rounded-xl font-bold text-xs uppercase tracking-widest hover:from-primary/90 hover:to-orange-700 transition-all shadow-lg shadow-primary/30"
+              >
+                <Save size={16} /> Enregistrer
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {(Object.entries(data.pageBackgrounds) as [keyof typeof data.pageBackgrounds, PageBackground][]).map(([pageKey, bg]) => {
