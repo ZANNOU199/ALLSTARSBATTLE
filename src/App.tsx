@@ -72,6 +72,13 @@ const NavDropdown = ({ label, items, active = false }: { label: string, items: {
   );
 };
 
+const CountdownItem = ({ value, label }: { value: number | string, label: string }) => (
+  <div className="flex flex-col">
+    <span className="text-4xl md:text-6xl font-heading text-primary">{value}</span>
+    <span className="text-[10px] uppercase tracking-widest font-bold text-slate-500">{label}</span>
+  </div>
+);
+
 const DancerCard = ({ name, origin, image }: { name: string, origin: string, image: string }) => (
   <motion.div 
     whileHover={{ scale: 1.05, y: -10 }}
@@ -670,14 +677,12 @@ export default function App() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.6 }}
-            className="flex items-center justify-center mb-16 border-y border-white/10 py-8 max-w-4xl mx-auto overflow-x-auto px-4"
+            className="grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-2xl mx-auto mb-16 border-y border-white/10 py-8"
           >
-            <div className="text-center text-lg sm:text-2xl md:text-4xl font-heading text-white whitespace-nowrap">
-              <span className="text-primary font-bold">{timeLeft.days}</span> Jours{' '}
-              <span className="text-primary font-bold">{timeLeft.hours}</span> Heures{' '}
-              <span className="text-primary font-bold">{timeLeft.minutes}</span> Minutes{' '}
-              <span className="text-primary font-bold">{timeLeft.seconds}</span> Secondes
-            </div>
+            <CountdownItem value={timeLeft.days} label="Jours" />
+            <CountdownItem value={timeLeft.hours} label="Heures" />
+            <CountdownItem value={timeLeft.minutes} label="Minutes" />
+            <CountdownItem value={timeLeft.seconds} label="Secondes" />
           </motion.div>
 
           <motion.div 
