@@ -9,7 +9,12 @@ import {
   Globe,
   PlayCircle,
   Share2,
-  Eye
+  Eye,
+  X,
+  Instagram,
+  Facebook,
+  Twitter,
+  Linkedin
 } from 'lucide-react';
 
 const Judges = () => {
@@ -19,6 +24,7 @@ const Judges = () => {
   const [djsMcsData, setDjsMcsData] = useState<any[]>([]);
   const [selectedJudge, setSelectedJudge] = useState<any>(null);
   const [selectedArtist, setSelectedArtist] = useState<any>(null);
+  const [selectedOrganizer, setSelectedOrganizer] = useState<any>(null);
   const [organizersConfig, setOrganizersConfig] = useState<any>(null);
 
   useEffect(() => {
@@ -44,13 +50,15 @@ const Judges = () => {
       img: p.photo
     })));
 
-    // Load organizers from CMS
+    // Load organizers from CMS with all details
     const organizers = data.organizers || [];
     setStaffData(organizers.map(org => ({
+      id: org.id,
       name: org.name,
       role: org.role,
       bio: org.bio,
-      image: org.photo
+      image: org.photo,
+      socialLinks: org.socialLinks || {}
     })));
 
     setOrganizersConfig(data.organizersConfig);
@@ -340,17 +348,29 @@ const Judges = () => {
                   className="group flex items-center justify-between py-6 hover:bg-white/5 px-4 transition-all cursor-pointer"
                 >
                   <div className="flex items-center gap-6">
-                    <div className="size-16 rounded-full overflow-hidden border border-primary/20 flex-shrink-0">
+                    <div 
+                      className="size-16 rounded-full overflow-hidden border border-primary/20 flex-shrink-0 cursor-pointer hover:border-primary transition-all"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedOrganizer(staff);
+                      }}
+                    >
                       <img 
                         src={staff.image} 
                         alt={staff.name} 
-                        className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all"
+                        className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all hover:scale-110"
                         loading="lazy"
                         referrerPolicy="no-referrer"
                       />
                     </div>
                     <div>
-                      <h4 className="font-heading text-3xl text-white uppercase group-hover:text-primary transition-colors leading-none mb-1">{staff.name}</h4>
+                      <h4 
+                        className="font-heading text-3xl text-white uppercase group-hover:text-primary transition-colors leading-none mb-1 cursor-pointer"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedOrganizer(staff);
+                        }}
+                      >{staff.name}</h4>
                       <p className="text-slate-500 text-[10px] font-black uppercase tracking-widest">{staff.role}</p>
                     </div>
                   </div>
@@ -381,6 +401,136 @@ const Judges = () => {
           </div>
         </div>
       </section>
+
+      {/* Modal Détails Organisateur */}
+      <AnimatePresence>
+        {selectedOrganizer && (
+          <motion.div 
+            className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <motion.div 
+              className="bg-[#111] border border-white/10 rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+            >
+              <div className="sticky top-0 bg-[#111]/95 backdrop-blur border-b border-white/10 flex justify-between items-center p-6">
+                <h2 className="text-2xl font-heading text-white">{selectedOrganizer.name}</h2>
+                <button 
+                  onClick={() => setSelectedOrganizer(null)}
+                  className="text-slate-400 hover:text-white transition-colors"
+                >
+                  <X size={28} />
+                </button>
+              </div>
+
+              <div className="p-8 space-y-8">
+                {/* Photo */}
+                <div className="flex justify-center">
+                  <img 
+                    src={selectedOrganizer.image} 
+                    alt={selectedOrganizer.name}
+                    className="w-full max-w-sm h-96 object-cover rounded-2xl border border-white/10"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = 'https://via.placeholder.com/400x500?text=Photo';
+                    }}
+                  />
+                </div>
+
+                {/* Rôle & Organisation */}
+                <div className="space-y-4 text-center">
+                  <div>
+                    <p className="text-slate-400 text-[10px] uppercase font-bold mb-2">Rôle/Titre</p>
+                    <p className="text-lg text-primary font-bold">{selectedOrganizer.role}</p>
+                  </div>
+                </div>
+
+                {/* Biographie */}
+                <div className="space-y-3">
+                  <p className="text-slate-400 text-[10px] uppercase font-bold">Biographie</p>
+                  <p className="text-white leading-relaxed text-base">{selectedOrganizer.bio}</p>
+                </div>
+
+                {/* Réseaux Sociaux */}
+                {selectedOrganizer.socialLinks && Object.keys(selectedOrganizer.socialLinks).length > 0 && (
+                  <div className="space-y-4 pt-6 border-t border-white/10">
+                    <p className="text-slate-400 text-[10px] uppercase font-bold">Réseaux Sociaux</p>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {selectedOrganizer.socialLinks.instagram && (
+                        <a 
+                          href={`https://instagram.com/${selectedOrganizer.socialLinks.instagram}`} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-3 p-4 bg-white/5 hover:bg-pink-500/10 border border-white/10 hover:border-pink-500/30 rounded-xl transition-all group"
+                        >
+                          <Instagram size={24} className="text-pink-400 group-hover:scale-110 transition-transform" />
+                          <div>
+                            <p className="text-[10px] text-slate-400 uppercase font-bold">Instagram</p>
+                            <p className="text-white">@{selectedOrganizer.socialLinks.instagram}</p>
+                          </div>
+                        </a>
+                      )}
+                      {selectedOrganizer.socialLinks.facebook && (
+                        <a 
+                          href={`https://facebook.com/${selectedOrganizer.socialLinks.facebook}`} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-3 p-4 bg-white/5 hover:bg-blue-500/10 border border-white/10 hover:border-blue-500/30 rounded-xl transition-all group"
+                        >
+                          <Facebook size={24} className="text-blue-400 group-hover:scale-110 transition-transform" />
+                          <div>
+                            <p className="text-[10px] text-slate-400 uppercase font-bold">Facebook</p>
+                            <p className="text-white">{selectedOrganizer.socialLinks.facebook}</p>
+                          </div>
+                        </a>
+                      )}
+                      {selectedOrganizer.socialLinks.twitter && (
+                        <a 
+                          href={`https://twitter.com/${selectedOrganizer.socialLinks.twitter}`} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-3 p-4 bg-white/5 hover:bg-sky-500/10 border border-white/10 hover:border-sky-500/30 rounded-xl transition-all group"
+                        >
+                          <Twitter size={24} className="text-sky-400 group-hover:scale-110 transition-transform" />
+                          <div>
+                            <p className="text-[10px] text-slate-400 uppercase font-bold">Twitter</p>
+                            <p className="text-white">@{selectedOrganizer.socialLinks.twitter}</p>
+                          </div>
+                        </a>
+                      )}
+                      {selectedOrganizer.socialLinks.linkedin && (
+                        <a 
+                          href={`https://linkedin.com/in/${selectedOrganizer.socialLinks.linkedin}`} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-3 p-4 bg-white/5 hover:bg-blue-600/10 border border-white/10 hover:border-blue-600/30 rounded-xl transition-all group"
+                        >
+                          <Linkedin size={24} className="text-blue-500 group-hover:scale-110 transition-transform" />
+                          <div>
+                            <p className="text-[10px] text-slate-400 uppercase font-bold">LinkedIn</p>
+                            <p className="text-white">{selectedOrganizer.socialLinks.linkedin}</p>
+                          </div>
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Bouton Fermer */}
+                <button 
+                  onClick={() => setSelectedOrganizer(null)}
+                  className="w-full mt-8 px-6 py-3 bg-primary text-background-dark rounded-xl font-bold transition-all hover:shadow-[0_0_20px_rgba(211,95,23,0.4)]"
+                >
+                  Fermer
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
