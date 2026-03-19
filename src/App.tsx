@@ -638,7 +638,7 @@ export default function App() {
           {/* Photo for Mobile */}
           <div 
             className="md:hidden w-full h-full bg-cover bg-center opacity-60 scale-110"
-            style={{ backgroundImage: `url("${pageBackgrounds?.hero.imageUrl || 'https://images.unsplash.com/photo-1547153760-18fc86324498?auto=format&fit=crop&q=60&w=800'}")` }}
+            style={{ backgroundImage: `url("${pageBackgrounds?.hero.imageUrl || 'https://i.ibb.co/LhsB2zPT/20260319-190925.jpg'}")` }}
           ></div>
           
           <div className="absolute inset-0 bg-gradient-to-b from-background-dark/70 via-background-dark/20 to-background-dark/80"></div>
