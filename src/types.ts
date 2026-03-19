@@ -286,6 +286,38 @@ export interface CMSData {
   media: MediaItem[];
   globalConfig: GlobalConfig;
   theme: ThemeConfig;
+  participate: {
+    hero: {
+      title: string;
+      titleHighlight: string;
+      subtitle: string;
+    };
+    sections: {
+      dancers: {
+        title: string;
+        description: string;
+      };
+      professionals: {
+        title: string;
+        description: string;
+      };
+      volunteers: {
+        title: string;
+        description: string;
+      };
+    };
+    formFields: {
+      nameLabel: string;
+      emailLabel: string;
+      phoneLabel: string;
+      countryLabel: string;
+      messageLabel: string;
+    };
+    successMessage: {
+      title: string;
+      subtitle: string;
+    };
+  };
 }
 
 export type CMSState = CMSData;

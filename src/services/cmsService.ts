@@ -338,6 +338,38 @@ const initialData: CMSData = {
     surface: '#1a1a1a',
     text: '#ffffff',
     mutedText: '#94a3b8'
+  },
+  participate: {
+    hero: {
+      title: 'Rejoignez l\'expérience',
+      titleHighlight: 'All Star Battle International',
+      subtitle: 'Participez à l\'événement qui célèbre le Breaking et les danses Hip-Hop en Afrique'
+    },
+    sections: {
+      dancers: {
+        title: '🎤 POUR LES DANSEURS',
+        description: 'La direction artistique du festival sélectionne et invite des danseurs chaque année. Les danseurs internationaux pouvant prendre en charge leur mobilité peuvent également candidater pour participer au festival.'
+      },
+      professionals: {
+        title: '💼 POUR LES PROFESSIONNELS',
+        description: 'Programmateurs, directeurs de compagnies, producteurs : rejoignez un espace d\'échange, de collaboration et de découverte. Le festival développe un réseau de professionnels internationaux autour de la danse Hip-Hop.'
+      },
+      volunteers: {
+        title: '❤️ POUR LES VOLONTAIRES',
+        description: 'Vivez le festival de l\'intérieur et contribuez activement à son organisation. Rejoignez notre équipe de bénévoles passionnés et faites partie de l\'aventure !'
+      }
+    },
+    formFields: {
+      nameLabel: 'Nom Complet',
+      emailLabel: 'Adresse Email',
+      phoneLabel: 'Numéro de Téléphone',
+      countryLabel: 'Pays',
+      messageLabel: 'Message Additionnel'
+    },
+    successMessage: {
+      title: '✨ Inscription Réussie !',
+      subtitle: 'Merci de votre intérêt pour l\'All Star Battle International ! Notre équipe vous contactera bientôt pour confirmer votre participation.'
+    }
   }
 };
 

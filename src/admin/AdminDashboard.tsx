@@ -20,7 +20,8 @@ import {
   Menu,
   X,
   Palette,
-  Mail
+  Mail,
+  UserCheck
 } from 'lucide-react';
 import { cmsService } from '../services/cmsService';
 import { CMSData } from '../types';
@@ -41,6 +42,7 @@ import GlobalConfigSEO from './modules/GlobalConfigSEO';
 import HomepageContent from './modules/HomepageContent';
 import ThemeSettings from './modules/ThemeSettings';
 import ContactCMS from './modules/ContactCMS';
+import ParticipateAdmin from './modules/ParticipateAdmin';
 
 type ModuleId = 
   | 'dashboard' 
@@ -56,7 +58,8 @@ type ModuleId =
   | 'contact'
   | 'config'
   | 'homepage'
-  | 'theme';
+  | 'theme'
+  | 'participate';
 
 export default function AdminDashboard({ onLogout }: { onLogout: () => void }) {
   const [activeModule, setActiveModule] = useState<ModuleId>('dashboard');
@@ -71,6 +74,7 @@ export default function AdminDashboard({ onLogout }: { onLogout: () => void }) {
     { id: 'dashboard', label: 'Tableau de Bord', icon: LayoutDashboard },
     { id: 'homepage', label: 'Contenu Accueil (Page)', icon: Palette },
     { id: 'scene', label: 'Scène Artistique', icon: Palette },
+    { id: 'participate', label: 'Page Participer', icon: UserCheck },
     { id: 'participants', label: 'Participants & Jury', icon: Users },
     { id: 'program', label: 'Programme & Planning', icon: Calendar },
     { id: 'blog', label: 'Blog & Actualités', icon: FileText },
@@ -89,6 +93,7 @@ export default function AdminDashboard({ onLogout }: { onLogout: () => void }) {
       case 'dashboard': return <DashboardOverview data={data} />;
       case 'homepage': return <HomepageContent data={data} setData={setData} />;
       case 'scene': return <SceneArtistique data={data} setData={setData} />;
+      case 'participate': return <ParticipateAdmin data={data} setData={setData} />;
       case 'participants': return <ParticipantsJury data={data} setData={setData} />;
       case 'program': return <ProgramPlanning data={data} setData={setData} />;
       case 'blog': return <BlogNews data={data} setData={setData} />;

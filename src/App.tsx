@@ -328,6 +328,7 @@ const BracketContent = ({ brackets }: { brackets?: any }) => {
 import ArtisticScene from './ArtisticScene';
 import Contact from './Contact';
 import Partners from './Partners';
+import Participate from './Participate';
 import AdminDashboard from './admin/AdminDashboard';
 import { cmsService } from './services/cmsService';
 import { GlobalConfig, MediaItem } from './types';
@@ -336,7 +337,7 @@ export default function App() {
   // Apply theme colors from CMS
   useThemeApply();
 
-  const [currentPage, setCurrentPage] = useState<'home' | 'competition' | 'dancers' | 'judges' | 'media' | 'history' | 'tickets' | 'program' | 'news' | 'artistic' | 'contact' | 'partners' | 'admin'>('home');
+  const [currentPage, setCurrentPage] = useState<'home' | 'competition' | 'dancers' | 'judges' | 'media' | 'history' | 'tickets' | 'program' | 'news' | 'artistic' | 'contact' | 'partners' | 'participate' | 'admin'>('home');
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
   const [selectedArticleId, setSelectedArticleId] = useState<string | undefined>(undefined);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -348,6 +349,7 @@ export default function App() {
   const [bracketData, setBracketData] = useState<any>(null);
   const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
   const [partnerData, setPartnerData] = useState<any>(null);
+  const [participateData, setParticipateData] = useState<any>(null);
   const [selectedMediaYear, setSelectedMediaYear] = useState<number>(2026);
 
   useEffect(() => {
@@ -360,6 +362,7 @@ export default function App() {
     setBracketData(data.competition.brackets);
     setMediaItems(data.media || []);
     setPartnerData(data.partners);
+    setParticipateData(data.participate);
   }, []);
 
   // Recharge la config quand on revient de l'admin avec les nouvelles données
@@ -370,6 +373,7 @@ export default function App() {
       setBracketData(data.competition.brackets);
       setMediaItems(data.media || []);
       setPartnerData(data.partners);
+      setParticipateData(data.participate);
     }
   }, [currentPage]);
 
@@ -399,7 +403,7 @@ export default function App() {
     window.scrollTo(0, 0);
   }, [currentPage]);
 
-  const navigateTo = (page: 'home' | 'competition' | 'dancers' | 'judges' | 'media' | 'history' | 'tickets' | 'program' | 'news' | 'artistic' | 'contact' | 'partners' | 'admin' | 'faq', anchor?: string, articleId?: string) => (e: React.MouseEvent) => {
+  const navigateTo = (page: 'home' | 'competition' | 'dancers' | 'judges' | 'media' | 'history' | 'tickets' | 'program' | 'news' | 'artistic' | 'contact' | 'partners' | 'participate' | 'admin' | 'faq', anchor?: string, articleId?: string) => (e: React.MouseEvent) => {
     e.preventDefault();
     window.scrollTo(0, 0);
     setCurrentPage(page);
@@ -678,10 +682,16 @@ export default function App() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.8 }}
-            className="flex flex-col sm:flex-row gap-6 justify-center mb-12"
+            className="flex flex-col sm:flex-row gap-4 justify-center mb-12 max-w-2xl mx-auto"
           >
-            <button onClick={navigateTo('tickets')} className="btn-luxury-primary shimmer-effect w-full sm:w-auto">
-              BILLETERIE
+            <button onClick={navigateTo('participate')} className="btn-luxury-primary shimmer-effect flex-1 sm:flex-none">
+              PARTICIPER
+            </button>
+            <button onClick={navigateTo('history')} className="btn-luxury-secondary shimmer-effect flex-1 sm:flex-none">
+              DÉCOUVRIR LE FESTIVAL
+            </button>
+            <button onClick={navigateTo('partners')} className="btn-luxury-accent shimmer-effect flex-1 sm:flex-none">
+              DEVENIR PARTENAIRE
             </button>
           </motion.div>
 
@@ -1141,6 +1151,8 @@ export default function App() {
     />
   ) : currentPage === 'contact' ? (
     <Contact onNavigateToFAQ={() => setCurrentPage('faq')} />
+  ) : currentPage === 'participate' ? (
+    <Participate onBack={() => setCurrentPage('home')} data={participateData} />
   ) : currentPage === 'partners' ? (
     <Partners onContactClick={navigateTo('contact')} />
   ) : currentPage === 'admin' ? (
