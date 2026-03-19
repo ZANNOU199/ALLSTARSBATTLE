@@ -44,6 +44,26 @@ export interface Participant {
   category: 'b-boy' | 'b-girl' | 'crew' | 'judge' | 'dj' | 'mc';
 }
 
+export interface Organizer {
+  id: string;
+  name: string;
+  role: string;
+  bio: string;
+  photo: string;
+  socialLinks?: {
+    instagram?: string;
+    facebook?: string;
+    twitter?: string;
+    linkedin?: string;
+  };
+}
+
+export interface OrganizersConfig {
+  sectionTitle: string;
+  sectionDescription: string;
+  organizationName: string;
+}
+
 export interface Activity {
   id: string;
   time: string;
@@ -373,6 +393,8 @@ export interface CMSData {
       subtitle: string;
     };
   };
+  organizers?: Organizer[];
+  organizersConfig?: OrganizersConfig;
 }
 
 export type CMSState = CMSData;

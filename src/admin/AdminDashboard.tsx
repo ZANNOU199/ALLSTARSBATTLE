@@ -45,6 +45,7 @@ import ContactCMS from './modules/ContactCMS';
 import ParticipateAdmin from './modules/ParticipateAdmin';
 import BackgroundImages from './modules/BackgroundImages';
 import SiteImagesManager from './modules/SiteImagesManager';
+import OrganizersAdmin from './modules/OrganizersAdmin';
 
 type ModuleId = 
   | 'dashboard' 
@@ -63,7 +64,8 @@ type ModuleId =
   | 'theme'
   | 'participate'
   | 'backgrounds'
-  | 'siteAssets';
+  | 'siteAssets'
+  | 'organizers';
 
 export default function AdminDashboard({ onLogout }: { onLogout: () => void }) {
   const [activeModule, setActiveModule] = useState<ModuleId>('dashboard');
@@ -82,6 +84,7 @@ export default function AdminDashboard({ onLogout }: { onLogout: () => void }) {
     { id: 'scene', label: 'Scène Artistique', icon: Palette },
     { id: 'participate', label: 'Page Participer', icon: UserCheck },
     { id: 'participants', label: 'Participants & Jury', icon: Users },
+    { id: 'organizers', label: 'Équipe Organisation', icon: Users },
     { id: 'program', label: 'Programme & Planning', icon: Calendar },
     { id: 'blog', label: 'Blog & Actualités', icon: FileText },
     { id: 'competition', label: 'Compétition & Brackets', icon: Trophy },
@@ -111,6 +114,7 @@ export default function AdminDashboard({ onLogout }: { onLogout: () => void }) {
       case 'contact': return <ContactCMS data={data} setData={setData} />;
       case 'media': return <MediaArchives data={data} setData={setData} />;
       case 'partners': return <PartnersMedia data={data} setData={setData} />;
+      case 'organizers': return <OrganizersAdmin data={data} setData={setData} />;
       case 'config': return <GlobalConfigSEO data={data} setData={setData} />;
       case 'theme': return <ThemeSettings data={data} setData={setData} />;
       default: return <DashboardOverview data={data} />;

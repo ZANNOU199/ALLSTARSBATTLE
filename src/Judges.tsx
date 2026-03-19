@@ -19,6 +19,7 @@ const Judges = () => {
   const [djsMcsData, setDjsMcsData] = useState<any[]>([]);
   const [selectedJudge, setSelectedJudge] = useState<any>(null);
   const [selectedArtist, setSelectedArtist] = useState<any>(null);
+  const [organizersConfig, setOrganizersConfig] = useState<any>(null);
 
   useEffect(() => {
     const data = cmsService.getData();
@@ -43,21 +44,16 @@ const Judges = () => {
       img: p.photo
     })));
 
-    // For staff, we'll use a default or maybe add a category to CMS later
-    setStaffData([
-      { 
-        name: "Elom Kodjo", 
-        role: "Directeur Fondateur & Producteur",
-        bio: "Visionnaire et activiste culturel, Elom a fondé l'ASBI pour propulser le breaking africain sur la scène mondiale.",
-        image: "https://picsum.photos/seed/elom/400/400"
-      },
-      { 
-        name: "Sena Ayivi", 
-        role: "Coordinatrice Artistique",
-        bio: "Experte en danse urbaine, Sena veille à l'excellence artistique et à la cohérence culturelle de chaque édition.",
-        image: "https://picsum.photos/seed/sena/400/400"
-      }
-    ]);
+    // Load organizers from CMS
+    const organizers = data.organizers || [];
+    setStaffData(organizers.map(org => ({
+      name: org.name,
+      role: org.role,
+      bio: org.bio,
+      image: org.photo
+    })));
+
+    setOrganizersConfig(data.organizersConfig);
   }, []);
 
   React.useEffect(() => {
@@ -326,13 +322,13 @@ const Judges = () => {
       <section className="py-24 px-6 max-w-7xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-16 items-start">
           <div className="lg:sticky lg:top-32">
-            <h2 className="font-heading text-6xl text-white uppercase leading-none mb-6 tracking-tighter">L’EQUIPE <br/><span className="text-accent-red italic">ORGANISATION</span></h2>
+            <h2 className="font-heading text-6xl text-white uppercase leading-none mb-6 tracking-tighter">{organizersConfig?.sectionTitle?.split('ORGANISATION')[0] || 'L\'EQUIPE'} <br/><span className="text-accent-red italic">ORGANISATION</span></h2>
             <p className="text-slate-400 leading-relaxed font-light">
-              Derrière le plus grand événement de breaking d'Afrique de l'Ouest, se trouve une équipe passionnée d'activistes culturels et d'experts en événementiel.
+              {organizersConfig?.sectionDescription || 'Derrière le plus grand événement de breaking d\'Afrique de l\'Ouest, se trouve une équipe passionnée d\'activistes culturels et d\'experts en événementiel.'}
             </p>
             <div className="mt-8 flex items-center gap-4">
               <div className="w-12 h-0.5 bg-primary"></div>
-              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">ASBI Togo 2026</span>
+              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">{organizersConfig?.organizationName || 'ASBI Togo 2026'}</span>
             </div>
           </div>
           

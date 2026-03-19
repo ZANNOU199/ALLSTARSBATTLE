@@ -492,6 +492,36 @@ const initialData: CMSData = {
         type: 'video'
       }
     }
+  },
+  organizers: [
+    {
+      id: '1',
+      name: 'Elom Kodjo',
+      role: 'Directeur Fondateur & Producteur',
+      bio: 'Visionnaire et activiste culturel, Elom a fondé l\'ASBI pour propulser le breaking africain sur la scène mondiale.',
+      photo: 'https://picsum.photos/seed/elom/400/500',
+      socialLinks: {
+        instagram: '@elomkodjo',
+        facebook: 'elomkodjo',
+        twitter: '@elomkodjo'
+      }
+    },
+    {
+      id: '2',
+      name: 'Sena Ayivi',
+      role: 'Coordinatrice Artistique',
+      bio: 'Experte en production artistique, Sena orchestre chaque détail pour créer une expérience inoubliable.',
+      photo: 'https://picsum.photos/seed/sena/400/500',
+      socialLinks: {
+        instagram: '@senaayivi',
+        facebook: 'senaayivi'
+      }
+    }
+  ],
+  organizersConfig: {
+    sectionTitle: 'L\'EQUIPE ORGANISATION',
+    sectionDescription: 'Derrière le plus grand événement de breaking d\'Afrique de l\'Ouest, se trouve une équipe passionnée d\'activistes culturels et d\'experts en événementiel.',
+    organizationName: 'ASBI Togo 2026'
   }
 };
 
@@ -544,6 +574,11 @@ export const cmsService = {
           pageBackgrounds: {
             ...initialData.pageBackgrounds,
             ...parsed.pageBackgrounds
+          },
+          organizers: parsed.organizers || initialData.organizers,
+          organizersConfig: {
+            ...initialData.organizersConfig,
+            ...parsed.organizersConfig
           },
           siteAssets: {
             backgrounds: { ...initialData.siteAssets.backgrounds, ...parsed.siteAssets?.backgrounds },
