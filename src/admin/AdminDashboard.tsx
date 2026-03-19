@@ -38,6 +38,7 @@ import TicketingFAQ from './modules/TicketingFAQ';
 import HistoryLegends from './modules/HistoryLegends';
 import PartnersMedia from './modules/PartnersMedia';
 import MediaArchives from './modules/MediaArchives';
+import SiteImagesManager from './modules/SiteImagesManager';
 import GlobalConfigSEO from './modules/GlobalConfigSEO';
 import HomepageContent from './modules/HomepageContent';
 import ThemeSettings from './modules/ThemeSettings';
@@ -55,6 +56,7 @@ type ModuleId =
   | 'history' 
   | 'partners' 
   | 'media'
+  | 'images'
   | 'contact'
   | 'config'
   | 'homepage'
@@ -83,6 +85,7 @@ export default function AdminDashboard({ onLogout }: { onLogout: () => void }) {
     { id: 'history', label: 'Histoire & Légendes', icon: History },
     { id: 'contact', label: 'Page Contact', icon: Mail },
     { id: 'media', label: 'Galerie & Archives Média', icon: ImageIcon },
+    { id: 'images', label: 'Images du Site', icon: ImageIcon },
     { id: 'partners', label: 'Partenaires', icon: Handshake },
     { id: 'config', label: 'Configuration & SEO', icon: Settings },
     { id: 'theme', label: 'Paramètres du Thème', icon: Palette },
@@ -102,6 +105,7 @@ export default function AdminDashboard({ onLogout }: { onLogout: () => void }) {
       case 'history': return <HistoryLegends data={data} setData={setData} />;
       case 'contact': return <ContactCMS data={data} setData={setData} />;
       case 'media': return <MediaArchives data={data} setData={setData} />;
+      case 'images': return <SiteImagesManager data={data} setData={setData} />;
       case 'partners': return <PartnersMedia data={data} setData={setData} />;
       case 'config': return <GlobalConfigSEO data={data} setData={setData} />;
       case 'theme': return <ThemeSettings data={data} setData={setData} />;

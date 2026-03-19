@@ -1,4 +1,50 @@
 
+// Site Assets - Images et Vidéos du site
+export interface BackgroundImage {
+  id: string;
+  name: string;
+  section: string; // e.g., "hero", "competition", "dancers", "hompage-feature"
+  url: string;
+  width?: number;
+  height?: number;
+  size?: string; // File size in KB/MB
+  uploadedAt?: string;
+  alt: string;
+}
+
+export interface IllustrativeImage {
+  id: string;
+  name: string;
+  section: string; // e.g., "about", "services", "features"
+  url: string;
+  width?: number;
+  height?: number;
+  size?: string; // File size in KB/MB
+  uploadedAt?: string;
+  alt: string;
+  caption?: string;
+}
+
+export interface SiteVideo {
+  id: string;
+  name: string;
+  section: string; // e.g., "hero-background", "testimonial"
+  url: string;
+  thumbnail?: string;
+  width?: number;
+  height?: number;
+  duration?: string; // e.g., "2:30"
+  size?: string; // File size in KB/MB
+  uploadedAt?: string;
+  alt: string;
+}
+
+export interface SiteAssets {
+  backgroundImages: BackgroundImage[];
+  illustrativeImages: IllustrativeImage[];
+  videos: SiteVideo[];
+}
+
 export interface Company {
   id: string;
   name: string;
@@ -284,6 +330,7 @@ export interface CMSData {
     };
   };
   media: MediaItem[];
+  siteAssets: SiteAssets;
   globalConfig: GlobalConfig;
   theme: ThemeConfig;
   participate: {

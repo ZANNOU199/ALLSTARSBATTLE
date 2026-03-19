@@ -256,6 +256,133 @@ const initialData: CMSData = {
       thumbnail: ''
     }
   ],
+  siteAssets: {
+    backgroundImages: [
+      {
+        id: '1',
+        name: 'Hero Homepage',
+        section: 'hero',
+        url: 'https://images.unsplash.com/photo-1566576912321-d01dcc01d4b0?auto=format&fit=crop&q=80&w=2560&h=1440',
+        width: 2560,
+        height: 1440,
+        size: '2.8 MB',
+        uploadedAt: '2026-01-15',
+        alt: 'Hero background with breaking dancers'
+      },
+      {
+        id: '2',
+        name: 'Competition Section',
+        section: 'competition',
+        url: 'https://images.unsplash.com/photo-1516322318423-f06f70259b0c?auto=format&fit=crop&q=80&w=2560&h=1440',
+        width: 2560,
+        height: 1440,
+        size: '3.1 MB',
+        uploadedAt: '2026-01-20',
+        alt: 'Competition arena background'
+      },
+      {
+        id: '3',
+        name: 'Dancers Section',
+        section: 'dancers',
+        url: 'https://images.unsplash.com/photo-1510578773206-a38aa66472e8?auto=format&fit=crop&q=80&w=2560&h=1440',
+        width: 2560,
+        height: 1440,
+        size: '2.6 MB',
+        uploadedAt: '2026-01-22',
+        alt: 'Featured dancers background'
+      },
+      {
+        id: '4',
+        name: 'Partners Section',
+        section: 'partners',
+        url: 'https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&q=80&w=2560&h=1440',
+        width: 2560,
+        height: 1440,
+        size: '2.9 MB',
+        uploadedAt: '2026-01-25',
+        alt: 'Partners and sponsors background'
+      }
+    ],
+    illustrativeImages: [
+      {
+        id: '1',
+        name: 'About Section Image',
+        section: 'about',
+        url: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format&fit=crop&q=80&w=1200&h=800',
+        width: 1200,
+        height: 800,
+        size: '1.2 MB',
+        uploadedAt: '2026-01-18',
+        alt: 'About section illustration',
+        caption: 'The spirit of All Stars Battle'
+      },
+      {
+        id: '2',
+        name: 'VIP Experience Icon',
+        section: 'vip',
+        url: 'https://images.unsplash.com/photo-1549887534-f2cb8b07ef5e?auto=format&fit=crop&q=80&w=800&h=600',
+        width: 800,
+        height: 600,
+        size: '0.8 MB',
+        uploadedAt: '2026-01-20',
+        alt: 'VIP experience illustration',
+        caption: 'Premium access to the action'
+      },
+      {
+        id: '3',
+        name: 'Press Media Image',
+        section: 'press',
+        url: 'https://images.unsplash.com/photo-1557821552-17105176677c?auto=format&fit=crop&q=80&w=1200&h=800',
+        width: 1200,
+        height: 800,
+        size: '1.4 MB',
+        uploadedAt: '2026-01-23',
+        alt: 'Press and media coverage',
+        caption: 'Featured in major publications'
+      }
+    ],
+    videos: [
+      {
+        id: '1',
+        name: 'Hero Background Video',
+        section: 'hero',
+        url: 'https://vjs.zencdn.net/v/oceans.mp4',
+        thumbnail: 'https://images.unsplash.com/photo-1566576912321-d01dcc01d4b0?auto=format&fit=crop&q=80&w=400&h=225',
+        width: 1920,
+        height: 1080,
+        duration: '0:45',
+        size: '45.2 MB',
+        uploadedAt: '2026-01-15',
+        alt: 'Hero video background'
+      },
+      {
+        id: '2',
+        name: 'Trailer 2026',
+        section: 'promo',
+        url: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+        thumbnail: 'https://images.unsplash.com/photo-1516322318423-f06f70259b0c?auto=format&fit=crop&q=80&w=400&h=225',
+        width: 1280,
+        height: 720,
+        duration: '2:15',
+        size: '52.1 MB',
+        uploadedAt: '2026-01-20',
+        alt: 'Official event trailer'
+      },
+      {
+        id: '3',
+        name: 'Highlights Compilation',
+        section: 'archive',
+        url: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+        thumbnail: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format&fit=crop&q=80&w=400&h=225',
+        width: 1280,
+        height: 720,
+        duration: '5:30',
+        size: '78.5 MB',
+        uploadedAt: '2026-01-22',
+        alt: 'Event highlights compilation'
+      }
+    ]
+  },
   globalConfig: {
     contact: {
       email: 'contact@asbi.com',
