@@ -90,7 +90,7 @@ export default function AdminDashboard({ onLogout }: { onLogout: () => void }) {
 
   const renderModule = () => {
     switch (activeModule) {
-      case 'dashboard': return <DashboardOverview data={data} />;
+      case 'dashboard': return <DashboardOverview data={data} onNavigate={(module) => setActiveModule(module as ModuleId)} />;
       case 'homepage': return <HomepageContent data={data} setData={setData} />;
       case 'scene': return <SceneArtistique data={data} setData={setData} />;
       case 'participate': return <ParticipateAdmin data={data} setData={setData} />;
